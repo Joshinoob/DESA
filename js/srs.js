@@ -107,17 +107,19 @@
     return typeof limit === "number" ? news.slice(0, limit) : news;
   }
 
-  // Setzt eine Karte sofort auf "fällig" (Box 0), unabhängig vom bisherigen Stand.
+  // Plant eine Karte für baldiges Wiederholen ein, OHNE bestehenden Fortschritt zu
+  // zerstören: neue Karten werden sofort fällig (wie gewohnt), bereits gelernte
+  // Karten werden nur vorgezogen (spätestens morgen fällig), ihre Box bleibt erhalten.
   // Genutzt von der Nachschlage-Funktion, wenn ein Begriff als unklar markiert wird.
-  function flagForReview(progress, cardId) {
-    const state = getCardState(progress, cardId);
-    progress[cardId] = {
-      box: 0,
-      due: todayISO(),
-      reps: state.reps || 0,
-      lapses: state.lapses || 0,
-      lastReview: state.lastReview || null
-    };
+  function scheduleSoon(progress, cardId) {
+    const existing = progress[cardId];
+    if (!existing) {
+      progress[cardId] = { box: 0, due: todayISO(), reps: 0, lapses: 0, lastReview: null };
+    } else {
+      const tomorrow = addDays(new Date(), 1).toISOString();
+      const dueSooner = new Date(existing.due) < new Date(tomorrow) ? existing.due : tomorrow;
+      progress[cardId] = Object.assign({}, existing, { due: dueSooner });
+    }
     saveProgress(progress);
     return progress[cardId];
   }
@@ -182,7 +184,7 @@
     getDueCards: getDueCards,
     getNewCards: getNewCards,
     getModuleStats: getModuleStats,
-    flagForReview: flagForReview,
+    scheduleSoon: scheduleSoon,
     loadGaps: loadGaps,
     saveGaps: saveGaps,
     addGap: addGap,

@@ -51,14 +51,42 @@
   // oder in der Testauswertung. Gibt es dazu eine Karte, wird sie sofort auf "fällig"
   // gesetzt und in die laufende Session eingereiht. Gibt es keine, wird der Begriff
   // als "Wissenslücke" im Dashboard gemerkt, statt verloren zu gehen.
+  // Bevorzugt Karten, deren Frage/Titel den Begriff direkt enthält, vor Karten, die
+  // ihn nur beiläufig im Fließtext erwähnen (relevanteste Treffer zuerst, max. 3).
   function searchCards(term, excludeId) {
     const t = term.trim().toLowerCase();
     if (!t) return [];
-    return FLASHCARDS.filter(function (c) {
-      if (c.id === excludeId) return false;
-      const haystack = (c.front + " " + (c.back || "") + " " + (c.profile ? JSON.stringify(c.profile) : "")).toLowerCase();
-      return haystack.indexOf(t) !== -1;
-    }).slice(0, 5);
+    const scored = [];
+    FLASHCARDS.forEach(function (c) {
+      if (c.id === excludeId) return;
+      const front = c.front.toLowerCase();
+      const body = ((c.back || "") + " " + (c.profile ? JSON.stringify(c.profile) : "")).toLowerCase();
+      let score = 0;
+      if (front.indexOf(t) !== -1) score = 3;
+      else if (c.profile && c.profile.klasse && c.profile.klasse.toLowerCase().indexOf(t) !== -1) score = 2;
+      else if (body.indexOf(t) !== -1) score = 1;
+      if (score > 0) scored.push({ card: c, score: score });
+    });
+    scored.sort(function (a, b) { return b.score - a.score; });
+    return scored.slice(0, 3).map(function (s) { return s.card; });
+  }
+
+  function showCardModal(card) {
+    const isProfile = !!card.profile;
+    const content = isProfile ? renderProfile(card.profile) : '<div class="modal-plain-back">' + escapeHtml(card.back) + "</div>";
+    const backdrop = document.createElement("div");
+    backdrop.className = "lookup-modal-backdrop";
+    backdrop.innerHTML =
+      '<div class="lookup-modal">' +
+      '<button class="lookup-modal-close" aria-label="Schließen">×</button>' +
+      '<div class="lookup-modal-front">' + escapeHtml(card.front) + "</div>" +
+      '<div class="lookup-modal-body">' + content + "</div>" +
+      '<p class="lookup-modal-hint muted">Wird dir bald wieder zum Lernen vorgeschlagen.</p>' +
+      "</div>";
+    document.body.appendChild(backdrop);
+    function close() { backdrop.remove(); }
+    backdrop.addEventListener("click", function (e) { if (e.target === backdrop) close(); });
+    backdrop.querySelector(".lookup-modal-close").addEventListener("click", close);
   }
 
   function showToast(msg) {
@@ -76,13 +104,11 @@
     const sourceFront = sourceEl.getAttribute("data-card-front") || "";
     const matches = searchCards(term, currentId);
     if (matches.length > 0) {
-      matches.forEach(function (c) {
-        window.SRS.flagForReview(progress, c.id);
-        if (learnQueue && !learnQueue.some(function (q) { return q.id === c.id; })) {
-          learnQueue.splice(1, 0, c);
-        }
-      });
-      showToast(matches.length + ' Karte(n) zu „' + term + '“ gefunden – als Nächstes fällig.');
+      matches.forEach(function (c) { window.SRS.scheduleSoon(progress, c.id); });
+      showCardModal(matches[0]);
+      if (matches.length > 1) {
+        showToast((matches.length - 1) + " weitere Karte(n) zu „" + term + "“ wurden ebenfalls bald eingeplant.");
+      }
     } else {
       window.SRS.addGap(term, sourceFront);
       showToast('Kein Eintrag zu „' + term + '“ gefunden – als Wissenslücke gemerkt (siehe Dashboard).');
