@@ -118,82 +118,50 @@
     }
   }
 
-  let lookupPopoverEl = null;
-  function removeLookupPopover() {
-    if (lookupPopoverEl) { lookupPopoverEl.remove(); lookupPopoverEl = null; }
-  }
-
-  // "selectionchange" statt "mouseup": funktioniert zuverlässig bei Touch-Auswahl
-  // (Griffe ziehen auf dem Handy löst kein mouseup aus). Debounce, weil das Event
-  // während des Ziehens sehr häufig feuert.
-  function showLookupPopover(rect, text, sourceEl) {
-    removeLookupPopover();
-    const btn = document.createElement("button");
-    btn.className = "lookup-popover";
-    const shown = text.length > 30 ? text.slice(0, 30) + "…" : text;
-    btn.textContent = '🔖 „' + shown + '“ nachschlagen';
-    // Erst anhängen, dann messen (Breite unbekannt vor dem Rendern).
-    btn.style.visibility = "hidden";
-    document.body.appendChild(btn);
-    const btnWidth = btn.offsetWidth || 200;
-    const btnHeight = btn.offsetHeight || 44;
-    // rect kommt aus getBoundingClientRect() und ist damit bereits Viewport-relativ —
-    // genau wie position:fixed es braucht. NICHT mit scrollX/scrollY verrechnen,
-    // sonst springt das Popover an die falsche Stelle, sobald die Seite gescrollt ist
-    // (z.B. bei den langen Steckbrief-Karten auf dem Handy).
-    // Bevorzugt unterhalb der Auswahl (auf dem Handy liegt die native Kopieren-Leiste
-    // oberhalb) — passt es aber nicht mehr in den sichtbaren Bereich, klappt es nach oben.
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const top = spaceBelow > btnHeight + 16
-      ? rect.bottom + 10
-      : Math.max(8, rect.top - btnHeight - 10);
-    const maxLeft = window.innerWidth - btnWidth - 10;
-    const left = Math.max(8, Math.min(rect.left, maxLeft));
-    btn.style.top = top + "px";
-    btn.style.left = left + "px";
-    btn.style.visibility = "visible";
-    // Nur bei Maus: verhindert kosmetisch, dass der Klick die Textauswahl vorher verwirft.
-    // NICHT bei touchstart: preventDefault() dort unterdrückt in mobilen Browsern das
-    // nachfolgende "click"-Event, der Tap würde sonst ins Leere gehen.
-    btn.addEventListener("mousedown", function (ev) { ev.preventDefault(); });
-    btn.addEventListener("click", function () {
-      handleLookup(text, sourceEl);
-      removeLookupPopover();
-      const sel = window.getSelection();
-      if (sel) sel.removeAllRanges();
+  // Frühere Version nutzte Text-Selektion (Ziehen mit dem Finger) + Popover-Button.
+  // Auf dem Handy ist Selektieren fummelig und kollidiert mit der nativen
+  // Kopieren/Nachschlagen-Leiste des Browsers, daher jetzt direkt: jedes Wort ist ein
+  // eigenes antippbares/klickbares Element, ein Tap/Klick löst die Suche sofort aus.
+  function wrapLookupWords(root) {
+    if (!root) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    const textNodes = [];
+    let node;
+    while ((node = walker.nextNode())) {
+      if (node.nodeValue.trim()) textNodes.push(node);
+    }
+    textNodes.forEach(function (textNode) {
+      const parts = textNode.nodeValue.split(/(\s+)/);
+      const frag = document.createDocumentFragment();
+      parts.forEach(function (part) {
+        if (!part) return;
+        if (/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+        } else {
+          const span = document.createElement("span");
+          span.className = "lookup-word";
+          span.textContent = part;
+          frag.appendChild(span);
+        }
+      });
+      textNode.parentNode.replaceChild(frag, textNode);
     });
-    lookupPopoverEl = btn;
   }
 
-  function checkSelectionForLookup() {
-    const sel = window.getSelection();
-    const text = sel ? sel.toString().trim() : "";
-    // Bei leerer/zu kurzer/zu langer Auswahl das evtl. offene Popover unangetastet lassen —
-    // sonst verschwindet es genau in dem Moment, in dem der Finger/die Maus es antippt.
-    if (!text || text.length < 2 || text.length > 60 || sel.rangeCount === 0) return;
-    const anchorNode = sel.anchorNode;
-    const container = anchorNode && anchorNode.nodeType === 3 ? anchorNode.parentElement : anchorNode;
-    const sourceEl = container && container.closest ? container.closest(".lookup-source") : null;
+  function wrapAllLookupSources() {
+    document.querySelectorAll(".lookup-source").forEach(wrapLookupWords);
+  }
+
+  document.addEventListener("click", function (e) {
+    const span = e.target.closest && e.target.closest(".lookup-word");
+    if (!span) return;
+    const sourceEl = span.closest(".lookup-source");
     if (!sourceEl) return;
-    const range = sel.getRangeAt(0);
-    const rect = range.getBoundingClientRect();
-    if (!rect || (rect.width === 0 && rect.height === 0)) return;
-    showLookupPopover(rect, text, sourceEl);
-  }
-
-  let selectionDebounce = null;
-  document.addEventListener("selectionchange", function () {
-    clearTimeout(selectionDebounce);
-    selectionDebounce = setTimeout(checkSelectionForLookup, 300);
-  });
-
-  // Popover schließen, wenn irgendwo anders hingetippt/-geklickt wird (Maus & Touch).
-  ["mousedown", "touchstart"].forEach(function (evt) {
-    document.addEventListener(evt, function (e) {
-      if (lookupPopoverEl && !(e.target.closest && e.target.closest(".lookup-popover"))) {
-        removeLookupPopover();
-      }
-    });
+    const word = span.textContent.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
+    if (word.length < 2) return;
+    span.classList.add("lookup-word-active");
+    setTimeout(function () { span.classList.remove("lookup-word-active"); }, 400);
+    handleLookup(word, sourceEl);
   });
 
   // ---------- Routing ----------
@@ -215,7 +183,7 @@
     else if (route === "soe") renderSOEList();
     else if (route === "soe-case") renderSOEDetail(arg);
     else renderDashboard();
-    removeLookupPopover();
+    wrapAllLookupSources();
     window.scrollTo(0, 0);
   }
   window.addEventListener("hashchange", router);
@@ -390,8 +358,9 @@
       '<button class="btn rating-good" data-rating="good">Gut</button>' +
       '<button class="btn rating-easy" data-rating="easy">Leicht</button>' +
       "</div>" +
-      '<p class="lookup-hint muted">Tipp: markiere ein unklares Wort (z.B. „PRIS“) mit der Maus, um es nachzuschlagen.</p>' +
+      '<p class="lookup-hint muted">Tipp: tippe/klicke ein unklares Wort (z.B. „PRIS“) an, um es nachzuschlagen.</p>' +
       "</main>";
+    wrapAllLookupSources();
 
     document.getElementById("reveal-btn").addEventListener("click", function () {
       document.getElementById("flashcard-back").classList.remove("hidden");
@@ -572,6 +541,7 @@
       '<div class="cta-row"><a class="btn btn-primary" href="#/test">Neuer Test</a> <a class="btn btn-secondary" href="#/progress">Fortschritt ansehen</a></div>' +
       (wrong.length > 0 ? "<h2>Falsch beantwortete Fragen</h2>" + wrongHtml : "<p>Alle Fragen richtig! 🎉</p>") +
       "</main>";
+    wrapAllLookupSources();
   }
 
   // ---------- Progress ----------
