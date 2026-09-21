@@ -84,7 +84,8 @@
       due: addDays(new Date(), dueDays).toISOString(),
       reps: reps,
       lapses: lapses,
-      lastReview: todayISO()
+      lastReview: todayISO(),
+      lastRating: rating
     };
     progress[cardId] = newState;
     saveProgress(progress);
@@ -157,6 +158,24 @@
     return gaps;
   }
 
+  // Karten, deren letzte Bewertung "Nochmal" oder "Schwer" war — damit dieser
+  // Lernaufwand sichtbar wird und gezielt wiederholt werden kann, statt nur in der
+  // Box-Zahl zu verschwinden.
+  function getDifficultCards(allCards, progress, limit) {
+    const matches = [];
+    allCards.forEach(function (c) {
+      const state = progress[c.id];
+      if (state && (state.lastRating === "again" || state.lastRating === "hard")) {
+        matches.push({ card: c, state: state });
+      }
+    });
+    matches.sort(function (a, b) {
+      return new Date(b.state.lastReview) - new Date(a.state.lastReview);
+    });
+    const limited = typeof limit === "number" ? matches.slice(0, limit) : matches;
+    return limited.map(function (m) { return m.card; });
+  }
+
   function getModuleStats(allCards, progress, moduleId) {
     const cards = allCards.filter(function (c) { return c.module === moduleId; });
     const total = cards.length;
@@ -184,6 +203,7 @@
     getDueCards: getDueCards,
     getNewCards: getNewCards,
     getModuleStats: getModuleStats,
+    getDifficultCards: getDifficultCards,
     scheduleSoon: scheduleSoon,
     loadGaps: loadGaps,
     saveGaps: saveGaps,

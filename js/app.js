@@ -215,9 +215,12 @@
     let totalCards = FLASHCARDS.length;
     let totalDue = window.SRS.getDueCards(FLASHCARDS, progress, "all").length;
     let totalMastered = 0;
+    let totalStarted = 0;
     FLASHCARDS.forEach(function (c) {
       const st = progress[c.id];
-      if (st && st.box >= 4) totalMastered++;
+      if (!st) return;
+      totalStarted++;
+      if (st.box >= 4) totalMastered++;
     });
     const results = window.SRS.loadResults();
     const lastResultsByModule = {};
@@ -237,6 +240,7 @@
         '<td data-label="Modul"><span class="part-badge">Teil ' + m.part + "</span> " + escapeHtml(m.title) + "</td>" +
         '<td data-label="Karten">' + stats.total + "</td>" +
         '<td data-label="Fällig">' + (stats.due > 0 ? '<span class="due-badge">' + stats.due + "</span>" : "0") + "</td>" +
+        '<td data-label="Begonnen">' + stats.started + "</td>" +
         '<td data-label="Beherrschung"><div class="bar"><div class="bar-fill" style="width:' + masteryPct + '%"></div></div><span class="bar-label">' + masteryPct + "%</span></td>" +
         '<td data-label="Letzter Test">' + lastScore + "</td>" +
         '<td data-label="Aktionen" class="row-actions">' +
@@ -245,6 +249,17 @@
         "</td></tr>"
       );
     }).join("");
+
+    const difficultCards = window.SRS.getDifficultCards(FLASHCARDS, progress, 12);
+    const difficultHtml = difficultCards.length === 0 ? "" :
+      '<h2>Schwierige Karten (' + difficultCards.length + ')</h2>' +
+      '<p class="muted">Zuletzt mit „Nochmal" oder „Schwer" bewertet.</p>' +
+      '<ul class="gap-list">' +
+      difficultCards.map(function (c) {
+        return '<li class="gap-item"><span>' + escapeHtml(c.front) + '<span class="gap-source"> — ' + escapeHtml(moduleById(c.module).title) + "</span></span></li>";
+      }).join("") +
+      "</ul>" +
+      '<div class="cta-row"><a class="btn btn-secondary" href="#/learn-session/difficult">Schwierige Karten üben</a></div>';
 
     const gaps = window.SRS.loadGaps();
     const gapsHtml = gaps.length === 0 ? "" :
@@ -265,6 +280,7 @@
       '<h1>Dein DESA-Lernstand</h1>' +
       '<div class="stat-cards">' +
       '<div class="stat-card"><div class="stat-value">' + totalDue + '</div><div class="stat-label">Karten heute fällig</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + totalStarted + " / " + totalCards + '</div><div class="stat-label">Karten begonnen</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + totalMastered + " / " + totalCards + '</div><div class="stat-label">Karten gemeistert</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + MCQ.length + '</div><div class="stat-label">Testfragen verfügbar</div></div>' +
       "</div>" +
@@ -273,9 +289,10 @@
       '<a class="btn btn-secondary" href="#/test-session/mixed">Prüfungssimulation starten</a>' +
       "</div>" +
       '<h2>Module</h2>' +
-      '<div class="table-scroll"><table class="module-table"><thead><tr><th>Modul</th><th>Karten</th><th>Fällig</th><th>Beherrschung</th><th>Letzter Test</th><th></th></tr></thead><tbody>' +
+      '<div class="table-scroll"><table class="module-table"><thead><tr><th>Modul</th><th>Karten</th><th>Fällig</th><th>Begonnen</th><th>Beherrschung</th><th>Letzter Test</th><th></th></tr></thead><tbody>' +
       moduleRows +
       "</tbody></table></div>" +
+      difficultHtml +
       gapsHtml +
       "</main>";
 
@@ -312,10 +329,23 @@
   let learnStats = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
 
   function startLearnSession(moduleId) {
+    learnStats = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
+    if (moduleId === "difficult") {
+      learnQueue = window.SRS.getDifficultCards(FLASHCARDS, progress);
+      if (learnQueue.length === 0) {
+        app.innerHTML =
+          nav("learn") +
+          '<main class="container narrow"><h1>Keine schwierigen Karten</h1>' +
+          '<p>Aktuell ist keine Karte mit „Nochmal" oder „Schwer" bewertet.</p>' +
+          '<a class="btn btn-secondary" href="#/dashboard">Zurück zum Dashboard</a></main>';
+        return;
+      }
+      renderLearnCard();
+      return;
+    }
     const due = window.SRS.getDueCards(FLASHCARDS, progress, moduleId);
     const fresh = window.SRS.getNewCards(FLASHCARDS, progress, moduleId, 15);
     learnQueue = due.concat(fresh);
-    learnStats = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
     if (learnQueue.length === 0) {
       app.innerHTML =
         nav("learn") +
@@ -556,15 +586,10 @@
 
     const moduleBars = CURRICULUM.map(function (m) {
       const stats = window.SRS.getModuleStats(FLASHCARDS, progress, m.id);
-      const boxCounts = [0, 0, 0, 0, 0, 0];
-      FLASHCARDS.filter(function (c) { return c.module === m.id; }).forEach(function (c) {
-        const st = progress[c.id];
-        boxCounts[st ? st.box : 0]++;
-      });
       const masteryPct = stats.total ? Math.round((stats.mastered / stats.total) * 100) : 0;
       return (
         '<div class="progress-module">' +
-        '<div class="progress-module-title">' + escapeHtml(m.title) + " – " + masteryPct + "% gemeistert (" + stats.mastered + "/" + stats.total + ")</div>" +
+        '<div class="progress-module-title">' + escapeHtml(m.title) + " – " + masteryPct + "% gemeistert (" + stats.mastered + "/" + stats.total + ") · " + stats.started + " begonnen</div>" +
         '<div class="bar"><div class="bar-fill" style="width:' + masteryPct + '%"></div></div>' +
         "</div>"
       );
