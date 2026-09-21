@@ -46,6 +46,84 @@
     }).join("");
   }
 
+  // ---------- Begriff markieren & nachschlagen ----------
+  // Nutzer markiert ein unklares Wort (z.B. "PRIS") mit der Maus während des Lernens
+  // oder in der Testauswertung. Gibt es dazu eine Karte, wird sie sofort auf "fällig"
+  // gesetzt und in die laufende Session eingereiht. Gibt es keine, wird der Begriff
+  // als "Wissenslücke" im Dashboard gemerkt, statt verloren zu gehen.
+  function searchCards(term, excludeId) {
+    const t = term.trim().toLowerCase();
+    if (!t) return [];
+    return FLASHCARDS.filter(function (c) {
+      if (c.id === excludeId) return false;
+      const haystack = (c.front + " " + (c.back || "") + " " + (c.profile ? JSON.stringify(c.profile) : "")).toLowerCase();
+      return haystack.indexOf(t) !== -1;
+    }).slice(0, 5);
+  }
+
+  function showToast(msg) {
+    const existing = document.querySelector(".toast");
+    if (existing) existing.remove();
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(function () { el.remove(); }, 3200);
+  }
+
+  function handleLookup(term, sourceEl) {
+    const currentId = sourceEl.getAttribute("data-card-id") || null;
+    const sourceFront = sourceEl.getAttribute("data-card-front") || "";
+    const matches = searchCards(term, currentId);
+    if (matches.length > 0) {
+      matches.forEach(function (c) {
+        window.SRS.flagForReview(progress, c.id);
+        if (learnQueue && !learnQueue.some(function (q) { return q.id === c.id; })) {
+          learnQueue.splice(1, 0, c);
+        }
+      });
+      showToast(matches.length + ' Karte(n) zu „' + term + '“ gefunden – als Nächstes fällig.');
+    } else {
+      window.SRS.addGap(term, sourceFront);
+      showToast('Kein Eintrag zu „' + term + '“ gefunden – als Wissenslücke gemerkt (siehe Dashboard).');
+    }
+  }
+
+  let lookupPopoverEl = null;
+  function removeLookupPopover() {
+    if (lookupPopoverEl) { lookupPopoverEl.remove(); lookupPopoverEl = null; }
+  }
+
+  document.addEventListener("mouseup", function (e) {
+    if (e.target.closest && e.target.closest(".lookup-popover")) return;
+    setTimeout(function () {
+      const sel = window.getSelection();
+      const text = sel ? sel.toString().trim() : "";
+      removeLookupPopover();
+      if (!text || text.length < 2 || text.length > 60 || sel.rangeCount === 0) return;
+      const anchorNode = sel.anchorNode;
+      const container = anchorNode && anchorNode.nodeType === 3 ? anchorNode.parentElement : anchorNode;
+      const sourceEl = container && container.closest ? container.closest(".lookup-source") : null;
+      if (!sourceEl) return;
+      const range = sel.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      if (!rect || (rect.top === 0 && rect.left === 0 && rect.width === 0)) return;
+      const btn = document.createElement("button");
+      btn.className = "lookup-popover";
+      const shown = text.length > 30 ? text.slice(0, 30) + "…" : text;
+      btn.textContent = '🔖 „' + shown + '“ nachschlagen';
+      btn.style.top = Math.max(8, rect.top + window.scrollY - 44) + "px";
+      btn.style.left = Math.max(8, rect.left + window.scrollX) + "px";
+      btn.addEventListener("click", function () {
+        handleLookup(text, sourceEl);
+        removeLookupPopover();
+        sel.removeAllRanges();
+      });
+      document.body.appendChild(btn);
+      lookupPopoverEl = btn;
+    }, 0);
+  });
+
   // ---------- Routing ----------
   function router() {
     const hash = location.hash || "#/dashboard";
@@ -117,6 +195,19 @@
       );
     }).join("");
 
+    const gaps = window.SRS.loadGaps();
+    const gapsHtml = gaps.length === 0 ? "" :
+      '<h2>Offene Wissenslücken (' + gaps.length + ')</h2>' +
+      '<p class="muted">Begriffe, die du markiert hast, zu denen es aber noch keine Karteikarte gibt.</p>' +
+      '<ul class="gap-list">' +
+      gaps.map(function (g) {
+        return (
+          '<li class="gap-item"><span>' + escapeHtml(g.term) + (g.source ? '<span class="gap-source"> — aus: ' + escapeHtml(g.source) + "</span>" : "") + "</span>" +
+          '<button class="btn btn-sm btn-secondary" data-remove-gap="' + escapeHtml(g.term) + '">Erledigt</button></li>'
+        );
+      }).join("") +
+      "</ul>";
+
     app.innerHTML =
       nav("dashboard") +
       '<main class="container">' +
@@ -134,7 +225,15 @@
       '<table class="module-table"><thead><tr><th>Modul</th><th>Karten</th><th>Fällig</th><th>Beherrschung</th><th>Letzter Test</th><th></th></tr></thead><tbody>' +
       moduleRows +
       "</tbody></table>" +
+      gapsHtml +
       "</main>";
+
+    document.querySelectorAll("[data-remove-gap]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        window.SRS.removeGap(btn.getAttribute("data-remove-gap"));
+        renderDashboard();
+      });
+    });
   }
 
   // ---------- Learn ----------
@@ -192,14 +291,14 @@
     const remaining = learnQueue.length;
     const isProfile = !!card.profile;
     const backContent = isProfile ? renderProfile(card.profile) : escapeHtml(card.back);
-    const backClass = "flashcard-back hidden" + (isProfile ? " profile-back" : "");
+    const backClass = "flashcard-back hidden lookup-source" + (isProfile ? " profile-back" : "");
     app.innerHTML =
       nav("learn") +
       '<main class="container narrow">' +
       '<div class="session-progress">Noch ' + remaining + " Karte(n) · " + escapeHtml(moduleById(card.module).title) + " – " + escapeHtml(subtopicTitle(card.module, card.subtopic)) + "</div>" +
       '<div class="flashcard' + (isProfile ? " flashcard-profile" : "") + '" id="flashcard">' +
       '<div class="flashcard-front">' + escapeHtml(card.front) + "</div>" +
-      '<div class="' + backClass + '" id="flashcard-back">' + backContent + "</div>" +
+      '<div class="' + backClass + '" id="flashcard-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + backContent + "</div>" +
       "</div>" +
       '<div class="cta-row" id="reveal-row"><button class="btn btn-primary" id="reveal-btn">Antwort zeigen</button></div>' +
       '<div class="rating-row hidden" id="rating-row">' +
@@ -208,6 +307,7 @@
       '<button class="btn rating-good" data-rating="good">Gut</button>' +
       '<button class="btn rating-easy" data-rating="easy">Leicht</button>' +
       "</div>" +
+      '<p class="lookup-hint muted">Tipp: markiere ein unklares Wort (z.B. „PRIS“) mit der Maus, um es nachzuschlagen.</p>' +
       "</main>";
 
     document.getElementById("reveal-btn").addEventListener("click", function () {
@@ -371,7 +471,7 @@
       const givenText = w.given === null ? "keine Antwort" : String.fromCharCode(65 + w.given) + ") " + escapeHtml(w.q.options[w.given]);
       const correctText = String.fromCharCode(65 + w.q.correct) + ") " + escapeHtml(w.q.options[w.q.correct]);
       return (
-        '<div class="review-item">' +
+        '<div class="review-item lookup-source" data-card-id="' + escapeHtml(w.q.id) + '" data-card-front="' + escapeHtml(w.q.question) + '">' +
         '<p class="question-text">' + escapeHtml(w.q.question) + "</p>" +
         '<p class="wrong-answer">Deine Antwort: ' + givenText + "</p>" +
         '<p class="correct-answer">Richtig: ' + correctText + "</p>" +

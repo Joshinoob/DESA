@@ -107,6 +107,54 @@
     return typeof limit === "number" ? news.slice(0, limit) : news;
   }
 
+  // Setzt eine Karte sofort auf "fällig" (Box 0), unabhängig vom bisherigen Stand.
+  // Genutzt von der Nachschlage-Funktion, wenn ein Begriff als unklar markiert wird.
+  function flagForReview(progress, cardId) {
+    const state = getCardState(progress, cardId);
+    progress[cardId] = {
+      box: 0,
+      due: todayISO(),
+      reps: state.reps || 0,
+      lapses: state.lapses || 0,
+      lastReview: state.lastReview || null
+    };
+    saveProgress(progress);
+    return progress[cardId];
+  }
+
+  const GAPS_KEY = "desa_gaps_v1";
+
+  function loadGaps() {
+    try {
+      const raw = localStorage.getItem(GAPS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveGaps(gaps) {
+    try {
+      localStorage.setItem(GAPS_KEY, JSON.stringify(gaps));
+    } catch (e) { /* ignore */ }
+  }
+
+  function addGap(term, sourceFront) {
+    const gaps = loadGaps();
+    const exists = gaps.some(function (g) { return g.term.toLowerCase() === term.toLowerCase(); });
+    if (!exists) {
+      gaps.push({ term: term, source: sourceFront, date: todayISO() });
+      saveGaps(gaps);
+    }
+    return gaps;
+  }
+
+  function removeGap(term) {
+    const gaps = loadGaps().filter(function (g) { return g.term !== term; });
+    saveGaps(gaps);
+    return gaps;
+  }
+
   function getModuleStats(allCards, progress, moduleId) {
     const cards = allCards.filter(function (c) { return c.module === moduleId; });
     const total = cards.length;
@@ -133,6 +181,11 @@
     reviewCard: reviewCard,
     getDueCards: getDueCards,
     getNewCards: getNewCards,
-    getModuleStats: getModuleStats
+    getModuleStats: getModuleStats,
+    flagForReview: flagForReview,
+    loadGaps: loadGaps,
+    saveGaps: saveGaps,
+    addGap: addGap,
+    removeGap: removeGap
   };
 })();
