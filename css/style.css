@@ -150,17 +150,30 @@ select {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 40px 28px;
+  padding: 32px 28px;
   min-height: 180px;
+  max-height: 65vh;
+  overflow-y: auto;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
   text-align: center;
   font-size: 1.15rem;
   margin-top: 16px;
 }
 
-.flashcard-back { border-top: 1px dashed var(--border); margin-top: 20px; padding-top: 20px; color: var(--accent); }
+.flashcard-back {
+  border-top: 1px dashed var(--border);
+  margin-top: 20px;
+  padding-top: 20px;
+  color: var(--text);
+  text-align: left;
+  white-space: pre-line;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.flashcard-back strong { color: var(--accent); }
 .hidden { display: none; }
 
 .session-progress { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 4px; }

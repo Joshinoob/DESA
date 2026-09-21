@@ -36,7 +36,8 @@ window.CURRICULUM = [
       { id: "opioide", title: "Opioide" },
       { id: "lokalanaesthetika", title: "Lokalanästhetika" },
       { id: "kardiovaskulaer", title: "Kardiovaskuläre Pharmaka" },
-      { id: "sonstige-pharmaka", title: "Antiemetika & Antikoagulanzien" }
+      { id: "sonstige-pharmaka", title: "Antiemetika & Antikoagulanzien" },
+      { id: "medikamenten-steckbriefe", title: "Medikamenten-Steckbriefe (Wirkstoffprofile)" }
     ]
   },
   {
