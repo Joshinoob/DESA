@@ -8,6 +8,24 @@
   const SOE_SCENARIOS = window.SOE_SCENARIOS || [];
   let progress = window.SRS.loadProgress();
 
+  // Prüft, ob localStorage tatsächlich funktioniert (nicht nur vorhanden ist) —
+  // in Safari im privaten Modus oder mit "Cookies blockieren" wirft setItem einen
+  // Fehler, oder Werte werden gar nicht erst persistiert. srs.js schluckt solche
+  // Fehler bewusst (kein Absturz), damit hier sichtbar wird, dass NICHTS gespeichert
+  // wird, statt dass es unbemerkt bleibt.
+  function storageWorks() {
+    try {
+      const key = "__desa_storage_test__";
+      localStorage.setItem(key, "1");
+      const ok = localStorage.getItem(key) === "1";
+      localStorage.removeItem(key);
+      return ok;
+    } catch (e) {
+      return false;
+    }
+  }
+  const STORAGE_OK = storageWorks();
+
   function moduleById(id) {
     return CURRICULUM.find(function (m) { return m.id === id; });
   }
@@ -198,7 +216,10 @@
       ["soe", "Mündlich"],
       ["progress", "Fortschritt"]
     ];
+    const warning = STORAGE_OK ? "" :
+      '<div class="storage-warning">⚠️ Dein Browser blockiert lokalen Speicher – dein Fortschritt wird NICHT gespeichert! Meist wegen privatem/Inkognito-Modus oder „Cookies blockieren" in den Browser-Einstellungen. Bitte deaktivieren und Seite neu laden.</div>';
     return (
+      warning +
       '<nav class="topnav">' +
       '<div class="brand">DESA-Trainer</div>' +
       '<div class="navlinks">' +
