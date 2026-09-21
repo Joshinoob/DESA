@@ -4,6 +4,7 @@
   const FLASHCARDS = window.FLASHCARDS;
   const MCQ = window.MCQ;
   const ALGORITHMS = window.ALGORITHMS || [];
+  const TABLES = window.TABLES || [];
   let progress = window.SRS.loadProgress();
 
   function moduleById(id) {
@@ -208,6 +209,8 @@
     else if (route === "algorithms") renderAlgorithmList();
     else if (route === "algorithm") renderAlgorithmReference(arg);
     else if (route === "algorithm-quiz") startAlgorithmQuiz(arg);
+    else if (route === "tables") renderTableList();
+    else if (route === "table") renderTable(arg);
     else renderDashboard();
     removeLookupPopover();
     window.scrollTo(0, 0);
@@ -220,6 +223,7 @@
       ["learn", "Lernen"],
       ["test", "Test"],
       ["algorithms", "Algorithmen"],
+      ["tables", "Tabellen"],
       ["progress", "Fortschritt"]
     ];
     return (
@@ -734,6 +738,44 @@
         renderAlgorithmQuizStep();
       };
     });
+  }
+
+  // ---------- Vergleichstabellen ----------
+  function renderTableList() {
+    const cards = TABLES.map(function (t) {
+      return (
+        '<div class="algo-card">' +
+        '<div class="algo-card-title">' + escapeHtml(t.title) + "</div>" +
+        '<div class="algo-card-meta muted">' + t.rows.length + " Zeilen</div>" +
+        '<div class="cta-row"><a class="btn btn-sm btn-primary" href="#/table/' + t.id + '">Ansehen</a></div>' +
+        "</div>"
+      );
+    }).join("");
+    app.innerHTML =
+      nav("tables") +
+      '<main class="container">' +
+      "<h1>Vergleichstabellen</h1>" +
+      '<p class="muted">Verwandte Fakten im Kontrast lernen – gut zum schnellen Wiederholen kurz vor der Prüfung.</p>' +
+      '<div class="algo-grid">' + cards + "</div>" +
+      "</main>";
+  }
+
+  function renderTable(id) {
+    const t = TABLES.find(function (x) { return x.id === id; });
+    if (!t) { renderTableList(); return; }
+    const theadHtml = "<tr>" + t.columns.map(function (c) { return "<th>" + escapeHtml(c) + "</th>"; }).join("") + "</tr>";
+    const tbodyHtml = t.rows.map(function (row) {
+      return "<tr>" + row.map(function (cell, i) {
+        return '<td data-label="' + escapeHtml(t.columns[i] || "") + '">' + escapeHtml(cell) + "</td>";
+      }).join("") + "</tr>";
+    }).join("");
+    app.innerHTML =
+      nav("tables") +
+      '<main class="container">' +
+      '<a class="back-link" href="#/tables">← Alle Tabellen</a>' +
+      "<h1>" + escapeHtml(t.title) + "</h1>" +
+      '<div class="table-scroll"><table class="module-table ref-table"><thead>' + theadHtml + "</thead><tbody>" + tbodyHtml + "</tbody></table></div>" +
+      "</main>";
   }
 
   router();
