@@ -108,7 +108,10 @@ h2 { font-size: 1.2rem; margin-top: 32px; margin-bottom: 12px; }
 .btn-secondary { background: transparent; }
 .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
 
-.module-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+/* Verhindert horizontales Überlaufen der Seite: die Tabelle scrollt in ihrem
+   eigenen Rahmen, statt Spalten am rechten Rand abzuschneiden (v.a. Handy). */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 8px; }
+.module-table { width: 100%; min-width: 560px; border-collapse: collapse; }
 .module-table th, .module-table td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
 .module-table th { color: var(--text-muted); font-weight: 600; }
 .row-actions { white-space: nowrap; }
@@ -440,5 +443,39 @@ select {
 @media (max-width: 640px) {
   .container { padding: 16px; }
   .rating-row { grid-template-columns: repeat(2, 1fr); }
-  .module-table { font-size: 0.82rem; }
+
+  /* Tabellen werden auf dem Handy zu gestapelten Karten statt horizontal zu
+     scrollen — sonst wirkt rechts immer etwas "abgeschnitten". */
+  .table-scroll { overflow-x: visible; }
+  .module-table { min-width: 0; width: 100%; border-collapse: separate; border-spacing: 0; }
+  .module-table thead { display: none; }
+  .module-table, .module-table tbody, .module-table tr, .module-table td { display: block; width: 100%; }
+  .module-table tr {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    background: var(--surface);
+  }
+  .module-table td {
+    border-bottom: none;
+    padding: 8px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+  }
+  .module-table td:not(:last-child) { border-bottom: 1px dashed var(--border); }
+  .module-table td::before {
+    content: attr(data-label);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+  }
+  .module-table td[data-label="Modul"] { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .module-table td[data-label="Modul"]::before { display: none; }
+  .row-actions { justify-content: flex-end; }
 }

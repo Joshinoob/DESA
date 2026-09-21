@@ -253,12 +253,12 @@
       const lastScore = lastResult ? Math.round((lastResult.correct / lastResult.total) * 100) + "%" : "–";
       return (
         '<tr>' +
-        '<td><span class="part-badge">Teil ' + m.part + "</span> " + escapeHtml(m.title) + "</td>" +
-        '<td>' + stats.total + "</td>" +
-        '<td>' + (stats.due > 0 ? '<span class="due-badge">' + stats.due + "</span>" : "0") + "</td>" +
-        '<td><div class="bar"><div class="bar-fill" style="width:' + masteryPct + '%"></div></div><span class="bar-label">' + masteryPct + "%</span></td>" +
-        '<td>' + lastScore + "</td>" +
-        '<td class="row-actions">' +
+        '<td data-label="Modul"><span class="part-badge">Teil ' + m.part + "</span> " + escapeHtml(m.title) + "</td>" +
+        '<td data-label="Karten">' + stats.total + "</td>" +
+        '<td data-label="Fällig">' + (stats.due > 0 ? '<span class="due-badge">' + stats.due + "</span>" : "0") + "</td>" +
+        '<td data-label="Beherrschung"><div class="bar"><div class="bar-fill" style="width:' + masteryPct + '%"></div></div><span class="bar-label">' + masteryPct + "%</span></td>" +
+        '<td data-label="Letzter Test">' + lastScore + "</td>" +
+        '<td data-label="Aktionen" class="row-actions">' +
         '<a class="btn btn-sm" href="#/learn/' + m.id + '">Lernen</a> ' +
         '<a class="btn btn-sm btn-secondary" href="#/test-session/' + m.id + '">Testen</a>' +
         "</td></tr>"
@@ -292,9 +292,9 @@
       '<a class="btn btn-secondary" href="#/test-session/mixed">Prüfungssimulation starten</a>' +
       "</div>" +
       '<h2>Module</h2>' +
-      '<table class="module-table"><thead><tr><th>Modul</th><th>Karten</th><th>Fällig</th><th>Beherrschung</th><th>Letzter Test</th><th></th></tr></thead><tbody>' +
+      '<div class="table-scroll"><table class="module-table"><thead><tr><th>Modul</th><th>Karten</th><th>Fällig</th><th>Beherrschung</th><th>Letzter Test</th><th></th></tr></thead><tbody>' +
       moduleRows +
-      "</tbody></table>" +
+      "</tbody></table></div>" +
       gapsHtml +
       "</main>";
 
@@ -568,7 +568,7 @@
       const pct = Math.round((r.correct / r.total) * 100);
       const modName = r.module === "mixed" ? "Gemischt (Prüfungssimulation)" : (moduleById(r.module) ? moduleById(r.module).title : r.module);
       const date = new Date(r.date).toLocaleString("de-DE");
-      return "<tr><td>" + date + "</td><td>" + escapeHtml(modName) + "</td><td>" + r.correct + "/" + r.total + " (" + pct + "%)</td></tr>";
+      return '<tr><td data-label="Datum">' + date + '</td><td data-label="Modul">' + escapeHtml(modName) + '</td><td data-label="Ergebnis">' + r.correct + "/" + r.total + " (" + pct + "%)</td></tr>";
     }).join("");
 
     const moduleBars = CURRICULUM.map(function (m) {
@@ -596,7 +596,7 @@
       "<h2>Testverlauf</h2>" +
       (results.length === 0
         ? "<p>Noch keine Tests absolviert.</p>"
-        : '<table class="module-table"><thead><tr><th>Datum</th><th>Modul</th><th>Ergebnis</th></tr></thead><tbody>' + resultRows + "</tbody></table>") +
+        : '<div class="table-scroll"><table class="module-table"><thead><tr><th>Datum</th><th>Modul</th><th>Ergebnis</th></tr></thead><tbody>' + resultRows + "</tbody></table></div>") +
       "</main>";
   }
 
