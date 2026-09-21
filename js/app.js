@@ -20,6 +20,32 @@
     return div.innerHTML;
   }
 
+  // Strukturiertes Steckbrief-Layout (Medikamenten-Karten): jedes Feld ein eigener,
+  // farblich signalisierter Block statt Fließtext (Chunking + Signaling-Prinzip
+  // nach Mayer, reduziert kognitive Last beim Scannen sicherheitskritischer Fakten).
+  const PROFILE_FIELDS = [
+    { key: "klasse", label: "Substanzklasse" },
+    { key: "mechanismus", label: "Wirkmechanismus", cls: "mechanism" },
+    { key: "indikation", label: "Indikation" },
+    { key: "dosierung", label: "Dosierung Erwachsene" },
+    { key: "pharmakokinetik", label: "Pharmakokinetik" },
+    { key: "nebenwirkungen", label: "Nebenwirkungen" },
+    { key: "kontraindikationen", label: "Kontraindikationen / Vorsicht", cls: "warning" },
+    { key: "interaktionen", label: "Interaktionen" },
+    { key: "antidot", label: "Antidot / Reversal", cls: "antidote" },
+    { key: "cave", label: "Cave / Prüfungsklassiker", cls: "warning" },
+    { key: "quelle", label: "Quelle", cls: "source" }
+  ];
+
+  function renderProfile(profile) {
+    return PROFILE_FIELDS.map(function (f) {
+      const val = profile[f.key];
+      if (!val) return "";
+      const cls = "db-row" + (f.cls ? " db-row--" + f.cls : "");
+      return '<div class="' + cls + '"><div class="db-label">' + escapeHtml(f.label) + '</div><div class="db-value">' + escapeHtml(val) + "</div></div>";
+    }).join("");
+  }
+
   // ---------- Routing ----------
   function router() {
     const hash = location.hash || "#/dashboard";
@@ -164,13 +190,16 @@
     }
     const card = learnQueue[0];
     const remaining = learnQueue.length;
+    const isProfile = !!card.profile;
+    const backContent = isProfile ? renderProfile(card.profile) : escapeHtml(card.back);
+    const backClass = "flashcard-back hidden" + (isProfile ? " profile-back" : "");
     app.innerHTML =
       nav("learn") +
       '<main class="container narrow">' +
       '<div class="session-progress">Noch ' + remaining + " Karte(n) · " + escapeHtml(moduleById(card.module).title) + " – " + escapeHtml(subtopicTitle(card.module, card.subtopic)) + "</div>" +
-      '<div class="flashcard" id="flashcard">' +
+      '<div class="flashcard' + (isProfile ? " flashcard-profile" : "") + '" id="flashcard">' +
       '<div class="flashcard-front">' + escapeHtml(card.front) + "</div>" +
-      '<div class="flashcard-back hidden" id="flashcard-back">' + escapeHtml(card.back) + "</div>" +
+      '<div class="' + backClass + '" id="flashcard-back">' + backContent + "</div>" +
       "</div>" +
       '<div class="cta-row" id="reveal-row"><button class="btn btn-primary" id="reveal-btn">Antwort zeigen</button></div>' +
       '<div class="rating-row hidden" id="rating-row">' +
