@@ -90,7 +90,8 @@ window.CURRICULUM = [
     subtopics: [
       { id: "als-bls", title: "ALS/BLS" },
       { id: "trauma", title: "Traumamanagement" },
-      { id: "anaphylaxie-transfusion", title: "Anaphylaxie & Massentransfusion" }
+      { id: "anaphylaxie-transfusion", title: "Anaphylaxie & Massentransfusion" },
+      { id: "toxikologie-verbrennungen", title: "Toxikologie & Verbrennungen" }
     ]
   },
   {
@@ -102,7 +103,9 @@ window.CURRICULUM = [
       { id: "kinderanaesthesie", title: "Kinderanästhesie" },
       { id: "kardio-thorax", title: "Kardio-/Thoraxanästhesie" },
       { id: "neuroanaesthesie", title: "Neuroanästhesie" },
-      { id: "hno-augen-ambulant", title: "HNO/Augen & ambulante Anästhesie" }
+      { id: "hno-augen-ambulant", title: "HNO/Augen & ambulante Anästhesie" },
+      { id: "orthopaedie-gefaesschirurgie", title: "Orthopädie & Gefäßchirurgie" },
+      { id: "transplantationsanaesthesie", title: "Transplantationsanästhesie" }
     ]
   },
   {
