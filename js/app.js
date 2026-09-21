@@ -168,18 +168,56 @@
 
   function wrapAllLookupSources() {
     document.querySelectorAll(".lookup-source").forEach(wrapLookupWords);
+    removeLookupConfirm();
+  }
+
+  // Ein Tap/Klick auf ein Wort löst nicht sofort die Suche aus, sondern zeigt erst
+  // eine kurze Bestätigung direkt neben dem Wort — vermeidet versehentliche Treffer
+  // beim normalen Lesen und macht explizit, dass die Karte bald wiederholt wird.
+  let lookupConfirmEl = null;
+  function removeLookupConfirm() {
+    if (lookupConfirmEl) { lookupConfirmEl.remove(); lookupConfirmEl = null; }
+  }
+
+  function showLookupConfirm(span, word, sourceEl) {
+    removeLookupConfirm();
+    const rect = span.getBoundingClientRect();
+    const btn = document.createElement("button");
+    btn.className = "lookup-confirm";
+    btn.innerHTML = '🔖 „' + word + '" nachschlagen<br><span class="lookup-confirm-sub">und bald zum Wiederholen vorschlagen</span>';
+    btn.style.visibility = "hidden";
+    document.body.appendChild(btn);
+    const w = btn.offsetWidth || 220;
+    const h = btn.offsetHeight || 50;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const top = spaceBelow > h + 16 ? rect.bottom + 8 : Math.max(8, rect.top - h - 8);
+    const left = Math.max(8, Math.min(rect.left, window.innerWidth - w - 8));
+    btn.style.top = top + "px";
+    btn.style.left = left + "px";
+    btn.style.visibility = "visible";
+    btn.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      handleLookup(word, sourceEl);
+      removeLookupConfirm();
+    });
+    lookupConfirmEl = btn;
   }
 
   document.addEventListener("click", function (e) {
     const span = e.target.closest && e.target.closest(".lookup-word");
-    if (!span) return;
-    const sourceEl = span.closest(".lookup-source");
-    if (!sourceEl) return;
-    const word = span.textContent.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
-    if (word.length < 2) return;
-    span.classList.add("lookup-word-active");
-    setTimeout(function () { span.classList.remove("lookup-word-active"); }, 400);
-    handleLookup(word, sourceEl);
+    if (span) {
+      const sourceEl = span.closest(".lookup-source");
+      if (!sourceEl) return;
+      const word = span.textContent.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
+      if (word.length < 2) return;
+      span.classList.add("lookup-word-active");
+      setTimeout(function () { span.classList.remove("lookup-word-active"); }, 400);
+      showLookupConfirm(span, word, sourceEl);
+      return;
+    }
+    if (lookupConfirmEl && !(e.target.closest && e.target.closest(".lookup-confirm"))) {
+      removeLookupConfirm();
+    }
   });
 
   // ---------- Routing ----------
@@ -399,7 +437,7 @@
       '<main class="container narrow">' +
       '<div class="session-progress">Noch ' + remaining + " Karte(n) · " + escapeHtml(moduleById(card.module).title) + " – " + escapeHtml(subtopicTitle(card.module, card.subtopic)) + "</div>" +
       '<div class="flashcard' + (isProfile ? " flashcard-profile" : "") + '" id="flashcard">' +
-      '<div class="flashcard-front">' + escapeHtml(card.front) + "</div>" +
+      '<div class="flashcard-front lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.front) + "</div>" +
       '<div class="' + backClass + '" id="flashcard-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + backContent + "</div>" +
       "</div>" +
       '<div class="cta-row" id="reveal-row"><button class="btn btn-primary" id="reveal-btn">Antwort zeigen</button></div>' +
@@ -522,13 +560,14 @@
       nav("test") +
       '<main class="container narrow">' +
       '<div class="session-progress">Frage ' + (testState.index + 1) + " / " + total + " · " + escapeHtml(moduleById(q.module).title) + "</div>" +
-      '<div class="question-box"><p class="question-text">' + escapeHtml(q.question) + "</p>" +
+      '<div class="question-box"><p class="question-text lookup-source" data-card-id="' + escapeHtml(q.id) + '" data-card-front="' + escapeHtml(q.question) + '">' + escapeHtml(q.question) + "</p>" +
       '<div class="options">' + optionsHtml + "</div></div>" +
       '<div class="cta-row">' +
       (testState.index > 0 ? '<button class="btn btn-secondary" id="prev-btn">Zurück</button>' : "") +
       '<button class="btn btn-primary" id="next-btn">' + (testState.index === total - 1 ? "Test abschließen" : "Weiter") + "</button>" +
       "</div>" +
       "</main>";
+    wrapAllLookupSources();
 
     document.querySelectorAll('input[name="option"]').forEach(function (input) {
       input.addEventListener("change", function () {

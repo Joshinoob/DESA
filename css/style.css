@@ -2,15 +2,15 @@
   --bg: #0f1720;
   --surface: #17212c;
   --surface-2: #1e2a37;
-  --border: #2a3a4a;
+  --border: #4a6278;
   --text: #e8eef4;
   --text-muted: #aab9c7;
   --accent: #4fa3e0;
-  --accent-2: #2c7dc0;
+  --accent-2: #2569a8;
   --green: #3fb27f;
   --yellow: #d9a441;
   --orange: #d97a41;
-  --red: #d9534f;
+  --red: #e2726d;
   --radius: 10px;
 }
 
@@ -240,7 +240,7 @@ select {
 .db-row--warning {
   border-left: 3px solid var(--red);
   padding-left: 10px;
-  background: rgba(217, 83, 79, 0.08);
+  background: rgba(226, 114, 109, 0.1);
   border-radius: 0 8px 8px 0;
   border-bottom: none;
   margin-bottom: 2px;
@@ -283,6 +283,26 @@ select {
 }
 .lookup-word:hover { background: rgba(79, 163, 224, 0.25); }
 .lookup-word-active { background: var(--accent-2) !important; color: white; }
+
+.lookup-confirm {
+  position: fixed;
+  z-index: 150;
+  background: var(--accent-2);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  max-width: min(260px, calc(100vw - 16px));
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+.lookup-confirm:hover { filter: brightness(1.1); }
+.lookup-confirm-sub { font-size: 0.75rem; opacity: 0.85; font-weight: 400; }
 
 .toast {
   position: fixed;
