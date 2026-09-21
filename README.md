@@ -19,19 +19,21 @@ Der gesamte Fortschritt (Karteikarten-Status, Testergebnisse) wird ausschließli
 
 ## Funktionsprinzip
 
-- **Dashboard**: Übersicht über alle Module, fällige Karten, Beherrschungsgrad, letzte Testergebnisse.
-- **Lernen**: Karteikarten mit Spaced-Repetition-Algorithmus (vereinfachtes 6-Boxen-Leitner-System). Nach jeder Karte bewertest du dich selbst (Nochmal/Schwer/Gut/Leicht) – das bestimmt, wann die Karte wieder fällig wird. Das ist die didaktisch wirksamste Methode für Faktenwissen (aktives Erinnern statt passives Wiederlesen).
+- **Dashboard**: Übersicht über alle Module, fällige Karten, Beherrschungsgrad, letzte Testergebnisse, offene Wissenslücken.
+- **Lernen**: Karteikarten mit Spaced-Repetition-Algorithmus (vereinfachtes 6-Boxen-Leitner-System). Nach jeder Karte bewertest du dich selbst (Nochmal/Schwer/Gut/Leicht) – das bestimmt, wann die Karte wieder fällig wird. Das ist die didaktisch wirksamste Methode für Faktenwissen (aktives Erinnern statt passives Wiederlesen). Medikamenten-Steckbriefe werden dabei als farblich signalisiertes Definitionslisten-Layout dargestellt (Kontraindikationen/Cave rot, Antidot grün, Wirkmechanismus hervorgehoben) statt als Fließtext.
+- **Begriff nachschlagen**: Während des Lernens (oder in der Testauswertung) kannst du ein unklares Wort markieren. Gibt es dazu eine Karte, wird sie sofort als Lerninhalt angezeigt und fürs baldige Wiederholen eingeplant; sonst landet der Begriff als „offene Wissenslücke" auf dem Dashboard.
 - **Test**: Single-Best-Answer-Fragen im EDAIC-Prüfungsstil (5 Antwortoptionen), pro Modul oder als gemischte Prüfungssimulation, mit Erklärung zu jeder falschen Antwort.
+- **Algorithmen**: Notfall-Abläufe (Reanimation, schwieriger Atemweg, Anaphylaxie, maligne Hyperthermie, LAST) als Nachlese-Timeline und als interaktiver „Was ist der nächste Schritt?"-Trainer – prozedurales Wissen lernt sich über Reihenfolge besser als über isolierte Fakten.
 - **Fortschritt**: Beherrschungsgrad je Modul, Testverlauf über Zeit.
 
 ## Struktur des Curriculums
 
 Orientiert am offiziellen EDAIC-Syllabus:
 
-**Teil 1 – Basiswissenschaften**: Anatomie, Physiologie, Pharmakologie, Physik & Messtechnik
+**Teil 1 – Basiswissenschaften**: Anatomie, Physiologie, Pharmakologie (inkl. 129 Medikamenten-Steckbriefen), Physik & Messtechnik
 **Teil 2 – Klinik**: Allgemeinanästhesie, Regionalanästhesie & Schmerzmedizin, Intensivmedizin, Notfallmedizin & Reanimation, Spezielle Anästhesie (Geburtshilfe, Kinder, Kardio/Thorax, Neuro, HNO/Augen/ambulant), Perioperative Medizin/Sicherheit/Ethik
 
-Aktuell enthalten: **220 Karteikarten** und **88 Testfragen**, verteilt auf 40 Unterthemen in 10 Modulen – ein High-Yield-Grundgerüst, kein erschöpfendes Nachschlagewerk.
+Aktuell enthalten: **349 Karteikarten** (davon 129 Medikamenten-Steckbriefe), **88 Testfragen** und **6 Notfall-Algorithmen**, verteilt auf 40 Unterthemen in 10 Modulen – ein High-Yield-Grundgerüst, kein erschöpfendes Nachschlagewerk.
 
 ## Wichtiger Hinweis zur inhaltlichen Korrektheit
 
@@ -47,6 +49,8 @@ Alle Inhalte liegen als einfache JavaScript-Arrays vor und lassen sich leicht er
 
 - `data/curriculum.js` – Module und Unterthemen (IDs müssen zu den Karten/Fragen passen)
 - `data/flashcards.js` – Karteikarten: `{ id, module, subtopic, front, back }`
+- `data/drugcards.js` – Medikamenten-Steckbriefe: `{ id, module, subtopic, front, profile: { klasse, mechanismus, indikation, dosierung, pharmakokinetik, nebenwirkungen, kontraindikationen, interaktionen, antidot, cave, quelle } }`
 - `data/mcq.js` – Testfragen: `{ id, module, subtopic, question, options: [5 Strings], correct: Index (0-4), explanation }`
+- `data/algorithms.js` – Notfall-Algorithmen: `{ id, title, category, source, steps: [String, ...] }`
 
 Einfach neue Objekte mit eindeutiger `id` in die jeweilige Datei einfügen; `module`/`subtopic` müssen mit den IDs aus `curriculum.js` übereinstimmen.

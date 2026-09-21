@@ -3,6 +3,7 @@
   const CURRICULUM = window.CURRICULUM;
   const FLASHCARDS = window.FLASHCARDS;
   const MCQ = window.MCQ;
+  const ALGORITHMS = window.ALGORITHMS || [];
   let progress = window.SRS.loadProgress();
 
   function moduleById(id) {
@@ -204,6 +205,9 @@
     else if (route === "test") renderTestSetup();
     else if (route === "test-session") startTestSession(arg);
     else if (route === "progress") renderProgress();
+    else if (route === "algorithms") renderAlgorithmList();
+    else if (route === "algorithm") renderAlgorithmReference(arg);
+    else if (route === "algorithm-quiz") startAlgorithmQuiz(arg);
     else renderDashboard();
     removeLookupPopover();
     window.scrollTo(0, 0);
@@ -215,6 +219,7 @@
       ["dashboard", "Dashboard"],
       ["learn", "Lernen"],
       ["test", "Test"],
+      ["algorithms", "Algorithmen"],
       ["progress", "Fortschritt"]
     ];
     return (
@@ -598,6 +603,137 @@
         ? "<p>Noch keine Tests absolviert.</p>"
         : '<div class="table-scroll"><table class="module-table"><thead><tr><th>Datum</th><th>Modul</th><th>Ergebnis</th></tr></thead><tbody>' + resultRows + "</tbody></table></div>") +
       "</main>";
+  }
+
+  // ---------- Algorithmen ----------
+  // Prozedurales Wissen (Reanimation, schwieriger Atemweg, Notfallmanagement) lernt
+  // sich schlechter über isolierte Karteikarten als über die tatsächliche Reihenfolge.
+  // Zwei Modi: (1) Referenz — die volle Schrittfolge zum Nachlesen; (2) Quiz — an
+  // jedem Punkt den richtigen nächsten Schritt aus mehreren Optionen auswählen.
+  function algorithmById(id) {
+    return ALGORITHMS.find(function (a) { return a.id === id; });
+  }
+
+  function renderAlgorithmList() {
+    const groups = {};
+    ALGORITHMS.forEach(function (a) {
+      (groups[a.category] = groups[a.category] || []).push(a);
+    });
+    const groupsHtml = Object.keys(groups).map(function (cat) {
+      const cards = groups[cat].map(function (a) {
+        return (
+          '<div class="algo-card">' +
+          '<div class="algo-card-title">' + escapeHtml(a.title) + "</div>" +
+          '<div class="algo-card-meta muted">' + a.steps.length + " Schritte · " + escapeHtml(a.source) + "</div>" +
+          '<div class="cta-row">' +
+          '<a class="btn btn-sm btn-secondary" href="#/algorithm/' + a.id + '">Nachlesen</a>' +
+          '<a class="btn btn-sm btn-primary" href="#/algorithm-quiz/' + a.id + '">Trainer starten</a>' +
+          "</div></div>"
+        );
+      }).join("");
+      return "<h2>" + escapeHtml(cat) + "</h2>" + '<div class="algo-grid">' + cards + "</div>";
+    }).join("");
+
+    app.innerHTML =
+      nav("algorithms") +
+      '<main class="container">' +
+      "<h1>Notfall-Algorithmen</h1>" +
+      '<p class="muted">Reihenfolge und Handlungsschritte üben – prozedurales Wissen statt reiner Fakten.</p>' +
+      groupsHtml +
+      "</main>";
+  }
+
+  function renderAlgorithmReference(id) {
+    const algo = algorithmById(id);
+    if (!algo) { renderAlgorithmList(); return; }
+    const stepsHtml = algo.steps.map(function (s, i) {
+      return (
+        '<li class="algo-step">' +
+        '<span class="algo-step-num">' + (i + 1) + "</span>" +
+        '<span class="algo-step-text lookup-source" data-card-id="algo-' + algo.id + '-' + i + '" data-card-front="' + escapeHtml(algo.title) + '">' + escapeHtml(s) + "</span>" +
+        "</li>"
+      );
+    }).join("");
+    app.innerHTML =
+      nav("algorithms") +
+      '<main class="container narrow">' +
+      '<a class="back-link" href="#/algorithms">← Alle Algorithmen</a>' +
+      "<h1>" + escapeHtml(algo.title) + "</h1>" +
+      '<p class="muted">Quelle: ' + escapeHtml(algo.source) + "</p>" +
+      '<ol class="algo-timeline">' + stepsHtml + "</ol>" +
+      '<div class="cta-row"><a class="btn btn-primary" href="#/algorithm-quiz/' + algo.id + '">Als Trainer üben</a></div>' +
+      "</main>";
+  }
+
+  let algoQuizState = null;
+
+  function startAlgorithmQuiz(id) {
+    const algo = algorithmById(id);
+    if (!algo || algo.steps.length < 2) { renderAlgorithmList(); return; }
+    algoQuizState = { algo: algo, index: 1, correct: 0, total: algo.steps.length - 1, revealed: [algo.steps[0]] };
+    renderAlgorithmQuizStep();
+  }
+
+  function renderAlgorithmQuizStep() {
+    const state = algoQuizState;
+    const algo = state.algo;
+    const revealedHtml = state.revealed.map(function (s, i) {
+      return '<li class="algo-step done"><span class="algo-step-num">' + (i + 1) + "</span><span class=\"algo-step-text\">" + escapeHtml(s) + "</span></li>";
+    }).join("");
+
+    if (state.index >= algo.steps.length) {
+      app.innerHTML =
+        nav("algorithms") +
+        '<main class="container narrow">' +
+        "<h1>" + escapeHtml(algo.title) + " – fertig</h1>" +
+        '<div class="score-circle">' + state.correct + "/" + state.total + "</div>" +
+        "<p>Richtige Schritte in korrekter Reihenfolge erkannt.</p>" +
+        '<div class="cta-row"><a class="btn btn-primary" href="#/algorithm/' + algo.id + '">Ablauf nachlesen</a> <a class="btn btn-secondary" href="#/algorithms">Zurück</a></div>' +
+        "</main>";
+      return;
+    }
+
+    const correctStep = algo.steps[state.index];
+    const pool = algo.steps.filter(function (s, i) { return i !== state.index && state.revealed.indexOf(s) === -1; });
+    const distractors = shuffle(pool).slice(0, Math.min(2, pool.length));
+    const options = shuffle([correctStep].concat(distractors));
+
+    app.innerHTML =
+      nav("algorithms") +
+      '<main class="container narrow">' +
+      '<div class="session-progress">' + escapeHtml(algo.title) + " · Schritt " + (state.index + 1) + " / " + algo.steps.length + "</div>" +
+      '<ol class="algo-timeline">' + revealedHtml + "</ol>" +
+      '<p class="algo-question">Was ist der nächste Schritt?</p>' +
+      '<div class="options" id="algo-options">' +
+      options.map(function (opt, i) {
+        return '<label class="option-row" data-correct="' + (opt === correctStep ? "1" : "0") + '"><input type="radio" name="algo-option" value="' + i + '"><span>' + escapeHtml(opt) + "</span></label>";
+      }).join("") +
+      "</div>" +
+      '<div class="cta-row"><button class="btn btn-primary" id="algo-check-btn" disabled>Prüfen</button></div>' +
+      "</main>";
+
+    let chosenCorrect = null;
+    document.querySelectorAll('input[name="algo-option"]').forEach(function (input) {
+      input.addEventListener("change", function () {
+        document.getElementById("algo-check-btn").disabled = false;
+        chosenCorrect = input.closest(".option-row").getAttribute("data-correct") === "1";
+      });
+    });
+    document.getElementById("algo-check-btn").addEventListener("click", function () {
+      document.querySelectorAll(".option-row").forEach(function (row) {
+        row.classList.add(row.getAttribute("data-correct") === "1" ? "option-correct" : "option-wrong-disabled");
+        row.querySelector("input").disabled = true;
+      });
+      if (chosenCorrect) state.correct++;
+      state.revealed.push(correctStep);
+      const btn = document.getElementById("algo-check-btn");
+      btn.textContent = "Weiter";
+      btn.disabled = false;
+      btn.onclick = function () {
+        state.index++;
+        renderAlgorithmQuizStep();
+      };
+    });
   }
 
   router();
