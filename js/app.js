@@ -5,6 +5,7 @@
   const MCQ = window.MCQ;
   const ALGORITHMS = window.ALGORITHMS || [];
   const TABLES = window.TABLES || [];
+  const SOE_SCENARIOS = window.SOE_SCENARIOS || [];
   let progress = window.SRS.loadProgress();
 
   function moduleById(id) {
@@ -211,6 +212,8 @@
     else if (route === "algorithm-quiz") startAlgorithmQuiz(arg);
     else if (route === "tables") renderTableList();
     else if (route === "table") renderTable(arg);
+    else if (route === "soe") renderSOEList();
+    else if (route === "soe-case") renderSOEDetail(arg);
     else renderDashboard();
     removeLookupPopover();
     window.scrollTo(0, 0);
@@ -224,6 +227,7 @@
       ["test", "Test"],
       ["algorithms", "Algorithmen"],
       ["tables", "Tabellen"],
+      ["soe", "Mündlich"],
       ["progress", "Fortschritt"]
     ];
     return (
@@ -776,6 +780,66 @@
       "<h1>" + escapeHtml(t.title) + "</h1>" +
       '<div class="table-scroll"><table class="module-table ref-table"><thead>' + theadHtml + "</thead><tbody>" + tbodyHtml + "</tbody></table></div>" +
       "</main>";
+  }
+
+  // ---------- Teil-2-Mündlich (SOE-Trainer) ----------
+  // Kein Karteikarten-Format: SOE-Szenarien sind lange, zusammenhängende Antworten, die man
+  // laut vor sich hin sprechen üben soll ("talk through"), nicht auswendig lernen wie Fakten.
+  function renderSOEList() {
+    const groups = {};
+    SOE_SCENARIOS.forEach(function (s) {
+      (groups[s.category] = groups[s.category] || []).push(s);
+    });
+    const groupsHtml = Object.keys(groups).map(function (cat) {
+      const cards = groups[cat].map(function (s) {
+        return (
+          '<div class="algo-card">' +
+          '<div class="algo-card-title">' + escapeHtml(s.title) + "</div>" +
+          '<div class="cta-row"><a class="btn btn-sm btn-primary" href="#/soe-case/' + s.id + '">Szenario üben</a></div>' +
+          "</div>"
+        );
+      }).join("");
+      return "<h2>" + escapeHtml(cat) + "</h2>" + '<div class="algo-grid">' + cards + "</div>";
+    }).join("");
+
+    app.innerHTML =
+      nav("soe") +
+      '<main class="container">' +
+      "<h1>Teil 2 – Mündliche Prüfung (SOE)</h1>" +
+      '<p class="muted">Lies das Szenario, sprich deine Antwort laut vor dich hin ("talk through") wie beim echten SOE, bevor du die Musterantwort aufdeckst – das trainiert freies mündliches Antworten, nicht nur Faktenwissen.</p>' +
+      groupsHtml +
+      "</main>";
+  }
+
+  function renderSOEDetail(id) {
+    const s = SOE_SCENARIOS.find(function (x) { return x.id === id; });
+    if (!s) { renderSOEList(); return; }
+    const followupsHtml = s.followups.map(function (f) {
+      return "<li>" + escapeHtml(f) + "</li>";
+    }).join("");
+    app.innerHTML =
+      nav("soe") +
+      '<main class="container narrow">' +
+      '<a class="back-link" href="#/soe">← Alle Szenarien</a>' +
+      '<div class="session-progress">' + escapeHtml(s.category) + "</div>" +
+      "<h1>" + escapeHtml(s.title) + "</h1>" +
+      '<p class="lookup-source" data-card-id="' + escapeHtml(s.id) + '-scenario" data-card-front="' + escapeHtml(s.title) + '">' + escapeHtml(s.scenario) + "</p>" +
+      "<h2>Vertiefende Rückfragen des Prüfers</h2>" +
+      "<ul>" + followupsHtml + "</ul>" +
+      '<div class="cta-row" id="soe-reveal-row"><button class="btn btn-primary" id="soe-reveal-btn">Musterantwort zeigen</button></div>' +
+      '<div class="hidden" id="soe-answer">' +
+      "<h2>Musterantwort</h2>" +
+      '<p class="lookup-source" data-card-id="' + escapeHtml(s.id) + '-answer" data-card-front="' + escapeHtml(s.title) + '">' + escapeHtml(s.modelAnswer) + "</p>" +
+      "<h2>Worauf der Prüfer achtet</h2>" +
+      "<p>" + escapeHtml(s.examTips) + "</p>" +
+      "</div>" +
+      '<div class="cta-row"><a class="btn btn-secondary" href="#/soe">Zurück zur Übersicht</a></div>' +
+      "</main>";
+
+    document.getElementById("soe-reveal-btn").addEventListener("click", function () {
+      document.getElementById("soe-answer").classList.remove("hidden");
+      document.getElementById("soe-reveal-row").classList.add("hidden");
+    });
   }
 
   router();

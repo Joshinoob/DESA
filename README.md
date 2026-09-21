@@ -24,6 +24,8 @@ Der gesamte Fortschritt (Karteikarten-Status, Testergebnisse) wird ausschließli
 - **Begriff nachschlagen**: Während des Lernens (oder in der Testauswertung) kannst du ein unklares Wort markieren. Gibt es dazu eine Karte, wird sie sofort als Lerninhalt angezeigt und fürs baldige Wiederholen eingeplant; sonst landet der Begriff als „offene Wissenslücke" auf dem Dashboard.
 - **Test**: Single-Best-Answer-Fragen im EDAIC-Prüfungsstil (5 Antwortoptionen), pro Modul oder als gemischte Prüfungssimulation, mit Erklärung zu jeder falschen Antwort.
 - **Algorithmen**: Notfall-Abläufe (Reanimation, schwieriger Atemweg, Anaphylaxie, maligne Hyperthermie, LAST) als Nachlese-Timeline und als interaktiver „Was ist der nächste Schritt?"-Trainer – prozedurales Wissen lernt sich über Reihenfolge besser als über isolierte Fakten.
+- **Tabellen**: Vergleichstabellen/Cheat-Sheets (Vasopressoren, Muskelrelaxanzien, Lokalanästhetika, Antidote, Nüchternheitszeiten, Verwechslungsgefahr MH/LAST/Anaphylaxie) – verwandte Fakten im Kontrast lernen statt isoliert.
+- **Mündlich (Teil 2/SOE)**: 16 mündliche Prüfungsszenarien im Stil der EDAIC Structured Oral Examination (8 Basiswissenschaften, 8 Klinik) mit Rückfragen des Prüfers, ausführlicher Musterantwort zum laut Nachsprechen und Hinweisen, worauf der Prüfer achtet – trainiert freies mündliches Antworten statt nur Faktenwissen.
 - **Fortschritt**: Beherrschungsgrad je Modul, Testverlauf über Zeit.
 
 ## Struktur des Curriculums
@@ -31,9 +33,11 @@ Der gesamte Fortschritt (Karteikarten-Status, Testergebnisse) wird ausschließli
 Orientiert am offiziellen EDAIC-Syllabus:
 
 **Teil 1 – Basiswissenschaften**: Anatomie, Physiologie, Pharmakologie (inkl. 129 Medikamenten-Steckbriefen), Physik & Messtechnik
-**Teil 2 – Klinik**: Allgemeinanästhesie, Regionalanästhesie & Schmerzmedizin, Intensivmedizin, Notfallmedizin & Reanimation, Spezielle Anästhesie (Geburtshilfe, Kinder, Kardio/Thorax, Neuro, HNO/Augen/ambulant), Perioperative Medizin/Sicherheit/Ethik
+**Teil 2 – Klinik**: Allgemeinanästhesie, Regionalanästhesie & Schmerzmedizin, Intensivmedizin, Notfallmedizin & Reanimation (inkl. Toxikologie & Verbrennungen), Spezielle Anästhesie (Geburtshilfe, Kinder, Kardio/Thorax, Neuro, HNO/Augen/ambulant, Orthopädie & Gefäßchirurgie, Transplantationsanästhesie), Perioperative Medizin/Sicherheit/Ethik
 
-Aktuell enthalten: **349 Karteikarten** (davon 129 Medikamenten-Steckbriefe), **88 Testfragen** und **6 Notfall-Algorithmen**, verteilt auf 40 Unterthemen in 10 Modulen – ein High-Yield-Grundgerüst, kein erschöpfendes Nachschlagewerk.
+Aktuell enthalten: **367 Karteikarten** (davon 129 Medikamenten-Steckbriefe), **97 Testfragen**, **6 Notfall-Algorithmen**, **6 Vergleichstabellen** und **16 mündliche SOE-Übungsszenarien** für Teil 2, verteilt auf 42 Unterthemen in 10 Modulen – ein High-Yield-Grundgerüst, kein erschöpfendes Nachschlagewerk.
+
+Alle Inhalte wurden zusätzlich durch ein gezieltes Korrektheitsaudit gegen aktuelle Leitlinien (ERC, ESAIC, ASA, Sepsis-3 u.a.) geprüft.
 
 ## Wichtiger Hinweis zur inhaltlichen Korrektheit
 
@@ -52,5 +56,7 @@ Alle Inhalte liegen als einfache JavaScript-Arrays vor und lassen sich leicht er
 - `data/drugcards.js` – Medikamenten-Steckbriefe: `{ id, module, subtopic, front, profile: { klasse, mechanismus, indikation, dosierung, pharmakokinetik, nebenwirkungen, kontraindikationen, interaktionen, antidot, cave, quelle } }`
 - `data/mcq.js` – Testfragen: `{ id, module, subtopic, question, options: [5 Strings], correct: Index (0-4), explanation }`
 - `data/algorithms.js` – Notfall-Algorithmen: `{ id, title, category, source, steps: [String, ...] }`
+- `data/tables.js` – Vergleichstabellen: `{ id, title, columns: [String, ...], rows: [[String, ...], ...] }`
+- `data/soe.js` – Mündliche Prüfungsszenarien (Teil 2/SOE): `{ id, category, title, scenario, followups: [String, ...], modelAnswer, examTips }`
 
 Einfach neue Objekte mit eindeutiger `id` in die jeweilige Datei einfügen; `module`/`subtopic` müssen mit den IDs aus `curriculum.js` übereinstimmen.
