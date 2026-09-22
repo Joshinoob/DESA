@@ -26,6 +26,25 @@
   }
   const STORAGE_OK = storageWorks();
 
+  // Evidenzbasierte Lernprinzipien, die diese App bereits umsetzt – als kurze,
+  // rotierende Erinnerung sichtbar gemacht, statt nur implizit zu wirken.
+  // Ein Tipp pro Kalendertag (nicht zufällig bei jedem Reload), damit er sich nicht
+  // wie Rauschen anfühlt.
+  const LEARNING_TIPS = [
+    "Verteiltes Lernen (Spaced Repetition) schlägt Pauken: Wiederholungen kurz vor dem Vergessen festigen Wissen deutlich langfristiger als mehrfaches Wiederholen am selben Tag.",
+    "Aktives Abrufen (Testing-Effekt): Sich selbst prüfen statt nur nachzulesen verbessert das Langzeitgedächtnis stärker als passives Wiederholen – genau das tun Karteikarten und Tests hier.",
+    "Interleaving: Themen gemischt statt blockweise zu üben (z.B. \"Alle Module\" statt ein Modul stundenlang) fühlt sich schwerer an, führt aber zu besserem Transfer und längerem Behalten.",
+    "Erklär es dir selbst: Wenn du beim Lernen kurz begründest, WARUM eine Antwort richtig ist, merkst du dir den Zusammenhang besser als reines Auswendiglernen (Elaboration).",
+    "Schlaf konsolidiert Gelerntes. Eine kurze Lernsession am Vortag einer Pause wirkt oft besser als eine lange Session direkt vor der Prüfung.",
+    "Erwünschte Schwierigkeit: Wenn sich eine Karte beim Abrufen etwas schwer anfühlt, ist das kein schlechtes Zeichen – gerade das festigt die Erinnerung stärker als leichtes Wiedererkennen.",
+    "Kurze, regelmäßige Sessions schlagen seltene Marathon-Sitzungen – ein täglicher kleiner Durchlauf ist lernpsychologisch effektiver als einmal pro Woche viel auf einmal.",
+    "Fehler sind Teil des Lernprozesses: Eine falsch beantwortete Frage mit anschließender Erklärung merkst du dir oft besser als eine, die du direkt richtig hattest."
+  ];
+  function todaysTip() {
+    const dayIndex = Math.floor(Date.now() / 86400000);
+    return LEARNING_TIPS[dayIndex % LEARNING_TIPS.length];
+  }
+
   function moduleById(id) {
     return CURRICULUM.find(function (m) { return m.id === id; });
   }
@@ -333,11 +352,14 @@
       }).join("") +
       "</ul>";
 
+    const streak = window.SRS.getStreak();
     app.innerHTML =
       nav("dashboard") +
       '<main class="container">' +
       '<h1>Dein DESA-Lernstand</h1>' +
+      '<p class="tip-box">💡 ' + escapeHtml(todaysTip()) + "</p>" +
       '<div class="stat-cards">' +
+      '<div class="stat-card"><div class="stat-value">' + (streak > 0 ? "🔥 " + streak : streak) + '</div><div class="stat-label">Tage-Streak</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + totalDue + '</div><div class="stat-label">Karten heute fällig</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + totalStarted + " / " + totalCards + '</div><div class="stat-label">Karten begonnen</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + totalMastered + " / " + totalCards + '</div><div class="stat-label">Karten gemeistert</div></div>' +
@@ -470,6 +492,11 @@
   }
 
   // ---------- Test ----------
+  // Zwei Modi: Übungsmodus mit sofortigem Feedback pro Frage (lerneffektiver für
+  // Übung — sofortiges Feedback verstärkt aktives Abrufen) und Prüfungssimulation
+  // mit verzögertem Feedback erst am Ende (realistische Prüfungsbedingung).
+  let pendingTestMode = "practice";
+
   function renderTestSetup() {
     const options = CURRICULUM.map(function (m) {
       return '<option value="' + m.id + '">' + escapeHtml(m.title) + " (" + MCQ.filter(function(q){return q.module===m.id;}).length + " Fragen)</option>";
@@ -478,9 +505,14 @@
       nav("test") +
       '<main class="container narrow">' +
       "<h1>Testmodus</h1>" +
-      '<p class="muted">Single-Best-Answer-Fragen im EDAIC-Stil. Wähle ein Modul oder starte eine gemischte Prüfungssimulation.</p>' +
+      '<p class="muted">Single-Best-Answer-Fragen im EDAIC-Stil.</p>' +
+      '<label for="test-mode">Modus</label>' +
+      '<select id="test-mode">' +
+      '<option value="practice">Übungsmodus (sofortiges Feedback pro Frage)</option>' +
+      '<option value="exam">Prüfungssimulation (Feedback erst am Ende, wie in der echten Prüfung)</option>' +
+      "</select>" +
       '<label for="test-module">Modul</label>' +
-      '<select id="test-module"><option value="mixed">Gemischt (Prüfungssimulation)</option>' + options + "</select>" +
+      '<select id="test-module"><option value="mixed">Gemischt (empfohlen – Interleaving)</option>' + options + "</select>" +
       '<label for="test-count">Anzahl Fragen</label>' +
       '<select id="test-count">' +
       '<option value="10">10</option>' +
@@ -493,6 +525,7 @@
     document.getElementById("start-test").addEventListener("click", function () {
       const mod = document.getElementById("test-module").value;
       const count = document.getElementById("test-count").value;
+      pendingTestMode = document.getElementById("test-mode").value;
       location.hash = "#/test-session/" + mod + "-" + count;
     });
   }
@@ -539,7 +572,8 @@
       questions: pool,
       index: 0,
       answers: new Array(pool.length).fill(null),
-      moduleId: moduleId
+      moduleId: moduleId,
+      mode: pendingTestMode
     };
     renderTestQuestion();
   }
@@ -547,21 +581,40 @@
   function renderTestQuestion() {
     const q = testState.questions[testState.index];
     const total = testState.questions.length;
+    const isPractice = testState.mode === "practice";
+    const selected = testState.answers[testState.index];
+    const answered = selected !== null;
+    const showFeedback = isPractice && answered;
+
     const optionsHtml = q.options.map(function (opt, i) {
+      let cls = "option-row";
+      if (showFeedback) {
+        if (i === q.correct) cls += " option-correct";
+        else if (i === selected) cls += " option-wrong-selected";
+        else cls += " option-wrong-disabled";
+      }
       return (
-        '<label class="option-row">' +
-        '<input type="radio" name="option" value="' + i + '"' + (testState.answers[testState.index] === i ? " checked" : "") + ">" +
+        '<label class="' + cls + '">' +
+        '<input type="radio" name="option" value="' + i + '"' + (selected === i ? " checked" : "") + (showFeedback ? " disabled" : "") + ">" +
         '<span>' + String.fromCharCode(65 + i) + ") " + escapeHtml(opt) + "</span>" +
         "</label>"
       );
     }).join("");
 
+    const feedbackHtml = !showFeedback ? "" :
+      '<div class="' + (selected === q.correct ? "correct-answer" : "wrong-answer") + '">' +
+      (selected === q.correct ? "Richtig! " : "Leider falsch. Richtig wäre: " + String.fromCharCode(65 + q.correct) + ") " + escapeHtml(q.options[q.correct])) +
+      "</div>" +
+      '<p class="explanation">' + escapeHtml(q.explanation) + "</p>";
+
     app.innerHTML =
       nav("test") +
       '<main class="container narrow">' +
-      '<div class="session-progress">Frage ' + (testState.index + 1) + " / " + total + " · " + escapeHtml(moduleById(q.module).title) + "</div>" +
+      '<div class="session-progress">' + (isPractice ? "Übungsmodus" : "Prüfungssimulation") + " · Frage " + (testState.index + 1) + " / " + total + " · " + escapeHtml(moduleById(q.module).title) + "</div>" +
       '<div class="question-box"><p class="question-text lookup-source" data-card-id="' + escapeHtml(q.id) + '" data-card-front="' + escapeHtml(q.question) + '">' + escapeHtml(q.question) + "</p>" +
-      '<div class="options">' + optionsHtml + "</div></div>" +
+      '<div class="options">' + optionsHtml + "</div>" +
+      feedbackHtml +
+      "</div>" +
       '<div class="cta-row">' +
       (testState.index > 0 ? '<button class="btn btn-secondary" id="prev-btn">Zurück</button>' : "") +
       '<button class="btn btn-primary" id="next-btn">' + (testState.index === total - 1 ? "Test abschließen" : "Weiter") + "</button>" +
@@ -572,6 +625,7 @@
     document.querySelectorAll('input[name="option"]').forEach(function (input) {
       input.addEventListener("change", function () {
         testState.answers[testState.index] = parseInt(input.value, 10);
+        if (isPractice) renderTestQuestion();
       });
     });
     if (document.getElementById("prev-btn")) {
@@ -608,6 +662,7 @@
       correct: correct
     });
     window.SRS.saveResults(results);
+    window.SRS.recordActivityToday();
 
     const wrongHtml = wrong.map(function (w) {
       const givenText = w.given === null ? "keine Antwort" : String.fromCharCode(65 + w.given) + ") " + escapeHtml(w.q.options[w.given]);
@@ -644,23 +699,52 @@
       return '<tr><td data-label="Datum">' + date + '</td><td data-label="Modul">' + escapeHtml(modName) + '</td><td data-label="Ergebnis">' + r.correct + "/" + r.total + " (" + pct + "%)</td></tr>";
     }).join("");
 
+    // Box-Verteilung statt einer einzelnen Mastery-Zahl: zeigt auch Fortschritt VOR
+    // dem Erreichen der Mastery-Schwelle (Neu -> Lernend -> Jung -> Reif).
+    function pct(n, total) { return total ? Math.round((n / total) * 100) : 0; }
     const moduleBars = CURRICULUM.map(function (m) {
-      const stats = window.SRS.getModuleStats(FLASHCARDS, progress, m.id);
-      const masteryPct = stats.total ? Math.round((stats.mastered / stats.total) * 100) : 0;
+      const dist = window.SRS.getBoxDistribution(FLASHCARDS, progress, m.id);
       return (
         '<div class="progress-module">' +
-        '<div class="progress-module-title">' + escapeHtml(m.title) + " – " + masteryPct + "% gemeistert (" + stats.mastered + "/" + stats.total + ") · " + stats.started + " begonnen</div>" +
-        '<div class="bar"><div class="bar-fill" style="width:' + masteryPct + '%"></div></div>' +
+        '<div class="progress-module-title">' + escapeHtml(m.title) + "</div>" +
+        '<div class="box-dist-bar">' +
+        '<div class="box-seg box-seg--neu" style="width:' + pct(dist.neu, dist.total) + '%"></div>' +
+        '<div class="box-seg box-seg--lernend" style="width:' + pct(dist.lernend, dist.total) + '%"></div>' +
+        '<div class="box-seg box-seg--jung" style="width:' + pct(dist.jung, dist.total) + '%"></div>' +
+        '<div class="box-seg box-seg--reif" style="width:' + pct(dist.reif, dist.total) + '%"></div>' +
+        "</div>" +
+        '<div class="box-dist-legend muted">Neu ' + dist.neu + " · Lernend " + dist.lernend + " · Jung " + dist.jung + " · Reif " + dist.reif + " (von " + dist.total + ")</div>" +
         "</div>"
       );
     }).join("");
+
+    // 7-Tage-Fälligkeitsvorschau: macht den Spacing-Effekt sichtbar (verteilte statt
+    // gebündelte Wiederholungen) und hilft, den täglichen Lernaufwand einzuschätzen.
+    const forecast = window.SRS.getDueForecast(FLASHCARDS, progress, 7);
+    const maxForecast = Math.max(1, Math.max.apply(null, forecast));
+    const forecastHtml = '<div class="forecast-chart">' + forecast.map(function (n, i) {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      const label = i === 0 ? "Heute" : d.toLocaleDateString("de-DE", { weekday: "short" });
+      const h = Math.round((n / maxForecast) * 100);
+      return (
+        '<div class="forecast-bar-wrap">' +
+        '<div class="forecast-bar" style="height:' + Math.max(h, n > 0 ? 6 : 2) + '%"><span class="forecast-count">' + n + "</span></div>" +
+        '<div class="forecast-label muted">' + escapeHtml(label) + "</div>" +
+        "</div>"
+      );
+    }).join("") + "</div>";
 
     app.innerHTML =
       nav("progress") +
       '<main class="container">' +
       "<h1>Fortschritt</h1>" +
-      "<h2>Beherrschung je Modul</h2>" +
+      "<h2>Lernphase je Modul</h2>" +
+      '<div class="box-dist-key muted"><span class="key-dot key-dot--neu"></span>Neu <span class="key-dot key-dot--lernend"></span>Lernend <span class="key-dot key-dot--jung"></span>Jung <span class="key-dot key-dot--reif"></span>Reif (gemeistert)</div>' +
       moduleBars +
+      "<h2>Fällige Karten – nächste 7 Tage</h2>" +
+      '<p class="muted">Gut verteilt ist besser als ein großer Berg an einem Tag – das ist der Sinn von Spaced Repetition.</p>' +
+      forecastHtml +
       "<h2>Testverlauf</h2>" +
       (results.length === 0
         ? "<p>Noch keine Tests absolviert.</p>"
