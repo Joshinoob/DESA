@@ -971,7 +971,7 @@
       klasse: "Lokalanästhetikum vom Ester-Typ (lange Wirkdauer, hohe Toxizität)",
       mechanismus: "Blockade spannungsabhängiger Na⁺-Kanäle der Nervenmembran; als Ester hydrolysiert durch Plasma-Pseudocholinesterase, jedoch langsamer als andere Ester bei hoher Lipophilie und Wirkstärke",
       indikation: "Spinalanästhesie (hyperbare Lösung), Oberflächenanästhesie von Haut/Schleimhaut und Auge, Kombinationscreme mit Lidocain",
-      dosierung: "Spinalanästhesie hyperbar ~10–20mg; Schleimhaut-Spray max. Gesamtdosis 20mg (ca. 2 Sprühstöße à 0,7mg); topische Haut-Creme Einwirkzeit 30–60min",
+      dosierung: "Spinalanästhesie hyperbar ~10–20mg; Schleimhaut-Spray üblich 2 Sprühstöße (je ca. 0,7mg), zugelassene Tages-/Einzel-Maximaldosis 20mg nicht überschreiten; topische Haut-Creme Einwirkzeit 30–60min",
       pharmakokinetik: "Wirkeintritt topisch/spinal schnell · Wirkdauer spinal 2–4h · Hydrolyse durch Plasma-Pseudocholinesterase (langsamer als andere Ester) · Metabolit PABA",
       nebenwirkungen: "Hohe systemische Toxizität (ZNS-Krämpfe, Kardiotoxizität) bei Fehlinjektion, allergische Reaktionen (Ester-Typ, PABA-Kreuzallergie), Hornhautschäden bei wiederholter Augenanwendung",
       kontraindikationen: "Bekannte Ester-/PABA-Allergie, Pseudocholinesterasemangel (verlängerte Toxizität), Anwendung auf großflächig geschädigter Haut/Schleimhaut",
