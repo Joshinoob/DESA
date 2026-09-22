@@ -35,9 +35,9 @@ Orientiert am offiziellen EDAIC-Syllabus:
 **Teil 1 – Basiswissenschaften**: Anatomie, Physiologie, Pharmakologie (inkl. 129 Medikamenten-Steckbriefen), Physik & Messtechnik
 **Teil 2 – Klinik**: Allgemeinanästhesie, Regionalanästhesie & Schmerzmedizin, Intensivmedizin, Notfallmedizin & Reanimation (inkl. Toxikologie & Verbrennungen), Spezielle Anästhesie (Geburtshilfe, Kinder, Kardio/Thorax, Neuro, HNO/Augen/ambulant, Orthopädie & Gefäßchirurgie, Transplantationsanästhesie), Perioperative Medizin/Sicherheit/Ethik
 
-Aktuell enthalten: **367 Karteikarten** (davon 129 Medikamenten-Steckbriefe), **97 Testfragen**, **6 Notfall-Algorithmen**, **6 Vergleichstabellen** und **16 mündliche SOE-Übungsszenarien** für Teil 2, verteilt auf 42 Unterthemen in 10 Modulen – ein High-Yield-Grundgerüst, kein erschöpfendes Nachschlagewerk.
+Aktuell enthalten: **427 Karteikarten** (davon 129 Medikamenten-Steckbriefe), **134 Testfragen**, **6 Notfall-Algorithmen**, **6 Vergleichstabellen** und **16 mündliche SOE-Übungsszenarien** für Teil 2, verteilt auf 42 Unterthemen in 10 Modulen.
 
-Alle Inhalte wurden zusätzlich durch ein gezieltes Korrektheitsaudit gegen aktuelle Leitlinien (ERC, ESAIC, ASA, Sepsis-3 u.a.) geprüft.
+Alle Inhalte wurden durch zwei Korrektheitsaudits gegen aktuelle Leitlinien und Fachliteratur geprüft (ERC, ESAIC, ASA, ESRA/NYSORA, KDIGO, ESPEN, Sepsis-3, Bundesärztekammer u.a.).
 
 ## Wichtiger Hinweis zur inhaltlichen Korrektheit
 
