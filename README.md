@@ -20,14 +20,14 @@ Der gesamte Fortschritt (Karteikarten-Status, Testergebnisse) wird ausschließli
 ## Funktionsprinzip
 
 - **Dashboard**: Übersicht über alle Module, fällige Karten, Beherrschungsgrad, letzte Testergebnisse, offene Wissenslücken.
-- **Lernen**: Karteikarten mit Spaced-Repetition-Algorithmus (vereinfachtes 6-Boxen-Leitner-System). Nach jeder Karte bewertest du dich selbst (Nochmal/Schwer/Gut/Leicht) – das bestimmt, wann die Karte wieder fällig wird. Das ist die didaktisch wirksamste Methode für Faktenwissen (aktives Erinnern statt passives Wiederlesen). Medikamenten-Steckbriefe werden dabei als farblich signalisiertes Definitionslisten-Layout dargestellt (Kontraindikationen/Cave rot, Antidot grün, Wirkmechanismus hervorgehoben) statt als Fließtext.
+- **Lernen**: Karteikarten mit Spaced-Repetition-Algorithmus (vereinfachtes 6-Boxen-Leitner-System). Vor dem Aufdecken schätzt du kurz deine Sicherheit ein (Weiß ich sicher/Unsicher/Keine Ahnung – Konfidenz-Rating, verbessert nachweislich die Selbsteinschätzung und das Behalten korrigierter Fehler), danach bewertest du dich selbst (Nochmal/Schwer/Gut/Leicht) – das bestimmt, wann die Karte wieder fällig wird. Medikamenten-Steckbriefe werden dabei als farblich signalisiertes Definitionslisten-Layout dargestellt (Kontraindikationen/Cave rot, Antidot grün, Wirkmechanismus hervorgehoben) statt als Fließtext.
 - **Begriff nachschlagen**: Während des Lernens (oder in der Testauswertung) kannst du ein unklares Wort markieren. Gibt es dazu eine Karte, wird sie sofort als Lerninhalt angezeigt und fürs baldige Wiederholen eingeplant; sonst landet der Begriff als „offene Wissenslücke" auf dem Dashboard.
 - **Test**: Single-Best-Answer-Fragen im EDAIC-Prüfungsstil (5 Antwortoptionen). Zwei Modi: **Übungsmodus** mit sofortigem Feedback pro Frage (lerneffektiver für den Erwerb) und **Prüfungssimulation** mit Feedback erst am Ende (realistische Prüfungsbedingung).
 - **Algorithmen**: Notfall-Abläufe (Reanimation, schwieriger Atemweg, Anaphylaxie, maligne Hyperthermie, LAST) als Nachlese-Timeline und als interaktiver „Was ist der nächste Schritt?"-Trainer – prozedurales Wissen lernt sich über Reihenfolge besser als über isolierte Fakten.
 - **Tabellen**: Vergleichstabellen/Cheat-Sheets (Vasopressoren, Muskelrelaxanzien, Lokalanästhetika, Antidote, Nüchternheitszeiten, Verwechslungsgefahr MH/LAST/Anaphylaxie) – verwandte Fakten im Kontrast lernen statt isoliert.
 - **Mündlich (Teil 2/SOE)**: 16 mündliche Prüfungsszenarien im Stil der EDAIC Structured Oral Examination (8 Basiswissenschaften, 8 Klinik) mit Rückfragen des Prüfers, ausführlicher Musterantwort zum laut Nachsprechen und Hinweisen, worauf der Prüfer achtet – trainiert freies mündliches Antworten statt nur Faktenwissen.
-- **Fortschritt**: Lernphase je Modul (Neu/Lernend/Jung/Reif statt nur einer Mastery-Zahl), 7-Tage-Fälligkeitsvorschau, Testverlauf über Zeit.
-- **Lern-Streak & Tipps**: Dashboard zeigt Tage-Streak (Motivation durch sichtbaren Fortschritt) und einen täglich wechselnden, evidenzbasierten Lerntipp (Spaced Repetition, Testing-Effekt, Interleaving u.a.).
+- **Fortschritt**: Lernphase je Modul (Neu/Lernend/Jung/Reif statt nur einer Mastery-Zahl), 7-Tage-Fälligkeitsvorschau, Kalibrierungsauswertung (stimmt die eigene Sicherheitseinschätzung mit dem tatsächlichen Ergebnis überein?), Testverlauf über Zeit.
+- **Lern-Streak**: Dashboard zeigt die Tage-Streak (Tage in Folge mit mindestens einer Wiederholung) als sichtbaren Fortschritts-/Motivationsanker.
 
 ## Struktur des Curriculums
 

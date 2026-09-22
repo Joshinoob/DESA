@@ -26,25 +26,6 @@
   }
   const STORAGE_OK = storageWorks();
 
-  // Evidenzbasierte Lernprinzipien, die diese App bereits umsetzt – als kurze,
-  // rotierende Erinnerung sichtbar gemacht, statt nur implizit zu wirken.
-  // Ein Tipp pro Kalendertag (nicht zufällig bei jedem Reload), damit er sich nicht
-  // wie Rauschen anfühlt.
-  const LEARNING_TIPS = [
-    "Verteiltes Lernen (Spaced Repetition) schlägt Pauken: Wiederholungen kurz vor dem Vergessen festigen Wissen deutlich langfristiger als mehrfaches Wiederholen am selben Tag.",
-    "Aktives Abrufen (Testing-Effekt): Sich selbst prüfen statt nur nachzulesen verbessert das Langzeitgedächtnis stärker als passives Wiederholen – genau das tun Karteikarten und Tests hier.",
-    "Interleaving: Themen gemischt statt blockweise zu üben (z.B. \"Alle Module\" statt ein Modul stundenlang) fühlt sich schwerer an, führt aber zu besserem Transfer und längerem Behalten.",
-    "Erklär es dir selbst: Wenn du beim Lernen kurz begründest, WARUM eine Antwort richtig ist, merkst du dir den Zusammenhang besser als reines Auswendiglernen (Elaboration).",
-    "Schlaf konsolidiert Gelerntes. Eine kurze Lernsession am Vortag einer Pause wirkt oft besser als eine lange Session direkt vor der Prüfung.",
-    "Erwünschte Schwierigkeit: Wenn sich eine Karte beim Abrufen etwas schwer anfühlt, ist das kein schlechtes Zeichen – gerade das festigt die Erinnerung stärker als leichtes Wiedererkennen.",
-    "Kurze, regelmäßige Sessions schlagen seltene Marathon-Sitzungen – ein täglicher kleiner Durchlauf ist lernpsychologisch effektiver als einmal pro Woche viel auf einmal.",
-    "Fehler sind Teil des Lernprozesses: Eine falsch beantwortete Frage mit anschließender Erklärung merkst du dir oft besser als eine, die du direkt richtig hattest."
-  ];
-  function todaysTip() {
-    const dayIndex = Math.floor(Date.now() / 86400000);
-    return LEARNING_TIPS[dayIndex % LEARNING_TIPS.length];
-  }
-
   function moduleById(id) {
     return CURRICULUM.find(function (m) { return m.id === id; });
   }
@@ -357,7 +338,6 @@
       nav("dashboard") +
       '<main class="container">' +
       '<h1>Dein DESA-Lernstand</h1>' +
-      '<p class="tip-box">💡 ' + escapeHtml(todaysTip()) + "</p>" +
       '<div class="stat-cards">' +
       '<div class="stat-card"><div class="stat-value">' + (streak > 0 ? "🔥 " + streak : streak) + '</div><div class="stat-label">Tage-Streak</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + totalDue + '</div><div class="stat-label">Karten heute fällig</div></div>' +
@@ -462,7 +442,11 @@
       '<div class="flashcard-front lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.front) + "</div>" +
       '<div class="' + backClass + '" id="flashcard-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + backContent + "</div>" +
       "</div>" +
-      '<div class="cta-row" id="reveal-row"><button class="btn btn-primary" id="reveal-btn">Antwort zeigen</button></div>' +
+      '<div class="cta-row confidence-row" id="reveal-row">' +
+      '<button class="btn confidence-sicher" data-confidence="sicher">Weiß ich sicher</button>' +
+      '<button class="btn confidence-unsicher" data-confidence="unsicher">Unsicher</button>' +
+      '<button class="btn confidence-keine" data-confidence="keine">Keine Ahnung</button>' +
+      "</div>" +
       '<div class="rating-row hidden" id="rating-row">' +
       '<button class="btn rating-again" data-rating="again">Nochmal</button>' +
       '<button class="btn rating-hard" data-rating="hard">Schwer</button>' +
@@ -473,15 +457,25 @@
       "</main>";
     wrapAllLookupSources();
 
-    document.getElementById("reveal-btn").addEventListener("click", function () {
-      document.getElementById("flashcard-back").classList.remove("hidden");
-      document.getElementById("reveal-row").classList.add("hidden");
-      document.getElementById("rating-row").classList.remove("hidden");
+    // Konfidenz-Auswahl deckt die Karte sofort auf (kein zusätzlicher Klick) —
+    // erfasst aber vorab die Selbsteinschätzung, um sie später mit dem
+    // tatsächlichen Ergebnis (Nochmal/Schwer vs. Gut/Leicht) zu vergleichen.
+    let cardConfidence = null;
+    document.querySelectorAll(".confidence-row button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        cardConfidence = btn.getAttribute("data-confidence");
+        document.getElementById("flashcard-back").classList.remove("hidden");
+        document.getElementById("reveal-row").classList.add("hidden");
+        document.getElementById("rating-row").classList.remove("hidden");
+      });
     });
     document.querySelectorAll("#rating-row button").forEach(function (btn) {
       btn.addEventListener("click", function () {
         const rating = btn.getAttribute("data-rating");
         window.SRS.reviewCard(progress, card.id, rating);
+        if (cardConfidence) {
+          window.SRS.recordCalibration(cardConfidence, rating === "good" || rating === "easy");
+        }
         learnStats.reviewed++;
         learnStats[rating]++;
         learnQueue.shift();
@@ -512,7 +506,7 @@
       '<option value="exam">Prüfungssimulation (Feedback erst am Ende, wie in der echten Prüfung)</option>' +
       "</select>" +
       '<label for="test-module">Modul</label>' +
-      '<select id="test-module"><option value="mixed">Gemischt (empfohlen – Interleaving)</option>' + options + "</select>" +
+      '<select id="test-module"><option value="mixed">Gemischt (empfohlen)</option>' + options + "</select>" +
       '<label for="test-count">Anzahl Fragen</label>' +
       '<select id="test-count">' +
       '<option value="10">10</option>' +
@@ -735,6 +729,28 @@
       );
     }).join("") + "</div>";
 
+    // Kalibrierung: stimmt die eigene Sicherheitseinschätzung mit dem tatsächlichen
+    // Ergebnis überein? Karten, bei denen "Weiß ich sicher" gewählt wurde, aber die
+    // Bewertung Nochmal/Schwer war, sind Kandidaten für Überschätzung — genau die
+    // Fälle, die nach Korrektur am besten hängen bleiben (Hypercorrection-Effekt).
+    const cal = window.SRS.loadCalibration();
+    const calLabels = { sicher: "Weiß ich sicher", unsicher: "Unsicher", keine: "Keine Ahnung" };
+    const calOrder = ["sicher", "unsicher", "keine"];
+    const calRows = calOrder.filter(function (k) { return cal[k] && cal[k].total > 0; }).map(function (k) {
+      const c = cal[k];
+      const p = Math.round((c.correct / c.total) * 100);
+      return (
+        '<div class="progress-module">' +
+        '<div class="progress-module-title">' + calLabels[k] + " – " + p + "% davon tatsächlich richtig erinnert (" + c.correct + "/" + c.total + ")</div>" +
+        '<div class="bar"><div class="bar-fill" style="width:' + p + '%"></div></div>' +
+        "</div>"
+      );
+    }).join("");
+    const calHtml = calRows === "" ? "" :
+      "<h2>Kalibrierung: Selbsteinschätzung vs. Ergebnis</h2>" +
+      '<p class="muted">Niedriger Prozentsatz bei „Weiß ich sicher" heißt: hier wird Wissen öfter überschätzt — genau diese Karten lohnt es, genauer anzuschauen.</p>' +
+      calRows;
+
     app.innerHTML =
       nav("progress") +
       '<main class="container">' +
@@ -743,8 +759,8 @@
       '<div class="box-dist-key muted"><span class="key-dot key-dot--neu"></span>Neu <span class="key-dot key-dot--lernend"></span>Lernend <span class="key-dot key-dot--jung"></span>Jung <span class="key-dot key-dot--reif"></span>Reif (gemeistert)</div>' +
       moduleBars +
       "<h2>Fällige Karten – nächste 7 Tage</h2>" +
-      '<p class="muted">Gut verteilt ist besser als ein großer Berg an einem Tag – das ist der Sinn von Spaced Repetition.</p>' +
       forecastHtml +
+      calHtml +
       "<h2>Testverlauf</h2>" +
       (results.length === 0
         ? "<p>Noch keine Tests absolviert.</p>"

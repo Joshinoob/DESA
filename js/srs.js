@@ -159,6 +159,34 @@
     return gaps;
   }
 
+  // Konfidenz-Kalibrierung (Judgment of Learning): erfasst, ob die eigene
+  // Sicherheitseinschätzung VOR dem Umdrehen der Karte mit dem tatsächlichen
+  // Ergebnis übereinstimmt. Gut belegter Effekt: Falsch beantwortete Karten, bei
+  // denen man sich sicher war ("Hypercorrection-Effekt"), werden nach Korrektur
+  // besonders gut behalten — und blindes Vertrauen wird sichtbar, statt unbemerkt
+  // zu bleiben.
+  const CALIBRATION_KEY = "desa_calibration_v1";
+
+  function loadCalibration() {
+    try {
+      const raw = localStorage.getItem(CALIBRATION_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function recordCalibration(confidence, wasCorrect) {
+    const cal = loadCalibration();
+    if (!cal[confidence]) cal[confidence] = { correct: 0, total: 0 };
+    cal[confidence].total += 1;
+    if (wasCorrect) cal[confidence].correct += 1;
+    try {
+      localStorage.setItem(CALIBRATION_KEY, JSON.stringify(cal));
+    } catch (e) { /* ignore */ }
+    return cal;
+  }
+
   // Karten, deren letzte Bewertung "Nochmal" oder "Schwer" war — damit dieser
   // Lernaufwand sichtbar wird und gezielt wiederholt werden kann, statt nur in der
   // Box-Zahl zu verschwinden.
@@ -289,6 +317,8 @@
     loadGaps: loadGaps,
     saveGaps: saveGaps,
     addGap: addGap,
-    removeGap: removeGap
+    removeGap: removeGap,
+    loadCalibration: loadCalibration,
+    recordCalibration: recordCalibration
   };
 })();
