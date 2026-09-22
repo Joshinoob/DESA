@@ -137,14 +137,6 @@ h2 { font-size: 1.2rem; margin-top: 32px; margin-bottom: 12px; }
   margin-right: 6px;
 }
 
-.due-badge {
-  background: var(--accent-2);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.85rem;
-}
-
 .bar { background: var(--surface-2); border-radius: 6px; height: 8px; overflow: hidden; width: 100px; display: inline-block; vertical-align: middle; }
 .bar-fill { background: var(--green); height: 100%; }
 .bar-label { margin-left: 8px; font-size: 0.82rem; color: var(--text-muted); }
