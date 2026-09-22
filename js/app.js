@@ -236,6 +236,8 @@
     else if (route === "algorithm-quiz") startAlgorithmQuiz(arg);
     else if (route === "tables") renderTableList();
     else if (route === "table") renderTable(arg);
+    else if (route === "drugs") renderDrugList();
+    else if (route === "drug") renderDrugDetail(arg);
     else if (route === "soe") renderSOEList();
     else if (route === "soe-case") renderSOEDetail(arg);
     else renderDashboard();
@@ -251,6 +253,7 @@
       ["test", "Test"],
       ["algorithms", "Algorithmen"],
       ["tables", "Tabellen"],
+      ["drugs", "Medikamente"],
       ["soe", "Mündlich"],
       ["progress", "Fortschritt"]
     ];
@@ -977,6 +980,52 @@
       "<h1>" + escapeHtml(t.title) + "</h1>" +
       '<div class="table-scroll"><table class="module-table ref-table"><thead>' + theadHtml + "</thead><tbody>" + tbodyHtml + "</tbody></table></div>" +
       "</main>";
+  }
+
+  // ---------- Medikamente (Nachschlagen) ----------
+  // Reine Referenz-/Nachschlagefunktion für die Medikamenten-Steckbriefe, getrennt
+  // vom Lernen-Karteikarten-Ablauf (kein Aufdecken/Bewerten) — für den Moment, in
+  // dem man einfach schnell einen Wirkstoff nachschlagen will, ohne eine SRS-Session
+  // zu starten.
+  function drugCards() {
+    return FLASHCARDS.filter(function (c) { return c.subtopic === "medikamenten-steckbriefe"; });
+  }
+
+  function renderDrugList() {
+    const cards = drugCards().slice().sort(function (a, b) { return a.front.localeCompare(b.front, "de"); });
+    const itemsHtml = cards.map(function (c) {
+      const name = c.front.replace(/^Steckbrief:\s*/, "");
+      return '<a class="drug-item" href="#/drug/' + c.id + '" data-name="' + escapeHtml(name.toLowerCase()) + '">' + escapeHtml(name) + "</a>";
+    }).join("");
+    app.innerHTML =
+      nav("drugs") +
+      '<main class="container">' +
+      "<h1>Medikamente nachschlagen</h1>" +
+      '<p class="muted">' + cards.length + ' Wirkstoffprofile zum schnellen Nachschlagen — ohne Lernkarten-Ablauf.</p>' +
+      '<input type="text" id="drug-search" placeholder="Wirkstoff suchen…" autocomplete="off">' +
+      '<div class="drug-grid" id="drug-grid">' + itemsHtml + "</div>" +
+      "</main>";
+    document.getElementById("drug-search").addEventListener("input", function (e) {
+      const q = e.target.value.trim().toLowerCase();
+      document.querySelectorAll(".drug-item").forEach(function (el) {
+        el.classList.toggle("hidden", q !== "" && el.getAttribute("data-name").indexOf(q) === -1);
+      });
+    });
+  }
+
+  function renderDrugDetail(id) {
+    const card = drugCards().find(function (c) { return c.id === id; });
+    if (!card) { renderDrugList(); return; }
+    app.innerHTML =
+      nav("drugs") +
+      '<main class="container narrow">' +
+      '<a class="back-link" href="#/drugs">← Alle Medikamente</a>' +
+      "<h1>" + escapeHtml(card.front.replace(/^Steckbrief:\s*/, "")) + "</h1>" +
+      '<div class="flashcard flashcard-profile" style="text-align:left">' +
+      '<div class="flashcard-back profile-back lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + renderProfile(card.profile) + "</div>" +
+      "</div>" +
+      "</main>";
+    wrapAllLookupSources();
   }
 
   // ---------- Teil-2-Mündlich (SOE-Trainer) ----------
