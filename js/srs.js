@@ -93,10 +93,14 @@
     return newState;
   }
 
+  // Nur Karten mit BESTEHENDEM Fortschritt gelten als "fällig" — eine nie gelernte
+  // Karte ist "neu", nicht "fällig zur Wiederholung" (sonst würde sie sowohl hier
+  // als auch in getNewCards auftauchen und doppelt in der Warteschlange landen).
   function getDueCards(allCards, progress, moduleFilter) {
     return allCards.filter(function (c) {
       if (moduleFilter && moduleFilter !== "all" && c.module !== moduleFilter) return false;
-      const state = getCardState(progress, c.id);
+      const state = progress[c.id];
+      if (!state) return false;
       return isDue(state);
     });
   }

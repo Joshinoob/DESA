@@ -227,7 +227,7 @@
     const route = parts[0] || "dashboard";
     const arg = parts[1];
     if (route === "learn") renderLearnSetup(arg);
-    else if (route === "learn-session") startLearnSession(arg);
+    else if (route === "learn-session") startLearnSession(arg, parts[2]);
     else if (route === "test") renderTestSetup();
     else if (route === "test-session") startTestSession(arg);
     else if (route === "progress") renderProgress();
@@ -273,6 +273,8 @@
   function renderDashboard() {
     let totalCards = FLASHCARDS.length;
     let totalDue = window.SRS.getDueCards(FLASHCARDS, progress, "all").length;
+    let totalNew = window.SRS.getNewCards(FLASHCARDS, progress, "all").length;
+    let sessionSize = totalDue + Math.min(totalNew, 15);
     let totalMastered = 0;
     let totalStarted = 0;
     FLASHCARDS.forEach(function (c) {
@@ -298,7 +300,6 @@
         '<tr>' +
         '<td data-label="Modul"><span class="part-badge">Teil ' + m.part + "</span> " + escapeHtml(m.title) + "</td>" +
         '<td data-label="Karten">' + stats.total + "</td>" +
-        '<td data-label="Fällig">' + (stats.due > 0 ? '<span class="due-badge">' + stats.due + "</span>" : "0") + "</td>" +
         '<td data-label="Begonnen">' + stats.started + "</td>" +
         '<td data-label="Beherrschung"><div class="bar"><div class="bar-fill" style="width:' + masteryPct + '%"></div></div><span class="bar-label">' + masteryPct + "%</span></td>" +
         '<td data-label="Letzter Test">' + lastScore + "</td>" +
@@ -346,11 +347,11 @@
       '<div class="stat-card"><div class="stat-value">' + MCQ.length + '</div><div class="stat-label">Testfragen verfügbar</div></div>' +
       "</div>" +
       '<div class="cta-row">' +
-      '<a class="btn btn-primary" href="#/learn-session/all">Alle fälligen Karten lernen (' + totalDue + ")</a>" +
+      '<a class="btn btn-primary" href="#/learn-session/all">Jetzt lernen (' + sessionSize + ")</a>" +
       '<a class="btn btn-secondary" href="#/test-session/mixed">Prüfungssimulation starten</a>' +
       "</div>" +
       '<h2>Module</h2>' +
-      '<div class="table-scroll"><table class="module-table"><thead><tr><th>Modul</th><th>Karten</th><th>Fällig</th><th>Begonnen</th><th>Beherrschung</th><th>Letzter Test</th><th></th></tr></thead><tbody>' +
+      '<div class="table-scroll"><table class="module-table"><thead><tr><th>Modul</th><th>Karten</th><th>Begonnen</th><th>Beherrschung</th><th>Letzter Test</th><th></th></tr></thead><tbody>' +
       moduleRows +
       "</tbody></table></div>" +
       difficultHtml +
@@ -378,18 +379,38 @@
       '<p class="muted">Spaced Repetition (Leitner-System): fällige Karten werden zuerst wiederholt, neue Karten werden nach und nach eingeführt.</p>' +
       '<label for="learn-module">Modul</label>' +
       '<select id="learn-module"><option value="all"' + (preselect === "all" || !preselect ? " selected" : "") + '>Alle Module (gemischt)</option>' + options + "</select>" +
+      '<label for="learn-subtopic">Unterthema</label>' +
+      '<select id="learn-subtopic"><option value="all">Alle Unterthemen</option></select>' +
       '<div class="cta-row"><button class="btn btn-primary" id="start-learn">Lernsession starten</button></div>' +
       "</main>";
+
+    function refreshSubtopics() {
+      const modId = document.getElementById("learn-module").value;
+      const subSelect = document.getElementById("learn-subtopic");
+      const mod = moduleById(modId);
+      if (!mod) {
+        subSelect.innerHTML = '<option value="all">Alle Unterthemen</option>';
+        subSelect.disabled = true;
+      } else {
+        subSelect.disabled = false;
+        subSelect.innerHTML = '<option value="all">Alle Unterthemen</option>' +
+          mod.subtopics.map(function (st) { return '<option value="' + st.id + '">' + escapeHtml(st.title) + "</option>"; }).join("");
+      }
+    }
+    document.getElementById("learn-module").addEventListener("change", refreshSubtopics);
+    refreshSubtopics();
+
     document.getElementById("start-learn").addEventListener("click", function () {
       const mod = document.getElementById("learn-module").value;
-      location.hash = "#/learn-session/" + mod;
+      const sub = document.getElementById("learn-subtopic").value;
+      location.hash = "#/learn-session/" + mod + (sub !== "all" ? "/" + sub : "");
     });
   }
 
   let learnQueue = [];
   let learnStats = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
 
-  function startLearnSession(moduleId) {
+  function startLearnSession(moduleId, subtopicId) {
     learnStats = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
     if (moduleId === "difficult") {
       learnQueue = window.SRS.getDifficultCards(FLASHCARDS, progress);
@@ -404,14 +425,22 @@
       renderLearnCard();
       return;
     }
-    const due = window.SRS.getDueCards(FLASHCARDS, progress, moduleId);
-    const fresh = window.SRS.getNewCards(FLASHCARDS, progress, moduleId, 15);
-    learnQueue = due.concat(fresh);
+    let due = window.SRS.getDueCards(FLASHCARDS, progress, moduleId);
+    let fresh = window.SRS.getNewCards(FLASHCARDS, progress, moduleId);
+    if (subtopicId && subtopicId !== "all") {
+      due = due.filter(function (c) { return c.subtopic === subtopicId; });
+      fresh = fresh.filter(function (c) { return c.subtopic === subtopicId; });
+    }
+    fresh = fresh.slice(0, 15);
+    // Durchmischt statt blockweise nach Unterthema abzuarbeiten (Interleaving) —
+    // gemischte statt geblockte Praxis verbessert nachweislich Transfer und
+    // langfristiges Behalten, auch wenn es sich beim Lernen schwerer anfühlt.
+    learnQueue = shuffle(due.concat(fresh));
     if (learnQueue.length === 0) {
       app.innerHTML =
         nav("learn") +
         '<main class="container narrow"><h1>Keine Karten fällig</h1>' +
-        '<p>Für dieses Modul sind aktuell keine Karten fällig und keine neuen Karten verfügbar. Komm später wieder oder wähle ein anderes Modul.</p>' +
+        '<p>Für diese Auswahl sind aktuell keine Karten fällig und keine neuen Karten verfügbar. Komm später wieder oder wähle eine andere Auswahl.</p>' +
         '<a class="btn btn-secondary" href="#/learn">Zurück</a></main>';
       return;
     }
@@ -495,18 +524,21 @@
     const options = CURRICULUM.map(function (m) {
       return '<option value="' + m.id + '">' + escapeHtml(m.title) + " (" + MCQ.filter(function(q){return q.module===m.id;}).length + " Fragen)</option>";
     }).join("");
+    const dueMcqCount = window.SRS.getDueCards(MCQ, progress, "all").length;
     app.innerHTML =
       nav("test") +
       '<main class="container narrow">' +
       "<h1>Testmodus</h1>" +
-      '<p class="muted">Single-Best-Answer-Fragen im EDAIC-Stil.</p>' +
+      '<p class="muted">Single-Best-Answer-Fragen im EDAIC-Stil. Jede Testfrage wird wie eine Karteikarte per Spaced Repetition eingeplant.</p>' +
       '<label for="test-mode">Modus</label>' +
       '<select id="test-mode">' +
       '<option value="practice">Übungsmodus (sofortiges Feedback pro Frage)</option>' +
       '<option value="exam">Prüfungssimulation (Feedback erst am Ende, wie in der echten Prüfung)</option>' +
       "</select>" +
       '<label for="test-module">Modul</label>' +
-      '<select id="test-module"><option value="mixed">Gemischt (empfohlen)</option>' + options + "</select>" +
+      '<select id="test-module">' +
+      (dueMcqCount > 0 ? '<option value="due">Fällige Testfragen (' + dueMcqCount + ")</option>" : "") +
+      '<option value="mixed">Gemischt (empfohlen)</option>' + options + "</select>" +
       '<label for="test-count">Anzahl Fragen</label>' +
       '<select id="test-count">' +
       '<option value="10">10</option>' +
@@ -553,7 +585,12 @@
       moduleId = "mixed";
     }
 
-    let pool = moduleId === "mixed" ? MCQ.slice() : MCQ.filter(function (q) { return q.module === moduleId; });
+    let pool;
+    if (moduleId === "due") {
+      pool = window.SRS.getDueCards(MCQ, progress, "all");
+    } else {
+      pool = moduleId === "mixed" ? MCQ.slice() : MCQ.filter(function (q) { return q.module === moduleId; });
+    }
     pool = shuffle(pool);
     if (count !== "all") pool = pool.slice(0, parseInt(count, 10));
 
@@ -642,8 +679,13 @@
     let correct = 0;
     const wrong = [];
     testState.questions.forEach(function (q, i) {
-      if (testState.answers[i] === q.correct) correct++;
+      const isCorrect = testState.answers[i] === q.correct;
+      if (isCorrect) correct++;
       else wrong.push({ q: q, given: testState.answers[i] });
+      // Testfragen laufen durch dieselbe Spaced-Repetition-Logik wie Karteikarten
+      // ("Successive Relearning") — richtig beantwortete Fragen werden seltener
+      // fällig, falsch beantwortete kommen bald wieder.
+      window.SRS.reviewCard(progress, q.id, isCorrect ? "good" : "again");
     });
     const total = testState.questions.length;
     const pct = Math.round((correct / total) * 100);
