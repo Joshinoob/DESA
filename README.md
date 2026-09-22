@@ -22,11 +22,12 @@ Der gesamte Fortschritt (Karteikarten-Status, Testergebnisse) wird ausschließli
 - **Dashboard**: Übersicht über alle Module, fällige Karten, Beherrschungsgrad, letzte Testergebnisse, offene Wissenslücken.
 - **Lernen**: Karteikarten mit Spaced-Repetition-Algorithmus (vereinfachtes 6-Boxen-Leitner-System). Nach jeder Karte bewertest du dich selbst (Nochmal/Schwer/Gut/Leicht) – das bestimmt, wann die Karte wieder fällig wird. Das ist die didaktisch wirksamste Methode für Faktenwissen (aktives Erinnern statt passives Wiederlesen). Medikamenten-Steckbriefe werden dabei als farblich signalisiertes Definitionslisten-Layout dargestellt (Kontraindikationen/Cave rot, Antidot grün, Wirkmechanismus hervorgehoben) statt als Fließtext.
 - **Begriff nachschlagen**: Während des Lernens (oder in der Testauswertung) kannst du ein unklares Wort markieren. Gibt es dazu eine Karte, wird sie sofort als Lerninhalt angezeigt und fürs baldige Wiederholen eingeplant; sonst landet der Begriff als „offene Wissenslücke" auf dem Dashboard.
-- **Test**: Single-Best-Answer-Fragen im EDAIC-Prüfungsstil (5 Antwortoptionen), pro Modul oder als gemischte Prüfungssimulation, mit Erklärung zu jeder falschen Antwort.
+- **Test**: Single-Best-Answer-Fragen im EDAIC-Prüfungsstil (5 Antwortoptionen). Zwei Modi: **Übungsmodus** mit sofortigem Feedback pro Frage (lerneffektiver für den Erwerb) und **Prüfungssimulation** mit Feedback erst am Ende (realistische Prüfungsbedingung).
 - **Algorithmen**: Notfall-Abläufe (Reanimation, schwieriger Atemweg, Anaphylaxie, maligne Hyperthermie, LAST) als Nachlese-Timeline und als interaktiver „Was ist der nächste Schritt?"-Trainer – prozedurales Wissen lernt sich über Reihenfolge besser als über isolierte Fakten.
 - **Tabellen**: Vergleichstabellen/Cheat-Sheets (Vasopressoren, Muskelrelaxanzien, Lokalanästhetika, Antidote, Nüchternheitszeiten, Verwechslungsgefahr MH/LAST/Anaphylaxie) – verwandte Fakten im Kontrast lernen statt isoliert.
 - **Mündlich (Teil 2/SOE)**: 16 mündliche Prüfungsszenarien im Stil der EDAIC Structured Oral Examination (8 Basiswissenschaften, 8 Klinik) mit Rückfragen des Prüfers, ausführlicher Musterantwort zum laut Nachsprechen und Hinweisen, worauf der Prüfer achtet – trainiert freies mündliches Antworten statt nur Faktenwissen.
-- **Fortschritt**: Beherrschungsgrad je Modul, Testverlauf über Zeit.
+- **Fortschritt**: Lernphase je Modul (Neu/Lernend/Jung/Reif statt nur einer Mastery-Zahl), 7-Tage-Fälligkeitsvorschau, Testverlauf über Zeit.
+- **Lern-Streak & Tipps**: Dashboard zeigt Tage-Streak (Motivation durch sichtbaren Fortschritt) und einen täglich wechselnden, evidenzbasierten Lerntipp (Spaced Repetition, Testing-Effekt, Interleaving u.a.).
 
 ## Struktur des Curriculums
 
@@ -35,9 +36,9 @@ Orientiert am offiziellen EDAIC-Syllabus:
 **Teil 1 – Basiswissenschaften**: Anatomie, Physiologie, Pharmakologie (inkl. 129 Medikamenten-Steckbriefen), Physik & Messtechnik
 **Teil 2 – Klinik**: Allgemeinanästhesie, Regionalanästhesie & Schmerzmedizin, Intensivmedizin, Notfallmedizin & Reanimation (inkl. Toxikologie & Verbrennungen), Spezielle Anästhesie (Geburtshilfe, Kinder, Kardio/Thorax, Neuro, HNO/Augen/ambulant, Orthopädie & Gefäßchirurgie, Transplantationsanästhesie), Perioperative Medizin/Sicherheit/Ethik
 
-Aktuell enthalten: **427 Karteikarten** (davon 129 Medikamenten-Steckbriefe), **134 Testfragen**, **6 Notfall-Algorithmen**, **6 Vergleichstabellen** und **16 mündliche SOE-Übungsszenarien** für Teil 2, verteilt auf 42 Unterthemen in 10 Modulen.
+Aktuell enthalten: **427 Karteikarten** (davon 129 Medikamenten-Steckbriefe), **209 Testfragen**, **6 Notfall-Algorithmen**, **6 Vergleichstabellen** und **16 mündliche SOE-Übungsszenarien** für Teil 2, verteilt auf 42 Unterthemen in 10 Modulen.
 
-Alle Inhalte wurden durch zwei Korrektheitsaudits gegen aktuelle Leitlinien und Fachliteratur geprüft (ERC, ESAIC, ASA, ESRA/NYSORA, KDIGO, ESPEN, Sepsis-3, Bundesärztekammer u.a.).
+Alle Inhalte wurden durch zwei Korrektheitsaudits gegen aktuelle Leitlinien und Fachliteratur geprüft (ERC, ESAIC, ASA, ESRA/NYSORA, KDIGO, ESPEN, Sepsis-3, Bundesärztekammer u.a.). Es gibt keine offiziellen oder frei zugänglichen echten EDAIC-Altfragen (ESAIC gibt keine frei, kursierende "Recall"-Fragen verletzen Vertraulichkeitsvereinbarungen/Urheberrecht) – alle Testfragen sind eigens verfasst und einzeln faktengeprüft, nicht aus echten Prüfungen reproduziert.
 
 ## Wichtiger Hinweis zur inhaltlichen Korrektheit
 

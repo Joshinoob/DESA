@@ -89,6 +89,7 @@
     };
     progress[cardId] = newState;
     saveProgress(progress);
+    recordActivityToday();
     return newState;
   }
 
@@ -190,6 +191,82 @@
     return { total: total, due: due, mastered: mastered, started: started };
   }
 
+  // Box-Verteilung nach Leitner-Lernphase statt nur einer einzelnen Mastery-Zahl —
+  // zeigt, wie viel gerade in welcher Phase steckt (Neu/Lernend/Jung/Reif), macht
+  // Fortschritt auch VOR dem Erreichen der Mastery-Schwelle sichtbar.
+  function getBoxDistribution(allCards, progress, moduleId) {
+    const cards = moduleId ? allCards.filter(function (c) { return c.module === moduleId; }) : allCards;
+    const dist = { neu: 0, lernend: 0, jung: 0, reif: 0, total: cards.length };
+    cards.forEach(function (c) {
+      const state = progress[c.id];
+      if (!state) { dist.neu++; return; }
+      if (state.box <= 1) dist.lernend++;
+      else if (state.box <= 3) dist.jung++;
+      else dist.reif++;
+    });
+    return dist;
+  }
+
+  // Wie viele Karten werden an jedem der nächsten `days` Tage fällig? Macht den
+  // Spacing-Effekt sichtbar ("verteiltes Lernen") statt nur den heutigen Stapel zu zeigen.
+  function getDueForecast(allCards, progress, days) {
+    const forecast = new Array(days).fill(0);
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const dayMs = 24 * 60 * 60 * 1000;
+    allCards.forEach(function (c) {
+      const state = progress[c.id];
+      if (!state) return;
+      const dueTime = new Date(state.due).getTime();
+      const dayIndex = Math.floor((dueTime - todayStart) / dayMs);
+      if (dayIndex >= 0 && dayIndex < days) forecast[dayIndex]++;
+      else if (dayIndex < 0) forecast[0]++;
+    });
+    return forecast;
+  }
+
+  // Lern-Streak: Tage in Folge mit mindestens einer Wiederholung. Sichtbarer Fortschritt
+  // und ein einfacher Habit-Anker sind evidenzbasiert motivationsfördernd.
+  const ACTIVITY_KEY = "desa_activity_v1";
+
+  function dateKey(d) {
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  }
+
+  function recordActivityToday() {
+    try {
+      const raw = localStorage.getItem(ACTIVITY_KEY);
+      const days = raw ? JSON.parse(raw) : [];
+      const key = dateKey(new Date());
+      if (days.indexOf(key) === -1) {
+        days.push(key);
+        localStorage.setItem(ACTIVITY_KEY, JSON.stringify(days.slice(-400)));
+      }
+    } catch (e) { /* localStorage evtl. nicht verfügbar */ }
+  }
+
+  function getStreak() {
+    try {
+      const raw = localStorage.getItem(ACTIVITY_KEY);
+      const days = raw ? JSON.parse(raw) : [];
+      const daySet = new Set(days);
+      const today = new Date();
+      let streak = 0;
+      let cursor = new Date(today);
+      if (!daySet.has(dateKey(cursor))) {
+        cursor.setDate(cursor.getDate() - 1);
+        if (!daySet.has(dateKey(cursor))) return 0;
+      }
+      while (daySet.has(dateKey(cursor))) {
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      return streak;
+    } catch (e) {
+      return 0;
+    }
+  }
+
   window.SRS = {
     BOX_INTERVALS: BOX_INTERVALS,
     MAX_BOX: MAX_BOX,
@@ -204,6 +281,10 @@
     getNewCards: getNewCards,
     getModuleStats: getModuleStats,
     getDifficultCards: getDifficultCards,
+    getBoxDistribution: getBoxDistribution,
+    getDueForecast: getDueForecast,
+    recordActivityToday: recordActivityToday,
+    getStreak: getStreak,
     scheduleSoon: scheduleSoon,
     loadGaps: loadGaps,
     saveGaps: saveGaps,
