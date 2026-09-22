@@ -142,7 +142,7 @@ h2 { font-size: 1.2rem; margin-top: 32px; margin-bottom: 12px; }
 .bar-label { margin-left: 8px; font-size: 0.82rem; color: var(--text-muted); }
 
 label { display: block; margin: 14px 0 6px; font-size: 0.9rem; color: var(--text-muted); }
-select {
+select, input[type="text"] {
   width: 100%;
   padding: 10px;
   border-radius: var(--radius);
@@ -150,7 +150,28 @@ select {
   background: var(--surface);
   color: var(--text);
   font-size: 0.95rem;
+  font-family: inherit;
 }
+
+.drug-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+.drug-item {
+  display: block;
+  min-width: 0;
+  overflow-wrap: break-word;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.drug-item:hover { background: var(--surface-2); border-color: var(--accent); }
 
 .flashcard {
   background: var(--surface);
