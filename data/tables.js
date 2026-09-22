@@ -90,5 +90,18 @@ window.TABLES = [
       ["Sofortmaßnahme", "Trigger stoppen, 100% O2, hyperventilieren", "LA-Gabe stoppen, Atemweg sichern, Benzodiazepin bei Krampf", "Allergenexposition stoppen, Adrenalin i.m."],
       ["Spezifisches Antidot/Therapie", "Dantrolen 2,5 mg/kg", "Lipidemulsion 1,5 ml/kg Bolus + 0,25 ml/kg/min", "Adrenalin 0,5 mg i.m. (anterolateraler Oberschenkel)"]
     ]
+  },
+  {
+    id: "organsysteme",
+    title: "Organsysteme im Überblick",
+    columns: ["Organsystem", "Hauptfunktion(en)", "Zentrale Normwerte", "Wichtigste Regulationsmechanismen", "Klassische Prüfungspathologien"],
+    rows: [
+      ["Atmung / Lunge", "Gasaustausch (O2-Aufnahme/CO2-Abgabe), CO2-Abatmung zur Säure-Basen-Regulation, Atemmechanik", "Tidalvolumen ~500ml (6–8 ml/kgKG); paO2 80–100mmHg; paCO2 35–45mmHg", "Atemzentrum (Medulla oblongata), zentrale/periphere Chemorezeptoren (CO2/pH dominant, Hypoxie-Antrieb Glomus caroticum), Hering-Breuer-Reflex", "ARDS, postoperative Atelektase/Hypoventilation, Aspirationspneumonie, obstruktive Schlafapnoe"],
+      ["Kreislauf / Herz", "Aufrechterhaltung Organperfusion (Herzzeitvolumen), Blutdruckregulation, O2-Transport", "Herzzeitvolumen ~5 l/min; Ejektionsfraktion ~55–70%; MAP 70–105mmHg", "Frank-Starling-Mechanismus, Barorezeptorreflex (Karotissinus/Aortenbogen), RAAS, autonomes NS", "Kardiogener Schock, perioperative Myokardischämie, Herzinsuffizienz, Vorhofflimmern"],
+      ["Niere & Säure-Basen-Haushalt", "Elimination harnpflichtiger Substanzen, Volumen-/Elektrolythomöostase, Säure-Basen-Regulation, EPO-/Vit-D-Bildung", "GFR ~120–125 ml/min (180 l/Tag); pH 7,35–7,45; HCO3– 22–26 mmol/l", "RAAS, ADH (Vasopressin), tubuloglomeruläres Feedback, renale Autoregulation (myogen)", "Akutes Nierenversagen (prä-/intra-/postrenal), Kontrastmittelnephropathie, metabolische Azidose/Alkalose"],
+      ["Leber & Stoffwechsel", "Synthese (Gerinnungsfaktoren, Albumin), Biotransformation/Medikamentenmetabolismus, Glukosehomöostase", "Albumin ~35–50 g/l; Quick >70% / INR <1,2; Cholinesterase als Kurzzeit-Syntheseparameter", "Hepatische Autoregulation (Pfortader-Puffer-Effekt), Insulin/Glukagon, First-Pass-Metabolismus (CYP450)", "Leberzirrhose/-insuffizienz, Pseudocholinesterasemangel (verlängerte Succinylcholinwirkung), hepatische Enzephalopathie"],
+      ["ZNS & Hirndruck", "Zerebrale Perfusion, Aufrechterhaltung Bewusstsein/Vitalfunktionen, Liquorzirkulation", "ICP 5–10(–15)mmHg (pathologisch >20–22mmHg); CPP-Ziel 60–70mmHg; zerebrale Autoregulation MAP 50–150mmHg", "Monro-Kellie-Doktrin, zerebrale Autoregulation (myogen), CO2-Reaktivität (Hyperventilation senkt ICP)", "Schädel-Hirn-Trauma mit intrakranieller Hypertension, Status epilepticus, zerebrale Ischämie/Hirnödem"],
+      ["Temperatur & Endokrinium", "Thermoregulation (Wärmebalance), Stressantwort/Homöostase über Hormonachsen, Energiestoffwechsel", "Kerntemperatur 36,5–37,5°C; Cortisol-Tagesrhythmus (Morgenmaximum); TSH/fT3/fT4 im Normbereich", "Hypothalamus (präoptischer Bereich) als Thermostat; HPA-Achse (CRH-ACTH-Cortisol, negatives Feedback); Schilddrüsenachse (TRH-TSH-T3/T4)", "Perioperative Hypothermie, Maligne Hyperthermie, thyreotoxische Krise/Myxödemkoma, Addison-Krise"]
+    ]
   }
 ];
