@@ -604,4 +604,16 @@ select, input[type="text"] {
   .module-table td[data-label="Modul"] { flex-direction: column; align-items: flex-start; gap: 2px; }
   .module-table td[data-label="Modul"]::before { display: none; }
   .row-actions { justify-content: flex-end; }
+
+  /* Referenztabellen (Vergleichstabellen) haben deutlich längere Zellinhalte als
+     die Modul-Übersicht — nebeneinander (Label links, Wert rechts) sprengt dann
+     die Zeile. Gestapeltes Layout (Label über Wert) gibt beiden die volle Breite. */
+  .ref-table td {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+  }
+  .ref-table td::before { flex-shrink: 1; }
+  .ref-table td { overflow-wrap: break-word; word-break: break-word; }
 }

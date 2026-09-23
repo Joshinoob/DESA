@@ -117,5 +117,101 @@ window.ALGORITHMS = [
       "Bei therapierefraktärem Kreislaufstillstand: kardiopulmonalen Bypass/ECMO erwägen, falls verfügbar",
       "Nach Stabilisierung: engmaschige Überwachung (Rezidivrisiko durch Rückverteilung), Dokumentation"
     ]
+  },
+  {
+    id: "phys-raas",
+    title: "Renin-Angiotensin-Aldosteron-System (RAAS)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology",
+    steps: [
+      "Auslöser: Abfall des renalen Perfusionsdrucks/Blutdrucks (z.B. Hypovolämie, Blutung) und/oder verminderte NaCl-Konzentration am distalen Tubulus sowie gesteigerte sympathische Aktivierung",
+      "Juxtaglomeruläre Zellen der Vas afferens setzen Renin frei (Barorezeptor-Mechanismus, Macula-densa-Signal, β1-Stimulation)",
+      "Renin spaltet hepatisches Angiotensinogen zu Angiotensin I",
+      "ACE (v.a. pulmonales Gefäßendothel) wandelt Angiotensin I in Angiotensin II um",
+      "Angiotensin II bewirkt direkte arterioläre Vasokonstriktion und erhöht so den peripheren Widerstand",
+      "Angiotensin II stimuliert die Zona glomerulosa der Nebennierenrinde zur Aldosteronausschüttung",
+      "Aldosteron fördert im distalen Tubulus/Sammelrohr die Na+- und Wasserrückresorption (im Austausch gegen K+/H+-Sekretion)",
+      "Ergebnis: Anstieg von intravasalem Volumen und peripherem Widerstand → Blutdruckanstieg mit Rückkopplungshemmung der weiteren Reninfreisetzung"
+    ]
+  },
+  {
+    id: "phys-barorezeptor",
+    title: "Barorezeptorreflex – kurzfristige Blutdruckregulation",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology",
+    steps: [
+      "Auslöser: Blutdruckabfall (z.B. Hämorrhagie, Vasodilatation unter Anästhesie) → verminderte Wanddehnung in Karotissinus und Aortenbogen",
+      "Verminderte Dehnung senkt die afferente Impulsfrequenz der Barorezeptoren über N. glossopharyngeus (Karotissinus) und N. vagus (Aortenbogen) zum Nucleus tractus solitarius (NTS) in der Medulla",
+      "Verminderter afferenter Input hemmt die tonische NTS-Aktivität → verminderte Hemmung des sympathischen Zentrums und verminderte Erregung der vagalen Kerne (Nucleus ambiguus/dorsalis nervi vagi)",
+      "Nettoeffekt: gesteigerter sympathischer Tonus und reduzierter vagaler Tonus zum Herzen und den Gefäßen",
+      "Sympathisch vermittelt: Anstieg von Herzfrequenz und Kontraktilität sowie periphere Vasokonstriktion (Anstieg des Gefäßwiderstands)",
+      "Verminderter Vagotonus verstärkt zusätzlich den Anstieg der Herzfrequenz",
+      "Ergebnis: Anstieg von Herzzeitvolumen und peripherem Widerstand → Wiederherstellung des arteriellen Mitteldrucks (kurzfristige Pufferung; bei chronischer Druckänderung „Resetting“ der Rezeptoren)"
+    ]
+  },
+  {
+    id: "phys-autoregulation-niere",
+    title: "Renale Autoregulation (myogener Mechanismus + tubuloglomeruläre Rückkopplung)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology",
+    steps: [
+      "Auslöser: Anstieg des arteriellen Perfusionsdrucks innerhalb des Autoregulationsbereichs (ca. MAP 80–180mmHg)",
+      "Myogener Mechanismus (schnell, Sekunden): erhöhter transmuraler Druck dehnt die glatte Muskulatur der Vas afferens → druckabhängige Kontraktion (myogene Vasokonstriktion)",
+      "Die myogene Vasokonstriktion begrenzt den Anstieg von renalem Blutfluss (RBF) und glomerulärem Filtrationsdruck weitgehend, aber nicht vollständig",
+      "Der geringe Rest-Anstieg der GFR erhöht die tubuläre Flussrate und die NaCl-Konzentration am distalen Tubulus (Macula densa) – tubuloglomeruläre Rückkopplung (TGF), etwas langsamer als der myogene Mechanismus",
+      "Macula-densa-Zellen detektieren die erhöhte NaCl-Konzentration und setzen parakrine Botenstoffe (v.a. ATP/Adenosin) frei",
+      "Diese Botenstoffe bewirken über den juxtaglomerulären Apparat eine zusätzliche Konstriktion der benachbarten Vas afferens",
+      "Zusammenspiel von myogenem Mechanismus und TGF hält renalen Blutfluss und GFR über den gesamten Autoregulationsbereich nahezu konstant",
+      "Außerhalb des Autoregulationsbereichs (MAP <80 oder >180mmHg) versagt die Autoregulation → RBF und GFR werden direkt druckabhängig"
+    ]
+  },
+  {
+    id: "phys-saeure-basen-kompensation",
+    title: "Kompensationsmechanismen bei metabolischer Azidose",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology; Winter-Formel",
+    steps: [
+      "Primäre Störung: vermehrter H+-Anfall oder HCO3--Verlust (z.B. Laktatazidose, Ketoazidose, Diarrhoe) → erniedrigtes Serum-HCO3- und erniedrigter pH",
+      "Sofortpufferung (Sekunden): extrazelluläres Bicarbonat-Puffersystem bindet überschüssige H+-Ionen, zusätzlich intrazelluläre Puffer (Proteine, Phosphat, Knochen) im Austausch gegen Kalium",
+      "Periphere (Glomus caroticum/aorticum) und zentrale Chemorezeptoren registrieren den erniedrigten pH/erhöhte H+-Konzentration",
+      "Respiratorische Kompensation (Minuten bis Stunden): gesteigerter Atemantrieb → Hyperventilation (Kussmaul-Atmung) → Abfall des PaCO2 gemäß Winter-Formel",
+      "Respiratorische Kompensation bleibt unvollständig, der pH normalisiert sich nicht vollständig; die renale Kompensation setzt langsamer ein (Stunden bis Tage)",
+      "Renale Kompensation: gesteigerte H+-Sekretion durch die Schaltzellen des Sammelrohrs (H+-ATPase) mit vermehrter Ausscheidung als titrierbare Säure und Ammonium (NH4+)",
+      "Renale Kompensation: gesteigerte Rückresorption und Neubildung von HCO3- im proximalen Tubulus (Ammoniogenese liefert neues Bicarbonat)",
+      "Über Tage etabliert sich ein neues Fließgleichgewicht: pH nahezu normalisiert bei weiterhin erniedrigtem HCO3- und kompensatorisch erniedrigtem PaCO2 (kompensierte metabolische Azidose)"
+    ]
+  },
+  {
+    id: "phys-cushing-kaskade",
+    title: "Cushing-Reflex-Kaskade bei erhöhtem Hirndruck",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology; Monro-Kellie-Doktrin",
+    steps: [
+      "Intrakranielle Volumenzunahme (z.B. Hämatom, Ödem, Tumor) → nach Monro-Kellie-Doktrin zunächst Kompensation durch Verdrängung von Liquor und venösem Blut",
+      "Kompensationsreserve erschöpft → intrakranieller Druck (ICP) steigt deutlich an",
+      "Zerebraler Perfusionsdruck (CPP = MAP − ICP) fällt ab → zerebrale Minderperfusion und Ischämie, insbesondere im Hirnstamm/Medulla oblongata",
+      "Ischämie der vasomotorischen Zentren in der Medulla löst eine massive sympathische Aktivierung aus (Cushing-Reflex)",
+      "Systemischer Blutdruckanstieg (Hypertonie) zur Wiederherstellung des zerebralen Perfusionsdrucks",
+      "Barorezeptoren in Karotissinus/Aortenbogen registrieren den Blutdruckanstieg → reflektorische vagale Bradykardie",
+      "Fortschreitende Ischämie/Kompression der Atemzentren im Hirnstamm → unregelmäßige, ataktische Atmung (bis Apnoe)",
+      "Cushing-Trias komplett (Hypertonie, Bradykardie, unregelmäßige Atmung) → Warnzeichen einer drohenden Herniation, sofortige Intervention notwendig"
+    ]
+  },
+  {
+    id: "phys-gerinnungskaskade",
+    title: "Gerinnungskaskade (klassisches Modell)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology; Ganong's Review of Medical Physiology",
+    steps: [
+      "Gefäßverletzung → subendotheliales Kollagen und Tissue Factor (Faktor III) werden exponiert, gleichzeitig lokale Vasokonstriktion",
+      "Extrinsischer Weg: Tissue Factor bindet mit Ca2+ Faktor VIIa → aktiviert Faktor X zu Xa (physiologisch der schnellere Trigger)",
+      "Intrinsischer Weg (Kontaktaktivierung): Faktor XII wird durch Kontakt mit negativ geladener Oberfläche zu XIIa aktiviert → aktiviert Faktor XI zu XIa → aktiviert Faktor IX zu IXa",
+      "Faktor IXa bildet mit Faktor VIIIa als Kofaktor und Ca2+ auf der Thrombozytenoberfläche den Tenase-Komplex → aktiviert zusätzlich Faktor X zu Xa",
+      "Gemeinsamer Weg: Faktor Xa bildet mit Faktor Va, Ca2+ und Phospholipiden den Prothrombinase-Komplex → wandelt Prothrombin (Faktor II) in Thrombin (IIa) um",
+      "Thrombin spaltet Fibrinogen unter Freisetzung von Fibrinopeptiden zu Fibrinmonomeren",
+      "Fibrinmonomere polymerisieren spontan zu einem löslichen Fibrinnetz",
+      "Thrombin aktiviert Faktor XIII zu XIIIa, der die Fibrinfasern kovalent quervernetzt → stabiles, unlösliches Fibringerinnsel",
+      "Hinweis: Klinisch genauer beschreibt heute das zellbasierte Modell (Initiierung auf TF-tragenden Zellen, Amplifikation/Propagation auf der Thrombozytenoberfläche) den tatsächlichen Ablauf in vivo; das klassische Kaskadenmodell bleibt aber die Standard-Lehr- und Prüfungsdarstellung (u.a. für die PT/aPTT-Interpretation)"
+    ]
   }
 ];
