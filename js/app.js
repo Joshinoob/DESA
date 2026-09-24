@@ -240,6 +240,8 @@
     else if (route === "table") renderTable(arg);
     else if (route === "drugs") renderDrugList();
     else if (route === "drug") renderDrugDetail(arg);
+    else if (route === "leitlinien") renderGuidelineList();
+    else if (route === "leitlinie") renderGuidelineDetail(arg);
     else if (route === "soe") renderSOEList();
     else if (route === "soe-case") renderSOEDetail(arg);
     else renderDashboard();
@@ -257,6 +259,7 @@
       ["physiologie", "Physiologie"],
       ["tables", "Tabellen"],
       ["drugs", "Medikamente"],
+      ["leitlinien", "Leitlinien"],
       ["soe", "Mündlich"],
       ["progress", "Fortschritt"]
     ];
@@ -1098,6 +1101,57 @@
     wrapAllLookupSources();
   }
 
+  // ---------- Leitlinien (Nachschlagen) ----------
+  // Reine Referenz-/Nachschlagefunktion für alle expliziten Leitlinien-Empfehlungskarten
+  // (fc-ll-*), gruppiert nach Modul — für die schnelle Wiederholung "was empfiehlt welche
+  // Leitlinie" kurz vor der Prüfung, getrennt vom SRS-Lernablauf (wo dieselben Karten
+  // regulär per Spaced Repetition geübt werden).
+  function guidelineCards() {
+    return FLASHCARDS.filter(function (c) { return c.id.indexOf("fc-ll-") === 0; });
+  }
+
+  function renderGuidelineList() {
+    const cards = guidelineCards();
+    const groups = {};
+    cards.forEach(function (c) { (groups[c.module] = groups[c.module] || []).push(c); });
+    const groupsHtml = Object.keys(groups).map(function (modId) {
+      const mod = moduleById(modId);
+      const items = groups[modId].map(function (c) {
+        return '<a class="drug-item guideline-item" href="#/leitlinie/' + c.id + '" data-name="' + escapeHtml(c.front.toLowerCase()) + '">' + escapeHtml(c.front) + "</a>";
+      }).join("");
+      return "<h2>" + escapeHtml(mod ? mod.title : modId) + "</h2>" + '<div class="drug-grid guideline-grid">' + items + "</div>";
+    }).join("");
+    app.innerHTML =
+      nav("leitlinien") +
+      '<main class="container">' +
+      "<h1>Leitlinien nachschlagen</h1>" +
+      '<p class="muted">' + cards.length + ' Empfehlungen aktueller Leitlinien (ERC, ESAIC, ESRA, KDIGO, ESPEN, PADIS, SSC u.a.), gruppiert nach Modul — zum schnellen Wiederholen vor der Prüfung, ohne Lernkarten-Ablauf.</p>' +
+      '<input type="text" id="guideline-search" placeholder="Leitlinie oder Stichwort suchen…" autocomplete="off">' +
+      groupsHtml +
+      "</main>";
+    document.getElementById("guideline-search").addEventListener("input", function (e) {
+      const q = e.target.value.trim().toLowerCase();
+      document.querySelectorAll(".guideline-item").forEach(function (el) {
+        el.classList.toggle("hidden", q !== "" && el.getAttribute("data-name").indexOf(q) === -1);
+      });
+    });
+  }
+
+  function renderGuidelineDetail(id) {
+    const card = guidelineCards().find(function (c) { return c.id === id; });
+    if (!card) { renderGuidelineList(); return; }
+    app.innerHTML =
+      nav("leitlinien") +
+      '<main class="container narrow">' +
+      '<a class="back-link" href="#/leitlinien">← Alle Leitlinien</a>' +
+      "<h1>" + escapeHtml(card.front) + "</h1>" +
+      '<div class="flashcard" style="text-align:left">' +
+      '<div class="flashcard-back lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.back) + "</div>" +
+      "</div>" +
+      "</main>";
+    wrapAllLookupSources();
+  }
+
   // ---------- Teil-2-Mündlich (SOE-Trainer) ----------
   // Kein Karteikarten-Format: SOE-Szenarien sind lange, zusammenhängende Antworten, die man
   // laut vor sich hin sprechen üben soll ("talk through"), nicht auswendig lernen wie Fakten.
@@ -1168,7 +1222,7 @@
     { icon: "🗂️", title: "Lernen", text: "Karteikarten nach dem Leitner-Prinzip. Vor dem Aufdecken schätzt du kurz deine Sicherheit ein (Konfidenz-Rating) – das verbessert nachweislich die Selbsteinschätzung und das Behalten." },
     { icon: "📝", title: "Test", text: "Single-Best-Answer-Fragen wie im EDAIC-Stil. Übungsmodus mit sofortigem Feedback oder Prüfungssimulation mit Zeitlimit (90 Sek./Frage) – wie in der echten Prüfung." },
     { icon: "🚨", title: "Algorithmen & Physiologie", text: "Notfall-Abläufe und physiologische Regelkreise als Nachlese-Timeline oder als Trainer: an jedem Punkt den richtigen nächsten Schritt auswählen." },
-    { icon: "💊", title: "Tabellen & Medikamente", text: "Vergleichstabellen zum Kontrastieren verwandter Fakten und eine reine Nachschlage-Ansicht aller Medikamenten-Steckbriefe – ganz ohne Lernkarten-Ablauf." },
+    { icon: "💊", title: "Tabellen, Medikamente & Leitlinien", text: "Vergleichstabellen zum Kontrastieren verwandter Fakten, eine Nachschlage-Ansicht aller Medikamenten-Steckbriefe und aller Leitlinien-Empfehlungen – ganz ohne Lernkarten-Ablauf, ideal zur schnellen Wiederholung kurz vor der Prüfung." },
     { icon: "🎙️", title: "Mündlich & Fortschritt", text: "SOE-Szenarien zum lauten Selbst-Antworten für Teil 2. Im Fortschrittsbereich siehst du Lernphasen, Fälligkeitsvorschau und Kalibrierung deiner Selbsteinschätzung." }
   ];
 
