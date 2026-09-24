@@ -163,6 +163,38 @@
     return gaps;
   }
 
+  // Manuelles "Gelernt"-Abhaken für die reinen Nachschlage-Ansichten (Medikamente,
+  // Leitlinien) — bewusst getrennt vom SRS-Fortschritt (progress), da diese Ansichten
+  // explizit KEINE Spaced-Repetition-Session sind, sondern ein simpler Selbstauskunfts-
+  // Haken ("das kenne ich schon") für die schnelle Übersicht kurz vor der Prüfung.
+  const LEARNED_DRUGS_KEY = "desa_learned_drugs_v1";
+  const LEARNED_GUIDELINES_KEY = "desa_learned_guidelines_v1";
+
+  function loadLearnedSet(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function toggleLearnedItem(key, itemId) {
+    const list = loadLearnedSet(key);
+    const idx = list.indexOf(itemId);
+    if (idx === -1) list.push(itemId);
+    else list.splice(idx, 1);
+    try {
+      localStorage.setItem(key, JSON.stringify(list));
+    } catch (e) { /* ignore */ }
+    return list;
+  }
+
+  function loadLearnedDrugs() { return loadLearnedSet(LEARNED_DRUGS_KEY); }
+  function toggleLearnedDrug(id) { return toggleLearnedItem(LEARNED_DRUGS_KEY, id); }
+  function loadLearnedGuidelines() { return loadLearnedSet(LEARNED_GUIDELINES_KEY); }
+  function toggleLearnedGuideline(name) { return toggleLearnedItem(LEARNED_GUIDELINES_KEY, name); }
+
   // Konfidenz-Kalibrierung (Judgment of Learning): erfasst, ob die eigene
   // Sicherheitseinschätzung VOR dem Umdrehen der Karte mit dem tatsächlichen
   // Ergebnis übereinstimmt. Gut belegter Effekt: Falsch beantwortete Karten, bei
@@ -323,6 +355,10 @@
     addGap: addGap,
     removeGap: removeGap,
     loadCalibration: loadCalibration,
-    recordCalibration: recordCalibration
+    recordCalibration: recordCalibration,
+    loadLearnedDrugs: loadLearnedDrugs,
+    toggleLearnedDrug: toggleLearnedDrug,
+    loadLearnedGuidelines: loadLearnedGuidelines,
+    toggleLearnedGuideline: toggleLearnedGuideline
   };
 })();

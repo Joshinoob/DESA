@@ -242,6 +242,8 @@
     else if (route === "drug") renderDrugDetail(arg);
     else if (route === "leitlinien") renderGuidelineList();
     else if (route === "leitlinie") renderGuidelineDetail(arg);
+    else if (route === "leitlinien-durchgehen") startGuidelineWalkthrough(parseInt(arg, 10));
+    else if (route === "leitlinien-test") startGuidelineQuiz(parseInt(arg, 10));
     else if (route === "soe") renderSOEList();
     else if (route === "soe-case") renderSOEDetail(arg);
     else renderDashboard();
@@ -1059,22 +1061,25 @@
   // Reine Referenz-/Nachschlagefunktion für die Medikamenten-Steckbriefe, getrennt
   // vom Lernen-Karteikarten-Ablauf (kein Aufdecken/Bewerten) — für den Moment, in
   // dem man einfach schnell einen Wirkstoff nachschlagen will, ohne eine SRS-Session
-  // zu starten.
+  // zu starten. Ein manuelles "Gelernt"-Abhaken (getrennt vom SRS-Fortschritt) macht
+  // den Überblick sichtbar, welche Wirkstoffe schon sitzen.
   function drugCards() {
     return FLASHCARDS.filter(function (c) { return c.subtopic === "medikamenten-steckbriefe"; });
   }
 
   function renderDrugList() {
     const cards = drugCards().slice().sort(function (a, b) { return a.front.localeCompare(b.front, "de"); });
+    const learned = window.SRS.loadLearnedDrugs();
     const itemsHtml = cards.map(function (c) {
       const name = c.front.replace(/^Steckbrief:\s*/, "");
-      return '<a class="drug-item" href="#/drug/' + c.id + '" data-name="' + escapeHtml(name.toLowerCase()) + '">' + escapeHtml(name) + "</a>";
+      const isLearned = learned.indexOf(c.id) !== -1;
+      return '<a class="drug-item' + (isLearned ? " drug-item--learned" : "") + '" href="#/drug/' + c.id + '" data-name="' + escapeHtml(name.toLowerCase()) + '">' + (isLearned ? '<span class="learned-check">✓</span> ' : "") + escapeHtml(name) + "</a>";
     }).join("");
     app.innerHTML =
       nav("drugs") +
       '<main class="container">' +
       "<h1>Medikamente nachschlagen</h1>" +
-      '<p class="muted">' + cards.length + ' Wirkstoffprofile zum schnellen Nachschlagen — ohne Lernkarten-Ablauf.</p>' +
+      '<p class="muted">' + cards.length + ' Wirkstoffprofile zum schnellen Nachschlagen — ohne Lernkarten-Ablauf. <strong>' + learned.length + ' von ' + cards.length + '</strong> als gelernt markiert.</p>' +
       '<input type="text" id="drug-search" placeholder="Wirkstoff suchen…" autocomplete="off">' +
       '<div class="drug-grid" id="drug-grid">' + itemsHtml + "</div>" +
       "</main>";
@@ -1089,50 +1094,96 @@
   function renderDrugDetail(id) {
     const card = drugCards().find(function (c) { return c.id === id; });
     if (!card) { renderDrugList(); return; }
+    const isLearned = window.SRS.loadLearnedDrugs().indexOf(id) !== -1;
     app.innerHTML =
       nav("drugs") +
       '<main class="container narrow">' +
       '<a class="back-link" href="#/drugs">← Alle Medikamente</a>' +
       "<h1>" + escapeHtml(card.front.replace(/^Steckbrief:\s*/, "")) + "</h1>" +
+      '<div class="cta-row"><button class="btn ' + (isLearned ? "btn-primary" : "btn-secondary") + '" id="toggle-learned-drug">' + (isLearned ? "✓ Gelernt (entfernen)" : "Als gelernt markieren") + "</button></div>" +
       '<div class="flashcard flashcard-profile" style="text-align:left">' +
       '<div class="flashcard-back profile-back lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + renderProfile(card.profile) + "</div>" +
       "</div>" +
       "</main>";
     wrapAllLookupSources();
+    document.getElementById("toggle-learned-drug").addEventListener("click", function () {
+      window.SRS.toggleLearnedDrug(id);
+      renderDrugDetail(id);
+    });
   }
 
   // ---------- Leitlinien (Nachschlagen) ----------
   // Reine Referenz-/Nachschlagefunktion für alle expliziten Leitlinien-Empfehlungskarten
-  // (fc-ll-*), gruppiert nach Modul — für die schnelle Wiederholung "was empfiehlt welche
-  // Leitlinie" kurz vor der Prüfung, getrennt vom SRS-Lernablauf (wo dieselben Karten
-  // regulär per Spaced Repetition geübt werden).
+  // (fc-ll-*), gruppiert nach der KONKRETEN Leitlinie (Feld "guideline"), nicht nur nach
+  // Modul — damit z.B. alle Empfehlungen der Surviving Sepsis Campaign zusammen
+  // durchgegangen werden können, auch wenn eine Leitlinie (wie die PONV-Konsensus-
+  // Leitlinie) über mehrere Module verteilt zitiert wird. Drei Ebenen: (1) Liste
+  // durchsuchen/nachschlagen, (2) eine Leitlinie komplett "durchgehen" (sequenzielle
+  // Wiederholung aller ihrer Karten), (3) sich mit den passenden Testfragen selbst
+  // abfragen ("Testen"). Manuelles "Diese Leitlinie kann ich"-Abhaken pro Leitlinie,
+  // getrennt vom SRS-Fortschritt.
   function guidelineCards() {
     return FLASHCARDS.filter(function (c) { return c.id.indexOf("fc-ll-") === 0; });
   }
 
-  function renderGuidelineList() {
-    const cards = guidelineCards();
+  function guidelineGroups() {
     const groups = {};
-    cards.forEach(function (c) { (groups[c.module] = groups[c.module] || []).push(c); });
-    const groupsHtml = Object.keys(groups).map(function (modId) {
-      const mod = moduleById(modId);
-      const items = groups[modId].map(function (c) {
-        return '<a class="drug-item guideline-item" href="#/leitlinie/' + c.id + '" data-name="' + escapeHtml(c.front.toLowerCase()) + '">' + escapeHtml(c.front) + "</a>";
+    guidelineCards().forEach(function (c) { (groups[c.guideline] = groups[c.guideline] || []).push(c); });
+    return Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "de"); })
+      .map(function (name) { return { name: name, cards: groups[name] }; });
+  }
+
+  function mcqForGuideline(name) {
+    return MCQ.filter(function (q) { return q.guideline === name; });
+  }
+
+  function renderGuidelineList() {
+    const groups = guidelineGroups();
+    const cards = guidelineCards();
+    const learned = window.SRS.loadLearnedGuidelines();
+    const groupsHtml = groups.map(function (g, idx) {
+      const isLearned = learned.indexOf(g.name) !== -1;
+      const quizCount = mcqForGuideline(g.name).length;
+      const itemsHtml = g.cards.map(function (c) {
+        return '<a class="drug-item guideline-item" href="#/leitlinie/' + c.id + '" data-name="' + escapeHtml((c.front + " " + g.name).toLowerCase()) + '">' + escapeHtml(c.front) + "</a>";
       }).join("");
-      return "<h2>" + escapeHtml(mod ? mod.title : modId) + "</h2>" + '<div class="drug-grid guideline-grid">' + items + "</div>";
+      return (
+        '<div class="guideline-group' + (isLearned ? " guideline-group--learned" : "") + '">' +
+        '<h2>' + (isLearned ? '<span class="learned-check">✓</span> ' : "") + escapeHtml(g.name) + '<span class="muted"> · ' + g.cards.length + (g.cards.length === 1 ? " Karte" : " Karten") + "</span></h2>" +
+        '<div class="cta-row">' +
+        '<a class="btn btn-sm btn-primary" href="#/leitlinien-durchgehen/' + idx + '">Durchgehen</a>' +
+        (quizCount > 0 ? '<a class="btn btn-sm btn-secondary" href="#/leitlinien-test/' + idx + '">Testen (' + quizCount + ")</a>" : "") +
+        '<button class="btn btn-sm btn-secondary toggle-learned-guideline" data-guideline="' + escapeHtml(g.name) + '">' + (isLearned ? "✓ Gelernt" : "Als gelernt markieren") + "</button>" +
+        "</div>" +
+        '<div class="drug-grid guideline-grid">' + itemsHtml + "</div>" +
+        "</div>"
+      );
     }).join("");
     app.innerHTML =
       nav("leitlinien") +
       '<main class="container">' +
       "<h1>Leitlinien nachschlagen</h1>" +
-      '<p class="muted">' + cards.length + ' Empfehlungen aktueller Leitlinien (ERC, ESAIC, ESRA, KDIGO, ESPEN, PADIS, SSC u.a.), gruppiert nach Modul — zum schnellen Wiederholen vor der Prüfung, ohne Lernkarten-Ablauf.</p>' +
+      '<p class="muted">' + cards.length + ' Empfehlungen aus ' + groups.length + ' Leitlinien (ERC, ESAIC, ESRA, KDIGO, ESPEN, PADIS, SSC u.a.) — <strong>' + learned.length + ' von ' + groups.length + '</strong> Leitlinien als gelernt markiert. Pro Leitlinie: alle Empfehlungen durchgehen oder dich mit passenden Testfragen abfragen.</p>' +
       '<input type="text" id="guideline-search" placeholder="Leitlinie oder Stichwort suchen…" autocomplete="off">' +
       groupsHtml +
       "</main>";
     document.getElementById("guideline-search").addEventListener("input", function (e) {
       const q = e.target.value.trim().toLowerCase();
-      document.querySelectorAll(".guideline-item").forEach(function (el) {
-        el.classList.toggle("hidden", q !== "" && el.getAttribute("data-name").indexOf(q) === -1);
+      document.querySelectorAll(".guideline-group").forEach(function (groupEl) {
+        const items = groupEl.querySelectorAll(".guideline-item");
+        let anyVisible = false;
+        items.forEach(function (el) {
+          const match = q === "" || el.getAttribute("data-name").indexOf(q) !== -1;
+          el.classList.toggle("hidden", !match);
+          if (match) anyVisible = true;
+        });
+        groupEl.classList.toggle("hidden", !anyVisible);
+      });
+    });
+    document.querySelectorAll(".toggle-learned-guideline").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        window.SRS.toggleLearnedGuideline(btn.getAttribute("data-guideline"));
+        renderGuidelineList();
       });
     });
   }
@@ -1144,12 +1195,147 @@
       nav("leitlinien") +
       '<main class="container narrow">' +
       '<a class="back-link" href="#/leitlinien">← Alle Leitlinien</a>' +
+      '<div class="session-progress">' + escapeHtml(card.guideline) + "</div>" +
       "<h1>" + escapeHtml(card.front) + "</h1>" +
       '<div class="flashcard" style="text-align:left">' +
       '<div class="flashcard-back lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.back) + "</div>" +
       "</div>" +
       "</main>";
     wrapAllLookupSources();
+  }
+
+  // ---------- Leitlinie durchgehen (sequenzielle Wiederholung aller Empfehlungen) ----------
+  let guidelineWalkState = null;
+
+  function startGuidelineWalkthrough(idx) {
+    const groups = guidelineGroups();
+    const group = groups[idx];
+    if (!group) { renderGuidelineList(); return; }
+    guidelineWalkState = { group: group, index: 0 };
+    renderGuidelineWalkStep();
+  }
+
+  function renderGuidelineWalkStep() {
+    const state = guidelineWalkState;
+    const group = state.group;
+    if (state.index >= group.cards.length) {
+      const isLearned = window.SRS.loadLearnedGuidelines().indexOf(group.name) !== -1;
+      app.innerHTML =
+        nav("leitlinien") +
+        '<main class="container narrow">' +
+        "<h1>" + escapeHtml(group.name) + " – fertig 🎉</h1>" +
+        "<p>Alle " + group.cards.length + " Empfehlungen dieser Leitlinie durchgegangen.</p>" +
+        '<div class="cta-row">' +
+        '<button class="btn ' + (isLearned ? "btn-primary" : "btn-secondary") + '" id="finish-mark-learned">' + (isLearned ? "✓ Gelernt" : "Diese Leitlinie kann ich") + "</button>" +
+        (mcqForGuideline(group.name).length > 0 ? '<a class="btn btn-secondary" href="#/leitlinien-test/' + guidelineGroups().findIndex(function (g) { return g.name === group.name; }) + '">Jetzt testen</a>' : "") +
+        '<a class="btn btn-secondary" href="#/leitlinien">Zurück zur Übersicht</a>' +
+        "</div></main>";
+      document.getElementById("finish-mark-learned").addEventListener("click", function () {
+        window.SRS.toggleLearnedGuideline(group.name);
+        renderGuidelineWalkStep();
+      });
+      return;
+    }
+    const card = group.cards[state.index];
+    app.innerHTML =
+      nav("leitlinien") +
+      '<main class="container narrow">' +
+      '<div class="session-progress">' + escapeHtml(group.name) + " · Empfehlung " + (state.index + 1) + " / " + group.cards.length + "</div>" +
+      '<div class="flashcard">' +
+      '<div class="flashcard-front lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.front) + "</div>" +
+      '<div class="flashcard-back hidden lookup-source" id="walk-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.back) + "</div>" +
+      "</div>" +
+      '<div class="cta-row" id="walk-reveal-row"><button class="btn btn-primary" id="walk-reveal-btn">Antwort zeigen</button></div>' +
+      '<div class="cta-row hidden" id="walk-next-row"><button class="btn btn-primary" id="walk-next-btn">Weiter</button></div>' +
+      "</main>";
+    wrapAllLookupSources();
+    document.getElementById("walk-reveal-btn").addEventListener("click", function () {
+      document.getElementById("walk-back").classList.remove("hidden");
+      document.getElementById("walk-reveal-row").classList.add("hidden");
+      document.getElementById("walk-next-row").classList.remove("hidden");
+    });
+    document.getElementById("walk-next-btn").addEventListener("click", function () {
+      state.index++;
+      renderGuidelineWalkStep();
+    });
+  }
+
+  // ---------- Leitlinie testen (Mini-Abfrage nur mit Fragen dieser Leitlinie) ----------
+  let guidelineQuizState = null;
+
+  function startGuidelineQuiz(idx) {
+    const groups = guidelineGroups();
+    const group = groups[idx];
+    const pool = group ? mcqForGuideline(group.name) : [];
+    if (!group || pool.length === 0) { renderGuidelineList(); return; }
+    guidelineQuizState = { group: group, questions: shuffle(pool), index: 0, correct: 0, answered: null };
+    renderGuidelineQuizStep();
+  }
+
+  function renderGuidelineQuizStep() {
+    const state = guidelineQuizState;
+    const total = state.questions.length;
+    if (state.index >= total) {
+      const isLearned = window.SRS.loadLearnedGuidelines().indexOf(state.group.name) !== -1;
+      app.innerHTML =
+        nav("leitlinien") +
+        '<main class="container narrow">' +
+        "<h1>" + escapeHtml(state.group.name) + " – Test fertig</h1>" +
+        '<div class="score-circle">' + state.correct + "/" + total + "</div>" +
+        '<div class="cta-row">' +
+        '<button class="btn ' + (isLearned ? "btn-primary" : "btn-secondary") + '" id="quiz-mark-learned">' + (isLearned ? "✓ Gelernt" : "Diese Leitlinie kann ich") + "</button>" +
+        '<a class="btn btn-secondary" href="#/leitlinien">Zurück zur Übersicht</a>' +
+        "</div></main>";
+      document.getElementById("quiz-mark-learned").addEventListener("click", function () {
+        window.SRS.toggleLearnedGuideline(state.group.name);
+        renderGuidelineQuizStep();
+      });
+      return;
+    }
+    const q = state.questions[state.index];
+    const answered = state.answered !== null;
+    const optionsHtml = q.options.map(function (opt, i) {
+      let cls = "option-row";
+      if (answered) {
+        if (i === q.correct) cls += " option-correct";
+        else if (i === state.answered) cls += " option-wrong-selected";
+        else cls += " option-wrong-disabled";
+      }
+      return (
+        '<label class="' + cls + '">' +
+        '<input type="radio" name="gl-option" value="' + i + '"' + (answered ? " disabled" : "") + ">" +
+        '<span>' + String.fromCharCode(65 + i) + ") " + escapeHtml(opt) + "</span>" +
+        "</label>"
+      );
+    }).join("");
+    const feedbackHtml = !answered ? "" :
+      '<div class="' + (state.answered === q.correct ? "correct-answer" : "wrong-answer") + '">' +
+      (state.answered === q.correct ? "Richtig! " : "Leider falsch. Richtig wäre: " + String.fromCharCode(65 + q.correct) + ") " + escapeHtml(q.options[q.correct])) +
+      "</div>" +
+      '<p class="explanation">' + escapeHtml(q.explanation) + "</p>";
+    app.innerHTML =
+      nav("leitlinien") +
+      '<main class="container narrow">' +
+      '<div class="session-progress">' + escapeHtml(state.group.name) + " · Frage " + (state.index + 1) + " / " + total + "</div>" +
+      '<div class="question-box"><p class="question-text">' + escapeHtml(q.question) + "</p>" +
+      '<div class="options">' + optionsHtml + "</div>" +
+      feedbackHtml +
+      "</div>" +
+      '<div class="cta-row"><button class="btn btn-primary" id="gl-next-btn">' + (state.index === total - 1 ? "Fertig" : "Weiter") + "</button></div>" +
+      "</main>";
+    document.querySelectorAll('input[name="gl-option"]').forEach(function (input) {
+      input.addEventListener("change", function () {
+        state.answered = parseInt(input.value, 10);
+        if (state.answered === q.correct) state.correct++;
+        renderGuidelineQuizStep();
+      });
+    });
+    document.getElementById("gl-next-btn").addEventListener("click", function () {
+      if (!answered) return;
+      state.index++;
+      state.answered = null;
+      renderGuidelineQuizStep();
+    });
   }
 
   // ---------- Teil-2-Mündlich (SOE-Trainer) ----------
@@ -1222,7 +1408,7 @@
     { icon: "🗂️", title: "Lernen", text: "Karteikarten nach dem Leitner-Prinzip. Vor dem Aufdecken schätzt du kurz deine Sicherheit ein (Konfidenz-Rating) – das verbessert nachweislich die Selbsteinschätzung und das Behalten." },
     { icon: "📝", title: "Test", text: "Single-Best-Answer-Fragen wie im EDAIC-Stil. Übungsmodus mit sofortigem Feedback oder Prüfungssimulation mit Zeitlimit (90 Sek./Frage) – wie in der echten Prüfung." },
     { icon: "🚨", title: "Algorithmen & Physiologie", text: "Notfall-Abläufe und physiologische Regelkreise als Nachlese-Timeline oder als Trainer: an jedem Punkt den richtigen nächsten Schritt auswählen." },
-    { icon: "💊", title: "Tabellen, Medikamente & Leitlinien", text: "Vergleichstabellen zum Kontrastieren verwandter Fakten, eine Nachschlage-Ansicht aller Medikamenten-Steckbriefe und aller Leitlinien-Empfehlungen – ganz ohne Lernkarten-Ablauf, ideal zur schnellen Wiederholung kurz vor der Prüfung." },
+    { icon: "💊", title: "Tabellen, Medikamente & Leitlinien", text: "Vergleichstabellen zum Kontrastieren verwandter Fakten sowie Nachschlage-Ansichten für Medikamente und Leitlinien – jeweils mit \"Gelernt\"-Abhaken. Leitlinien lassen sich zusätzlich thematisch komplett durchgehen oder mit passenden Testfragen abfragen, ganz ohne SRS-Ablauf." },
     { icon: "🎙️", title: "Mündlich & Fortschritt", text: "SOE-Szenarien zum lauten Selbst-Antworten für Teil 2. Im Fortschrittsbereich siehst du Lernphasen, Fälligkeitsvorschau und Kalibrierung deiner Selbsteinschätzung." }
   ];
 
