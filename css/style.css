@@ -182,6 +182,18 @@ select, input[type="text"] {
   font-size: 0.9rem;
 }
 .drug-item:hover { background: var(--surface-2); border-color: var(--accent); }
+.drug-item--learned { border-color: var(--green); }
+.learned-check { color: var(--green); font-weight: 700; }
+
+.guideline-group {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 16px;
+}
+.guideline-group--learned { border-color: var(--green); }
+.guideline-group h2 { margin: 0 0 10px; font-size: 1rem; }
+.guideline-group .guideline-grid { margin-top: 12px; }
 
 .flashcard {
   background: var(--surface);
