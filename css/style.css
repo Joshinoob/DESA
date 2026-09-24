@@ -24,6 +24,16 @@ body {
   line-height: 1.5;
 }
 
+.app-footer {
+  max-width: 720px;
+  margin: 24px auto 40px;
+  padding: 0 16px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
 .storage-warning {
   background: var(--red);
   color: white;
@@ -410,7 +420,18 @@ select, input[type="text"] {
 
 .lookup-modal-hint { margin-top: 18px; font-size: 0.8rem; }
 
+.onboarding-modal { text-align: center; }
+.onboarding-icon { font-size: 2.6rem; line-height: 1; margin-bottom: 8px; }
+.onboarding-modal h2 { margin: 4px 0 10px; }
+.onboarding-modal p { line-height: 1.6; color: var(--text-muted); }
+.onboarding-dots { display: flex; justify-content: center; gap: 6px; margin: 18px 0 6px; }
+.onboarding-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); display: inline-block; }
+.onboarding-dot--active { background: var(--accent); }
+.onboarding-actions { justify-content: space-between; }
+
 .session-progress { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 4px; }
+.exam-timer { float: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
+.exam-timer-warn { color: var(--red); }
 
 .rating-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 18px; }
 .rating-row button { padding: 12px 4px; }

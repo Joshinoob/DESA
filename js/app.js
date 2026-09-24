@@ -226,12 +226,14 @@
     const parts = hash.replace(/^#\//, "").split("/");
     const route = parts[0] || "dashboard";
     const arg = parts[1];
+    if (route !== "test-session") clearExamTimer();
     if (route === "learn") renderLearnSetup(arg);
     else if (route === "learn-session") startLearnSession(arg, parts[2]);
     else if (route === "test") renderTestSetup();
     else if (route === "test-session") startTestSession(arg);
     else if (route === "progress") renderProgress();
     else if (route === "algorithms") renderAlgorithmList();
+    else if (route === "physiologie") renderPhysiologyList();
     else if (route === "algorithm") renderAlgorithmReference(arg);
     else if (route === "algorithm-quiz") startAlgorithmQuiz(arg);
     else if (route === "tables") renderTableList();
@@ -252,6 +254,7 @@
       ["learn", "Lernen"],
       ["test", "Test"],
       ["algorithms", "Algorithmen"],
+      ["physiologie", "Physiologie"],
       ["tables", "Tabellen"],
       ["drugs", "Medikamente"],
       ["soe", "Mündlich"],
@@ -359,6 +362,7 @@
       "</tbody></table></div>" +
       difficultHtml +
       gapsHtml +
+      '<p class="muted"><a href="#" id="show-onboarding-link">Kurzanleitung erneut anzeigen</a></p>' +
       "</main>";
 
     document.querySelectorAll("[data-remove-gap]").forEach(function (btn) {
@@ -536,8 +540,9 @@
       '<label for="test-mode">Modus</label>' +
       '<select id="test-mode">' +
       '<option value="practice">Übungsmodus (sofortiges Feedback pro Frage)</option>' +
-      '<option value="exam">Prüfungssimulation (Feedback erst am Ende, wie in der echten Prüfung)</option>' +
+      '<option value="exam">Prüfungssimulation (Zeitlimit, Feedback erst am Ende, wie in der echten Prüfung)</option>' +
       "</select>" +
+      '<p class="muted">Die echte EDAIC-Part-1-Prüfung gibt ca. 90 Sekunden pro Frage vor (2 Papiere à 60 Fragen). Die Prüfungssimulation übernimmt dieses Zeitlimit – unter realistischem Zeitdruck zu üben verbessert nachweislich den Transfer aufs echte Prüfungsergebnis und deckt Selbstüberschätzung durch unbegrenztes Nachdenken beim Üben auf.</p>' +
       '<label for="test-module">Modul</label>' +
       '<select id="test-module">' +
       (dueMcqCount > 0 ? '<option value="due">Fällige Testfragen (' + dueMcqCount + ")</option>" : "") +
@@ -547,6 +552,7 @@
       '<option value="10">10</option>' +
       '<option value="20">20</option>' +
       '<option value="40">40</option>' +
+      '<option value="60">60 (EDAIC-Papierformat)</option>' +
       '<option value="all">Alle verfügbaren</option>' +
       "</select>" +
       '<div class="cta-row"><button class="btn btn-primary" id="start-test">Test starten</button></div>' +
@@ -569,8 +575,39 @@
   }
 
   let testState = null;
+  let examTimerInterval = null;
+  const EXAM_SECONDS_PER_QUESTION = 90; // ~90s/Frage entspricht dem realen EDAIC-Part-1-Zeitbudget (Online-Format: 90min/60 Fragen)
+
+  function clearExamTimer() {
+    if (examTimerInterval) { clearInterval(examTimerInterval); examTimerInterval = null; }
+  }
+
+  function tickExamTimer() {
+    if (!testState || !testState.deadline) { clearExamTimer(); return; }
+    const remainingMs = testState.deadline - Date.now();
+    const el = document.getElementById("exam-timer");
+    if (remainingMs <= 0) {
+      clearExamTimer();
+      finishTest();
+      return;
+    }
+    if (el) {
+      const totalSec = Math.floor(remainingMs / 1000);
+      const mm = Math.floor(totalSec / 60);
+      const ss = totalSec % 60;
+      el.textContent = "⏱ " + mm + ":" + (ss < 10 ? "0" : "") + ss;
+      el.classList.toggle("exam-timer-warn", remainingMs < 60000);
+    }
+  }
+
+  function startExamTimer() {
+    clearExamTimer();
+    tickExamTimer();
+    examTimerInterval = setInterval(tickExamTimer, 1000);
+  }
 
   function startTestSession(arg) {
+    clearExamTimer();
     let moduleId = "mixed";
     let count = "20";
     if (arg && arg !== "mixed") {
@@ -607,9 +644,11 @@
       index: 0,
       answers: new Array(pool.length).fill(null),
       moduleId: moduleId,
-      mode: pendingTestMode
+      mode: pendingTestMode,
+      deadline: pendingTestMode === "exam" ? Date.now() + pool.length * EXAM_SECONDS_PER_QUESTION * 1000 : null
     };
     renderTestQuestion();
+    if (testState.mode === "exam") startExamTimer();
   }
 
   function renderTestQuestion() {
@@ -641,10 +680,11 @@
       "</div>" +
       '<p class="explanation">' + escapeHtml(q.explanation) + "</p>";
 
+    const timerHtml = testState.mode === "exam" ? '<span class="exam-timer" id="exam-timer">⏱ --:--</span>' : "";
     app.innerHTML =
       nav("test") +
       '<main class="container narrow">' +
-      '<div class="session-progress">' + (isPractice ? "Übungsmodus" : "Prüfungssimulation") + " · Frage " + (testState.index + 1) + " / " + total + " · " + escapeHtml(moduleById(q.module).title) + "</div>" +
+      '<div class="session-progress">' + (isPractice ? "Übungsmodus" : "Prüfungssimulation") + " · Frage " + (testState.index + 1) + " / " + total + " · " + escapeHtml(moduleById(q.module).title) + timerHtml + "</div>" +
       '<div class="question-box"><p class="question-text lookup-source" data-card-id="' + escapeHtml(q.id) + '" data-card-front="' + escapeHtml(q.question) + '">' + escapeHtml(q.question) + "</p>" +
       '<div class="options">' + optionsHtml + "</div>" +
       feedbackHtml +
@@ -655,6 +695,7 @@
       "</div>" +
       "</main>";
     wrapAllLookupSources();
+    if (testState.mode === "exam") tickExamTimer();
 
     document.querySelectorAll('input[name="option"]').forEach(function (input) {
       input.addEventListener("change", function () {
@@ -679,6 +720,7 @@
   }
 
   function finishTest() {
+    clearExamTimer();
     let correct = 0;
     const wrong = [];
     testState.questions.forEach(function (q, i) {
@@ -822,9 +864,17 @@
     return ALGORITHMS.find(function (a) { return a.id === id; });
   }
 
-  function renderAlgorithmList() {
+  // Physiologie-Mechanismen (Regelkreise/Kaskaden) sind fachlich etwas anderes als
+  // prozedurale Notfall-Algorithmen und bekommen daher eine eigene Rubrik/Nav-Punkt,
+  // nutzen aber denselben Nachlese-/Trainer-Mechanismus (identisches Datenschema).
+  const PHYSIOLOGY_CATEGORY = "Physiologie-Mechanismen";
+  function algoHomeRoute(algo) {
+    return algo.category === PHYSIOLOGY_CATEGORY ? "physiologie" : "algorithms";
+  }
+
+  function renderAlgoGrid(items, activeRoute, heading, intro) {
     const groups = {};
-    ALGORITHMS.forEach(function (a) {
+    items.forEach(function (a) {
       (groups[a.category] = groups[a.category] || []).push(a);
     });
     const groupsHtml = Object.keys(groups).map(function (cat) {
@@ -843,17 +893,36 @@
     }).join("");
 
     app.innerHTML =
-      nav("algorithms") +
+      nav(activeRoute) +
       '<main class="container">' +
-      "<h1>Notfall-Algorithmen</h1>" +
-      '<p class="muted">Reihenfolge und Handlungsschritte üben – prozedurales Wissen statt reiner Fakten.</p>' +
+      "<h1>" + escapeHtml(heading) + "</h1>" +
+      '<p class="muted">' + escapeHtml(intro) + "</p>" +
       groupsHtml +
       "</main>";
+  }
+
+  function renderAlgorithmList() {
+    renderAlgoGrid(
+      ALGORITHMS.filter(function (a) { return a.category !== PHYSIOLOGY_CATEGORY; }),
+      "algorithms",
+      "Notfall-Algorithmen",
+      "Reihenfolge und Handlungsschritte üben – prozedurales Wissen statt reiner Fakten."
+    );
+  }
+
+  function renderPhysiologyList() {
+    renderAlgoGrid(
+      ALGORITHMS.filter(function (a) { return a.category === PHYSIOLOGY_CATEGORY; }),
+      "physiologie",
+      "Physiologie-Mechanismen",
+      "Regelkreise und Kaskaden (Rezeptoren, Second Messenger, Organfunktionen) als Nachlese-Übersicht und Reihenfolge-Trainer üben."
+    );
   }
 
   function renderAlgorithmReference(id) {
     const algo = algorithmById(id);
     if (!algo) { renderAlgorithmList(); return; }
+    const homeRoute = algoHomeRoute(algo);
     const stepsHtml = algo.steps.map(function (s, i) {
       return (
         '<li class="algo-step">' +
@@ -863,9 +932,9 @@
       );
     }).join("");
     app.innerHTML =
-      nav("algorithms") +
+      nav(homeRoute) +
       '<main class="container narrow">' +
-      '<a class="back-link" href="#/algorithms">← Alle Algorithmen</a>' +
+      '<a class="back-link" href="#/' + homeRoute + '">← ' + (homeRoute === "physiologie" ? "Alle Physiologie-Mechanismen" : "Alle Algorithmen") + '</a>' +
       "<h1>" + escapeHtml(algo.title) + "</h1>" +
       '<p class="muted">Quelle: ' + escapeHtml(algo.source) + "</p>" +
       '<ol class="algo-timeline">' + stepsHtml + "</ol>" +
@@ -885,18 +954,19 @@
   function renderAlgorithmQuizStep() {
     const state = algoQuizState;
     const algo = state.algo;
+    const homeRoute = algoHomeRoute(algo);
     const revealedHtml = state.revealed.map(function (s, i) {
       return '<li class="algo-step done"><span class="algo-step-num">' + (i + 1) + "</span><span class=\"algo-step-text\">" + escapeHtml(s) + "</span></li>";
     }).join("");
 
     if (state.index >= algo.steps.length) {
       app.innerHTML =
-        nav("algorithms") +
+        nav(homeRoute) +
         '<main class="container narrow">' +
         "<h1>" + escapeHtml(algo.title) + " – fertig</h1>" +
         '<div class="score-circle">' + state.correct + "/" + state.total + "</div>" +
         "<p>Richtige Schritte in korrekter Reihenfolge erkannt.</p>" +
-        '<div class="cta-row"><a class="btn btn-primary" href="#/algorithm/' + algo.id + '">Ablauf nachlesen</a> <a class="btn btn-secondary" href="#/algorithms">Zurück</a></div>' +
+        '<div class="cta-row"><a class="btn btn-primary" href="#/algorithm/' + algo.id + '">Ablauf nachlesen</a> <a class="btn btn-secondary" href="#/' + homeRoute + '">Zurück</a></div>' +
         "</main>";
       return;
     }
@@ -907,7 +977,7 @@
     const options = shuffle([correctStep].concat(distractors));
 
     app.innerHTML =
-      nav("algorithms") +
+      nav(homeRoute) +
       '<main class="container narrow">' +
       '<div class="session-progress">' + escapeHtml(algo.title) + " · Schritt " + (state.index + 1) + " / " + algo.steps.length + "</div>" +
       '<ol class="algo-timeline">' + revealedHtml + "</ol>" +
@@ -1088,5 +1158,77 @@
     });
   }
 
+  // ---------- Kurzanleitung (Onboarding) ----------
+  // Ersetzt echte Screenshots (die bei jeder UI-Änderung veralten würden) durch ein
+  // kurzes, immer aktuelles In-App-Tutorial: je ein Icon + knapper Erklärtext pro
+  // Hauptfunktion, einmal beim ersten Öffnen gezeigt, jederzeit über das Dashboard erneut aufrufbar.
+  const ONBOARDING_KEY = "desa_onboarding_seen_v1";
+  const ONBOARDING_SLIDES = [
+    { icon: "🎯", title: "Willkommen beim DESA-Trainer", text: "Eine Lern-App für die EDAIC-Prüfung mit Spaced Repetition: fällige Karten kommen automatisch zur richtigen Zeit wieder dran. Aller Fortschritt bleibt nur lokal in deinem Browser gespeichert." },
+    { icon: "🗂️", title: "Lernen", text: "Karteikarten nach dem Leitner-Prinzip. Vor dem Aufdecken schätzt du kurz deine Sicherheit ein (Konfidenz-Rating) – das verbessert nachweislich die Selbsteinschätzung und das Behalten." },
+    { icon: "📝", title: "Test", text: "Single-Best-Answer-Fragen wie im EDAIC-Stil. Übungsmodus mit sofortigem Feedback oder Prüfungssimulation mit Zeitlimit (90 Sek./Frage) – wie in der echten Prüfung." },
+    { icon: "🚨", title: "Algorithmen & Physiologie", text: "Notfall-Abläufe und physiologische Regelkreise als Nachlese-Timeline oder als Trainer: an jedem Punkt den richtigen nächsten Schritt auswählen." },
+    { icon: "💊", title: "Tabellen & Medikamente", text: "Vergleichstabellen zum Kontrastieren verwandter Fakten und eine reine Nachschlage-Ansicht aller Medikamenten-Steckbriefe – ganz ohne Lernkarten-Ablauf." },
+    { icon: "🎙️", title: "Mündlich & Fortschritt", text: "SOE-Szenarien zum lauten Selbst-Antworten für Teil 2. Im Fortschrittsbereich siehst du Lernphasen, Fälligkeitsvorschau und Kalibrierung deiner Selbsteinschätzung." }
+  ];
+
+  function renderOnboarding() {
+    let slideIndex = 0;
+    const backdrop = document.createElement("div");
+    backdrop.className = "lookup-modal-backdrop onboarding-backdrop";
+
+    function close() {
+      try { localStorage.setItem(ONBOARDING_KEY, "1"); } catch (e) { /* ignore */ }
+      backdrop.remove();
+    }
+
+    function renderSlide() {
+      const slide = ONBOARDING_SLIDES[slideIndex];
+      const isLast = slideIndex === ONBOARDING_SLIDES.length - 1;
+      const dots = ONBOARDING_SLIDES.map(function (_, i) {
+        return '<span class="onboarding-dot' + (i === slideIndex ? " onboarding-dot--active" : "") + '"></span>';
+      }).join("");
+      backdrop.innerHTML =
+        '<div class="lookup-modal onboarding-modal">' +
+        '<button class="lookup-modal-close" aria-label="Schließen" id="onboarding-close">×</button>' +
+        '<div class="onboarding-icon">' + slide.icon + "</div>" +
+        "<h2>" + escapeHtml(slide.title) + "</h2>" +
+        "<p>" + escapeHtml(slide.text) + "</p>" +
+        '<div class="onboarding-dots">' + dots + "</div>" +
+        '<div class="cta-row onboarding-actions">' +
+        (slideIndex > 0 ? '<button class="btn btn-secondary" id="onboarding-back">Zurück</button>' : '<button class="btn btn-secondary" id="onboarding-skip">Überspringen</button>') +
+        '<button class="btn btn-primary" id="onboarding-next">' + (isLast ? "Los geht's!" : "Weiter") + "</button>" +
+        "</div></div>";
+      document.getElementById("onboarding-close").addEventListener("click", close);
+      const skipBtn = document.getElementById("onboarding-skip");
+      if (skipBtn) skipBtn.addEventListener("click", close);
+      const backBtn = document.getElementById("onboarding-back");
+      if (backBtn) backBtn.addEventListener("click", function () { slideIndex--; renderSlide(); });
+      document.getElementById("onboarding-next").addEventListener("click", function () {
+        if (isLast) { close(); return; }
+        slideIndex++;
+        renderSlide();
+      });
+    }
+
+    backdrop.addEventListener("click", function (e) { if (e.target === backdrop) close(); });
+    document.body.appendChild(backdrop);
+    renderSlide();
+  }
+
+  function maybeShowOnboarding() {
+    let seen = false;
+    try { seen = localStorage.getItem(ONBOARDING_KEY) === "1"; } catch (e) { /* ignore */ }
+    if (!seen) renderOnboarding();
+  }
+
+  document.addEventListener("click", function (e) {
+    if (e.target && e.target.id === "show-onboarding-link") {
+      e.preventDefault();
+      renderOnboarding();
+    }
+  });
+
   router();
+  maybeShowOnboarding();
 })();

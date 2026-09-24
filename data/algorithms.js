@@ -213,5 +213,133 @@ window.ALGORITHMS = [
       "Thrombin aktiviert Faktor XIII zu XIIIa, der die Fibrinfasern kovalent quervernetzt → stabiles, unlösliches Fibringerinnsel",
       "Hinweis: Klinisch genauer beschreibt heute das zellbasierte Modell (Initiierung auf TF-tragenden Zellen, Amplifikation/Propagation auf der Thrombozytenoberfläche) den tatsächlichen Ablauf in vivo; das klassische Kaskadenmodell bleibt aber die Standard-Lehr- und Prüfungsdarstellung (u.a. für die PT/aPTT-Interpretation)"
     ]
+  },
+  {
+    id: "phys-neuromuskulaere-endplatte",
+    title: "Neuromuskuläre Erregungsübertragung (motorische Endplatte)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology; Miller's Anesthesia",
+    steps: [
+      "Aktionspotential erreicht die präsynaptische Nervenendigung des Alpha-Motoneurons → spannungsabhängige Ca2+-Kanäle öffnen sich, Ca2+-Einstrom",
+      "Ca2+-Einstrom löst Fusion Acetylcholin-gefüllter synaptischer Vesikel mit der präsynaptischen Membran aus → ACh-Freisetzung in den synaptischen Spalt (Exozytose)",
+      "ACh diffundiert durch den Spalt und bindet an nikotinerge ACh-Rezeptoren vom Muskeltyp (N_M, Pentamer (α1)2β1δε) auf der postsynaptischen Endplattenmembran",
+      "N_M-Rezeptor ist ein ligandengesteuerter, unselektiver Kationenkanal → Bindung öffnet den Kanal, Na+-Einstrom überwiegt gegenüber K+-Ausstrom → lokale Depolarisation (Endplattenpotential, EPP)",
+      "Überschreitet das EPP die Schwelle, öffnen benachbarte spannungsabhängige Na+-Kanäle → fortgeleitetes Aktionspotential entlang des Sarkolemms und in die T-Tubuli",
+      "Depolarisation der T-Tubuli aktiviert Dihydropyridin-Rezeptoren (DHPR), die mechanisch an Ryanodin-Rezeptoren (RyR1) des sarkoplasmatischen Retikulums gekoppelt sind → Ca2+-Freisetzung ins Zytosol",
+      "Zytosolisches Ca2+ bindet Troponin C → Tropomyosin gibt die Myosin-Bindungsstellen am Aktin frei → Querbrückenzyklus (Aktin-Myosin-Interaktion unter ATP-Verbrauch) → Muskelkontraktion",
+      "ACh wird durch Acetylcholinesterase im synaptischen Spalt rasch hydrolysiert → Beendigung der Rezeptorstimulation, Repolarisation – Angriffspunkt depolarisierender (Succinylcholin) und nichtdepolarisierender Muskelrelaxanzien am N_M-Rezeptor"
+    ]
+  },
+  {
+    id: "phys-sympathikus-kaskade",
+    title: "Sympathische Signalkaskade – Noradrenalin und adrenerge Rezeptoren",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology; Ganong's Review of Medical Physiology",
+    steps: [
+      "Auslöser: Aktivierung sympathischer Zentren (z.B. Barorezeptorreflex, Stress, Hypovolämie) → präganglionäre cholinerge Neurone erregen über nikotinerge Rezeptoren (N_N) postganglionäre sympathische Neurone",
+      "Postganglionäre sympathische Endigungen setzen Noradrenalin frei (Nebennierenmark: überwiegend Adrenalin auf humoralem Weg)",
+      "α1-Rezeptoren (Gq-gekoppelt, glatte Gefäßmuskulatur) → Phospholipase C, IP3/DAG, Ca2+-Anstieg → Vasokonstriktion",
+      "α2-Rezeptoren (Gi-gekoppelt, präsynaptisch an noradrenergen Endigungen sowie zentral) → Hemmung der Adenylatzyklase → negative Rückkopplung, drosselt die weitere Noradrenalin-Freisetzung",
+      "β1-Rezeptoren (Gs-gekoppelt, v.a. Myokard und juxtaglomeruläre Zellen) → Adenylatzyklase-Aktivierung, cAMP-Anstieg, PKA → gesteigerte Herzfrequenz, Kontraktilität und Reninfreisetzung",
+      "β2-Rezeptoren (Gs-gekoppelt, glatte Muskulatur der Bronchien und Skelettmuskelgefäße) → cAMP-vermittelte Relaxation → Bronchodilatation und Vasodilatation im Skelettmuskel",
+      "Nettoeffekt: Anstieg von Herzfrequenz, Kontraktilität und peripherem Widerstand (α1 dominiert in den meisten Gefäßbetten), gleichzeitig Bronchodilatation und Umverteilung des Blutflusses zugunsten der Skelettmuskulatur",
+      "Terminierung: Wiederaufnahme von Noradrenalin in die präsynaptische Endigung (Uptake-1) sowie enzymatischer Abbau durch MAO/COMT beenden die Rezeptorstimulation"
+    ]
+  },
+  {
+    id: "phys-parasympathikus-kaskade",
+    title: "Parasympathische (vagale) Signalkaskade – Acetylcholin und muskarinerge Rezeptoren",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology; Ganong's Review of Medical Physiology",
+    steps: [
+      "Auslöser: Aktivierung vagaler/parasympathischer Kerne (Nucleus ambiguus, Nucleus dorsalis nervi vagi) durch afferente Signale (z.B. Barorezeptorreflex bei Blutdruckanstieg)",
+      "Präganglionäre cholinerge Fasern setzen Acetylcholin frei, das an nikotinerge Rezeptoren (N_N) im Ganglion bindet und das kurze postganglionäre Neuron erregt",
+      "Postganglionäre parasympathische Endigungen setzen Acetylcholin in unmittelbarer Nähe des Zielorgans frei (kurze Diffusionsstrecke)",
+      "M2-Rezeptoren (Gi-gekoppelt, Sinusknoten/AV-Knoten/Vorhofmyokard) → Hemmung der Adenylatzyklase, Öffnung von GIRK-Kaliumkanälen → Hyperpolarisation → Abnahme von Herzfrequenz und Erregungsleitung",
+      "M3-Rezeptoren (Gq-gekoppelt, glatte Muskulatur von Bronchien, Gastrointestinaltrakt, Blase, sowie exokrine Drüsen) → Phospholipase C, Ca2+-Anstieg → Kontraktion glatter Muskulatur (Bronchokonstriktion, gesteigerte Darmmotilität) und gesteigerte Drüsensekretion",
+      "M1-Rezeptoren (Gq-gekoppelt, v.a. ZNS und Magenschleimhaut/enterisches Nervensystem) → verstärken über Gq/PLC die vagal vermittelte Magensäuresekretion",
+      "Nettoeffekt: Bradykardie, Bronchokonstriktion, gesteigerte gastrointestinale Motilität und Sekretion, Miosis – funktioneller Gegenspieler der sympathischen Kaskade",
+      "Terminierung: rasche Hydrolyse von Acetylcholin durch Acetylcholinesterase im synaptischen Spalt beendet die Rezeptorstimulation"
+    ]
+  },
+  {
+    id: "phys-nozizeption",
+    title: "Nozizeption – vom peripheren Reiz zur zentralen Schmerzwahrnehmung",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology; Miller's Anesthesia",
+    steps: [
+      "Peripherer noxischer Reiz (mechanisch, thermisch, chemisch) aktiviert freie Nervenendigungen (Nozizeptoren) → schnell leitende, dünn myelinisierte Aδ-Fasern (scharfer Erstschmerz) und langsam leitende unmyelinisierte C-Fasern (dumpfer Zweitschmerz)",
+      "Nozizeptive Afferenzen ziehen ins Hinterhorn des Rückenmarks und enden v.a. in Lamina I und II (Substantia gelatinosa)",
+      "Gate-Control-Mechanismus im Hinterhorn: Aktivität dicker, schnell leitender Aβ-Fasern (Berührung/Vibration) erregt inhibitorische Interneurone der Substantia gelatinosa → präsynaptische Hemmung der nozizeptiven Übertragung („Tor“ schließt sich); überwiegende C-Faser-Aktivität öffnet das Tor",
+      "Ohne ausreichende Hemmung erfolgt Umschaltung auf das zweite Neuron, dessen Axon kreuzt und im Tractus spinothalamicus lateralis aufsteigt",
+      "Der Tractus spinothalamicus projiziert zum Thalamus (v.a. Nucleus ventralis posterolateralis) als Umschaltstation",
+      "Thalamokortikale Projektion zum somatosensorischen Kortex (Lokalisation, Intensität) sowie zu limbischen Strukturen (Gyrus cinguli, Insula) für die affektiv-emotionale Schmerzkomponente",
+      "Absteigende Hemmung: periaquäduktales Grau (PAG) aktiviert über die Formatio reticularis (Nucleus raphe magnus, serotonerg; Locus coeruleus, noradrenerg) absteigende Bahnen zum Hinterhorn",
+      "Absteigende serotonerge/noradrenerge Bahnen und endogene Opioide (Enkephaline) hemmen präsynaptisch die nozizeptive Transmitterfreisetzung im Hinterhorn – Angriffspunkt von Opioiden, α2-Agonisten und SNRI"
+    ]
+  },
+  {
+    id: "phys-chemorezeption-atemantrieb",
+    title: "Atemantrieb – zentrale und periphere Chemorezeption",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology; Ganong's Review of Medical Physiology",
+    steps: [
+      "Zentrale Chemorezeptoren an der ventralen Medulla oblongata werden nicht direkt durch arterielles CO2, sondern durch den pH der umgebenden Liquorflüssigkeit stimuliert",
+      "CO2 diffundiert leicht durch die Blut-Hirn-Schranke ins Liquor, wird dort durch Carboanhydrase zu H2CO3 hydratisiert, das zu H+ und HCO3- dissoziiert",
+      "Da die Liquor-Pufferkapazität gering ist, führt bereits ein geringer PaCO2-Anstieg zu deutlichem Liquor-pH-Abfall → starke Stimulation der zentralen Chemorezeptoren (Hauptanteil, ca. 80% des CO2-Atemantriebs)",
+      "Periphere Chemorezeptoren (Glomus caroticum an der Karotisbifurkation, Glomera aortica) enthalten Typ-I-(Glomus-)Zellen, die primär den arteriellen PaO2 detektieren (relevant v.a. bei ausgeprägter Hypoxämie <60mmHg), zusätzlich PaCO2 und pH",
+      "Hypoxie hemmt sauerstoffsensitive Kaliumkanäle (u.a. TASK) der Glomuszellen → Membrandepolarisation → Öffnung spannungsabhängiger Ca2+-Kanäle, Ca2+-Einstrom → Transmitterfreisetzung (v.a. Dopamin)",
+      "Afferente Signale der Glomuszellen laufen über den N. glossopharyngeus (Karotiskörper) bzw. N. vagus (Aortenkörper) zum Nucleus tractus solitarius (NTS) in der Medulla",
+      "Zentrale und periphere Signale konvergieren auf die medullären Atemzentren (dorsale/ventrale Atemgruppe) → Anpassung von Atemfrequenz und Atemzugvolumen",
+      "Ergebnis: CO2/pH-Anstieg steigert vorrangig über die zentralen Chemorezeptoren die Ventilation, ausgeprägte Hypoxämie steigert zusätzlich über die peripheren Chemorezeptoren den Atemantrieb (einziger Mechanismus, der bei chronischer CO2-Retention den Restantrieb aufrechterhält – „hypoxic drive“)"
+    ]
+  },
+  {
+    id: "phys-insulin-glukagon",
+    title: "Blutzuckerregulation – Insulin-Glukagon-Regelkreis",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology; Ganong's Review of Medical Physiology",
+    steps: [
+      "Anstieg der Blutglukose (z.B. postprandial) → Aufnahme in pankreatische Betazellen über den insulinunabhängigen Glukosetransporter GLUT2",
+      "Glukokinase phosphoryliert Glukose als geschwindigkeitsbestimmender Schritt der Glykolyse → gesteigerte ATP-Produktion, Anstieg des ATP/ADP-Verhältnisses",
+      "ATP-Anstieg schließt ATP-abhängige Kaliumkanäle (K_ATP, Kir6.2/SUR1) der Betazellmembran → Membrandepolarisation",
+      "Depolarisation öffnet spannungsabhängige Ca2+-Kanäle → Ca2+-Einstrom löst Exozytose insulinhaltiger Sekretgranula aus",
+      "Insulin bindet an den Insulinrezeptor (Tyrosinkinase-Rezeptor) an Leber-, Muskel- und Fettzellen → Translokation von GLUT4-Transportern an die Zellmembran → gesteigerte Glukoseaufnahme, Glykogen-/Fettsynthese, Hemmung der hepatischen Glukoseproduktion",
+      "Abfall der Blutglukose (z.B. Fasten, Hypoglykämie) hemmt die Insulinfreisetzung und stimuliert die pankreatischen Alphazellen zur Glukagonfreisetzung",
+      "Glukagon bindet an Gs-gekoppelte Glukagonrezeptoren der Hepatozyten → Adenylatzyklase-Aktivierung, cAMP-Anstieg, PKA → gesteigerte Glykogenolyse und Glukoneogenese, gehemmte Glykogensynthese",
+      "Bei ausgeprägter/anhaltender Hypoglykämie zusätzliche sympathoadrenerge Gegenregulation: Adrenalin (über β2-Rezeptoren) verstärkt Glykogenolyse und Lipolyse, Cortisol und Wachstumshormon wirken protrahiert glukoseanhebend"
+    ]
+  },
+  {
+    id: "phys-sepsis-kaskade",
+    title: "Immunologisch-inflammatorische Kaskade bei Sepsis",
+    category: "Physiologie-Mechanismen",
+    source: "Surviving Sepsis Campaign Hintergrundliteratur; aktuelle Sepsis-Pathophysiologie-Reviews (PMC)",
+    steps: [
+      "Pathogen-assoziierte molekulare Muster (PAMPs, z.B. bakterielles Lipopolysaccharid) oder Damage-assoziierte Muster (DAMPs aus geschädigtem Gewebe) werden von Toll-like-Rezeptoren (v.a. TLR4 für LPS) auf Makrophagen/Monozyten erkannt",
+      "TLR4-Aktivierung löst über Adapterproteine (MyD88/TRIF) eine intrazelluläre Signalkaskade aus, die den Transkriptionsfaktor NF-κB aktiviert und in den Zellkern transloziert",
+      "NF-κB induziert die Transkription proinflammatorischer Zytokine, v.a. TNF-α, IL-1β und IL-6, die in die Zirkulation freigesetzt werden",
+      "TNF-α und IL-6 aktivieren das Gefäßendothel → Hochregulation von Adhäsionsmolekülen (Selektine, ICAM/VCAM) → Leukozytenadhäsion und -transmigration ins Gewebe",
+      "Endotheliale Aktivierung induziert vermehrte NO-Freisetzung (iNOS) sowie Störung der endothelialen Barriere (VE-Cadherin-Dissoziation) → generalisierte Vasodilatation und kapilläres Leck",
+      "Parallel Aktivierung der Gerinnungskaskade durch Tissue-Factor-Expression auf aktivierten Monozyten/Endothelzellen bei gleichzeitig gehemmter Fibrinolyse → Mikrothrombosierung",
+      "Kombination aus Vasodilatation, relativer und absoluter Hypovolämie (kapilläres Leck) sowie Mikrozirkulationsstörung durch Mikrothromben führt zu Gewebehypoperfusion",
+      "Anhaltende Hypoperfusion und mitochondriale Dysfunktion münden in Multiorgandysfunktion (septischer Schock) – die zelluläre Grundlage der bereits klinisch behandelten Sepsis-Therapie"
+    ]
+  },
+  {
+    id: "phys-hpa-achse",
+    title: "HPA-Achse (Hypothalamus-Hypophysen-Nebennierenrinden-Achse) bei chirurgischem Stress",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology; aktuelle Reviews zur perioperativen Kortisol-Stressantwort",
+    steps: [
+      "Chirurgisches Trauma/Stress (Schmerz, Gewebeschädigung, Hypovolämie) aktiviert afferente neurale und humorale Signale (u.a. Zytokine) zum Hypothalamus",
+      "Der Nucleus paraventricularis des Hypothalamus setzt Corticotropin-Releasing-Hormon (CRH, mit Vasopressin als Kosekretagogum) ins Pfortadersystem der Hypophyse frei",
+      "CRH bindet an Gs-gekoppelte CRH-Rezeptoren der kortikotropen Zellen im Hypophysenvorderlappen → cAMP-Anstieg → Freisetzung von ACTH aus Proopiomelanocortin (POMC)",
+      "ACTH gelangt über die Blutbahn zur Zona fasciculata der Nebennierenrinde und bindet dort an Melanocortin-2-Rezeptoren (Gs-gekoppelt)",
+      "ACTH-Bindung steigert über cAMP/PKA die Cholesterin-Verfügbarkeit (StAR-Protein) und die Steroidsynthese → gesteigerte Kortisolausschüttung",
+      "Kortisol wirkt über intrazelluläre Glukokortikoidrezeptoren (zytosolisch, nach Bindung Translokation in den Zellkern) genomisch: Steigerung der Glukoneogenese, permissive Wirkung auf Katecholamine, Immunmodulation/Entzündungshemmung",
+      "Kortisol hemmt im Sinne einer negativen Rückkopplung sowohl die hypothalamische CRH- als auch die hypophysäre ACTH-Freisetzung (kurzer und langer Feedback-Loop)",
+      "Bei anhaltendem chirurgischem Stress überwiegt zunächst der positive Antrieb (Schmerz/Zytokine) über die Feedback-Hemmung, sodass die Kortisolspiegel postoperativ über Stunden bis Tage erhöht bleiben – Grundlage der perioperativen Stressantwort und Substitutionsindikation bei NNR-Insuffizienz"
+    ]
   }
 ];
