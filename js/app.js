@@ -231,7 +231,7 @@
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
     const revealRow = document.getElementById("reveal-row");
     if (revealRow && !revealRow.classList.contains("hidden")) {
-      const sel = { "1": ".confidence-sicher", "2": ".confidence-unsicher", "3": ".confidence-keine" }[e.key];
+      const sel = { "1": ".confidence-sicher", "2": ".confidence-unsicher" }[e.key];
       if (sel) { e.preventDefault(); const btn = document.querySelector(sel); if (btn) btn.click(); }
       return;
     }
@@ -519,11 +519,18 @@
       '<div class="flashcard-front lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.front) + "</div>" +
       '<div class="' + backClass + '" id="flashcard-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + backContent + "</div>" +
       "</div>" +
+      // Bewusst nur 2 statt 3 Konfidenzstufen: die Hypercorrection-Forschung, auf der
+      // dieser Schritt beruht (siehe srs.js), unterscheidet selbst nur zwischen
+      // "confident errors" und "low-confidence errors" — eine binäre Einschätzung
+      // deckt den belegten Effekt also vollständig ab, ist aber schneller getroffen
+      // als eine 3-Wege-Entscheidung, und zusammen mit den 4 Bewertungs-Buttons
+      // bleibt die Karten-Session insgesamt überschaubarer.
+      '<p class="step-label muted" id="reveal-step-label">Wie sicher bist du?</p>' +
       '<div class="cta-row confidence-row" id="reveal-row">' +
-      '<button class="btn confidence-sicher" data-confidence="sicher"><kbd>1</kbd> Weiß ich sicher</button>' +
-      '<button class="btn confidence-unsicher" data-confidence="unsicher"><kbd>2</kbd> Unsicher</button>' +
-      '<button class="btn confidence-keine" data-confidence="keine"><kbd>3</kbd> Keine Ahnung</button>' +
+      '<button class="btn confidence-sicher" data-confidence="sicher"><kbd>1</kbd> Weiß ich</button>' +
+      '<button class="btn confidence-unsicher" data-confidence="unsicher"><kbd>2</kbd> Bin unsicher</button>' +
       "</div>" +
+      '<p class="step-label muted hidden" id="rating-step-label">Wie lief es wirklich?</p>' +
       '<div class="rating-row hidden" id="rating-row">' +
       '<button class="btn rating-again" data-rating="again"><kbd>1</kbd> Nochmal</button>' +
       '<button class="btn rating-hard" data-rating="hard"><kbd>2</kbd> Schwer</button>' +
@@ -543,7 +550,9 @@
         cardConfidence = btn.getAttribute("data-confidence");
         document.getElementById("flashcard-back").classList.remove("hidden");
         document.getElementById("reveal-row").classList.add("hidden");
+        document.getElementById("reveal-step-label").classList.add("hidden");
         document.getElementById("rating-row").classList.remove("hidden");
+        document.getElementById("rating-step-label").classList.remove("hidden");
       });
     });
     document.querySelectorAll("#rating-row button").forEach(function (btn) {
@@ -862,8 +871,8 @@
     // Bewertung Nochmal/Schwer war, sind Kandidaten für Überschätzung — genau die
     // Fälle, die nach Korrektur am besten hängen bleiben (Hypercorrection-Effekt).
     const cal = window.SRS.loadCalibration();
-    const calLabels = { sicher: "Weiß ich sicher", unsicher: "Unsicher", keine: "Keine Ahnung" };
-    const calOrder = ["sicher", "unsicher", "keine"];
+    const calLabels = { sicher: "Weiß ich", unsicher: "Bin unsicher" };
+    const calOrder = ["sicher", "unsicher"];
     const calRows = calOrder.filter(function (k) { return cal[k] && cal[k].total > 0; }).map(function (k) {
       const c = cal[k];
       const p = Math.round((c.correct / c.total) * 100);
@@ -876,7 +885,7 @@
     }).join("");
     const calHtml = calRows === "" ? "" :
       "<h2>Kalibrierung: Selbsteinschätzung vs. Ergebnis</h2>" +
-      '<p class="muted">Niedriger Prozentsatz bei „Weiß ich sicher" heißt: hier wird Wissen öfter überschätzt — genau diese Karten lohnt es, genauer anzuschauen.</p>' +
+      '<p class="muted">Niedriger Prozentsatz bei „Weiß ich" heißt: hier wird Wissen öfter überschätzt — genau diese Karten lohnt es, genauer anzuschauen.</p>' +
       calRows;
 
     app.innerHTML =
