@@ -344,13 +344,12 @@
     }).join("");
 
     // Schwierige Karten und Wissenslücken sind jetzt IMMER sichtbar (mit
-    // Leerzustand-Text statt komplett zu verschwinden) und stehen als eigene
-    // "Fokus"-Karten direkt unter der CTA-Zeile, statt weiter unten in der Seite
-    // begraben zu sein — das war zuvor nicht auffindbar, wenn (noch) leer.
+    // Leerzustand-Text statt komplett zu verschwinden) und stehen ganz oben im
+    // Dashboard als Tabs (ein Reiter zeigt jeweils den Inhalt, statt beide
+    // Listen gleichzeitig und dauerhaft Platz beanspruchen zu lassen) — vorher
+    // waren sie weiter unten und bei leerem Zustand komplett unauffindbar.
     const difficultCards = window.SRS.getDifficultCards(FLASHCARDS, progress, 12);
-    const difficultHtml =
-      '<div class="focus-card">' +
-      '<h2>Schwierige Karten (' + difficultCards.length + ')</h2>' +
+    const difficultPanelHtml =
       (difficultCards.length === 0 ?
         '<p class="muted">Aktuell keine Karte mit „Nochmal" oder „Schwer" bewertet — guter Stand!</p>' :
         '<p class="muted">Zuletzt mit „Nochmal" oder „Schwer" bewertet.</p>' +
@@ -360,13 +359,10 @@
         }).join("") +
         "</ul>" +
         (difficultCards.length > 6 ? '<p class="muted">… und ' + (difficultCards.length - 6) + ' weitere.</p>' : "") +
-        '<div class="cta-row"><a class="btn btn-sm btn-secondary" href="#/learn-session/difficult">Schwierige Karten üben</a></div>') +
-      "</div>";
+        '<div class="cta-row"><a class="btn btn-sm btn-secondary" href="#/learn-session/difficult">Schwierige Karten üben</a></div>');
 
     const gaps = window.SRS.loadGaps();
-    const gapsHtml =
-      '<div class="focus-card">' +
-      '<h2>Offene Wissenslücken (' + gaps.length + ')</h2>' +
+    const gapsPanelHtml =
       (gaps.length === 0 ?
         '<p class="muted">Noch keine offenen Wissenslücken. Tippe/klicke beim Lernen ein unbekanntes Wort an — findet sich dazu keine Karte, landet der Begriff hier.</p>' :
         '<p class="muted">Begriffe, die du markiert hast, zu denen es aber noch keine Karteikarte gibt.</p>' +
@@ -377,7 +373,18 @@
             '<button class="btn btn-sm btn-secondary" data-remove-gap="' + escapeHtml(g.term) + '">Erledigt</button></li>'
           );
         }).join("") +
-        "</ul>") +
+        "</ul>");
+
+    // Standard-Reiter: der mit tatsächlich etwas zu tun (falls nur einer leer ist).
+    const defaultTab = difficultCards.length === 0 && gaps.length > 0 ? "gaps" : "difficult";
+    const focusTabsHtml =
+      '<div class="focus-tabs">' +
+      '<div class="focus-tab-bar">' +
+      '<button class="focus-tab-btn' + (defaultTab === "difficult" ? " active" : "") + '" data-tab="difficult">Schwierige Karten (' + difficultCards.length + ')</button>' +
+      '<button class="focus-tab-btn' + (defaultTab === "gaps" ? " active" : "") + '" data-tab="gaps">Wissenslücken (' + gaps.length + ')</button>' +
+      "</div>" +
+      '<div class="focus-tab-panel' + (defaultTab === "difficult" ? "" : " hidden") + '" data-panel="difficult">' + difficultPanelHtml + "</div>" +
+      '<div class="focus-tab-panel' + (defaultTab === "gaps" ? "" : " hidden") + '" data-panel="gaps">' + gapsPanelHtml + "</div>" +
       "</div>";
 
     const streak = window.SRS.getStreak();
@@ -385,6 +392,7 @@
       nav("dashboard") +
       '<main class="container">' +
       '<h1>Dein DESA-Lernstand</h1>' +
+      focusTabsHtml +
       '<div class="stat-cards">' +
       '<div class="stat-card"><div class="stat-value">' + (streak > 0 ? "🔥 " + streak : streak) + '</div><div class="stat-label">Tage-Streak</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + totalDue + '</div><div class="stat-label">Karten heute fällig</div></div>' +
@@ -396,7 +404,6 @@
       '<a class="btn btn-primary" href="#/learn-session/all">Jetzt lernen (' + sessionSize + ")</a>" +
       '<a class="btn btn-secondary" href="#/test-session/mixed">Prüfungssimulation starten</a>' +
       "</div>" +
-      '<div class="focus-grid">' + difficultHtml + gapsHtml + "</div>" +
       '<details class="module-details" open>' +
       '<summary><h2>Module im Detail (' + CURRICULUM.length + ')</h2></summary>' +
       '<div class="table-scroll"><table class="module-table"><thead><tr><th>Modul</th><th>Karten</th><th>Begonnen</th><th>Beherrschung</th><th>Letzter Test</th><th></th></tr></thead><tbody>' +
@@ -410,6 +417,14 @@
       btn.addEventListener("click", function () {
         window.SRS.removeGap(btn.getAttribute("data-remove-gap"));
         renderDashboard();
+      });
+    });
+
+    document.querySelectorAll(".focus-tab-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const tab = btn.getAttribute("data-tab");
+        document.querySelectorAll(".focus-tab-btn").forEach(function (b) { b.classList.toggle("active", b === btn); });
+        document.querySelectorAll(".focus-tab-panel").forEach(function (p) { p.classList.toggle("hidden", p.getAttribute("data-panel") !== tab); });
       });
     });
   }
