@@ -231,7 +231,7 @@
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
     const revealRow = document.getElementById("reveal-row");
     if (revealRow && !revealRow.classList.contains("hidden")) {
-      const sel = { "1": ".confidence-sicher", "2": ".confidence-unsicher" }[e.key];
+      const sel = { "1": ".confidence-sicher", "2": ".confidence-unsicher", "3": ".confidence-keine" }[e.key];
       if (sel) { e.preventDefault(); const btn = document.querySelector(sel); if (btn) btn.click(); }
       return;
     }
@@ -526,16 +526,15 @@
       '<div class="flashcard-front lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.front) + "</div>" +
       '<div class="' + backClass + '" id="flashcard-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + backContent + "</div>" +
       "</div>" +
-      // Bewusst nur 2 statt 3 Konfidenzstufen: die Hypercorrection-Forschung, auf der
-      // dieser Schritt beruht (siehe srs.js), unterscheidet selbst nur zwischen
-      // "confident errors" und "low-confidence errors" — eine binäre Einschätzung
-      // deckt den belegten Effekt also vollständig ab, ist aber schneller getroffen
-      // als eine 3-Wege-Entscheidung, und zusammen mit den 4 Bewertungs-Buttons
-      // bleibt die Karten-Session insgesamt überschaubarer.
+      // 3 Konfidenzstufen (auf ausdrücklichen Nutzerwunsch wiederhergestellt) —
+      // wichtig ist, dass nie alle 7 Buttons gleichzeitig sichtbar sind: erst die
+      // 3 Konfidenz-Buttons, nach dem Aufdecken (reveal-row wird versteckt) dann
+      // erst die 4 Bewertungs-Buttons.
       '<p class="step-label muted" id="reveal-step-label">Wie sicher bist du?</p>' +
       '<div class="cta-row confidence-row" id="reveal-row">' +
-      '<button class="btn confidence-sicher" data-confidence="sicher"><kbd>1</kbd> Weiß ich</button>' +
-      '<button class="btn confidence-unsicher" data-confidence="unsicher"><kbd>2</kbd> Bin unsicher</button>' +
+      '<button class="btn confidence-sicher" data-confidence="sicher"><kbd>1</kbd> Weiß ich sicher</button>' +
+      '<button class="btn confidence-unsicher" data-confidence="unsicher"><kbd>2</kbd> Unsicher</button>' +
+      '<button class="btn confidence-keine" data-confidence="keine"><kbd>3</kbd> Keine Ahnung</button>' +
       "</div>" +
       '<p class="step-label muted hidden" id="rating-step-label">Wie lief es wirklich?</p>' +
       '<div class="rating-row hidden" id="rating-row">' +
@@ -878,8 +877,8 @@
     // Bewertung Nochmal/Schwer war, sind Kandidaten für Überschätzung — genau die
     // Fälle, die nach Korrektur am besten hängen bleiben (Hypercorrection-Effekt).
     const cal = window.SRS.loadCalibration();
-    const calLabels = { sicher: "Weiß ich", unsicher: "Bin unsicher" };
-    const calOrder = ["sicher", "unsicher"];
+    const calLabels = { sicher: "Weiß ich sicher", unsicher: "Unsicher", keine: "Keine Ahnung" };
+    const calOrder = ["sicher", "unsicher", "keine"];
     const calRows = calOrder.filter(function (k) { return cal[k] && cal[k].total > 0; }).map(function (k) {
       const c = cal[k];
       const p = Math.round((c.correct / c.total) * 100);
@@ -892,7 +891,7 @@
     }).join("");
     const calHtml = calRows === "" ? "" :
       "<h2>Kalibrierung: Selbsteinschätzung vs. Ergebnis</h2>" +
-      '<p class="muted">Niedriger Prozentsatz bei „Weiß ich" heißt: hier wird Wissen öfter überschätzt — genau diese Karten lohnt es, genauer anzuschauen.</p>' +
+      '<p class="muted">Niedriger Prozentsatz bei „Weiß ich sicher" heißt: hier wird Wissen öfter überschätzt — genau diese Karten lohnt es, genauer anzuschauen.</p>' +
       calRows;
 
     app.innerHTML =
