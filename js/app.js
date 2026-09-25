@@ -395,7 +395,6 @@
       focusTabsHtml +
       '<div class="stat-cards">' +
       '<div class="stat-card"><div class="stat-value">' + (streak > 0 ? "🔥 " + streak : streak) + '</div><div class="stat-label">Tage-Streak</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + totalDue + '</div><div class="stat-label">Karten heute fällig</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + totalStarted + " / " + totalCards + '</div><div class="stat-label">Karten begonnen</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + totalMastered + " / " + totalCards + '</div><div class="stat-label">Karten gemeistert</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + MCQ.length + '</div><div class="stat-label">Testfragen verfügbar</div></div>' +
