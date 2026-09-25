@@ -3,6 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- GitHub Pages lässt sich nicht per HTTP-Header konfigurieren (kein _headers-File
+       wie bei Netlify/Vercel) — diese Meta-Tags sind der Standard-Workaround, damit
+       Browser dieses HTML-Dokument selbst nicht zwischenspeichern. Ohne das würde ein
+       Browser trotz der unten per SHA versionierten JS/CSS-Dateien weiter eine alte,
+       gecachte index.html mit alten Versions-Hashes laden und man müsste den Cache von
+       Hand leeren, um überhaupt die neuen Hashes zu bekommen. -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>DESA-Trainer</title>
   <link rel="stylesheet" href="css/style.css?v=18">
 </head>
