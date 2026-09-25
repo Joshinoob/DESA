@@ -473,7 +473,8 @@ select, input[type="text"] {
   margin-right: 4px;
   opacity: 0.75;
 }
-.confidence-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.step-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; margin: 18px 0 6px; }
+.confidence-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .confidence-row button { padding: 12px 4px; font-size: 0.9rem; }
 .confidence-sicher { border-color: var(--green); color: var(--green); }
 .confidence-unsicher { border-color: var(--orange); color: var(--orange); }
