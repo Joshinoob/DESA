@@ -371,6 +371,16 @@ select, input[type="text"] {
 }
 .gap-item .gap-source { color: var(--text-muted); font-size: 0.78rem; }
 
+.focus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 8px 0 24px; }
+.focus-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+.focus-card h2 { margin: 0 0 8px; font-size: 1.05rem; }
+
+.module-details summary { cursor: pointer; list-style: none; }
+.module-details summary::-webkit-details-marker { display: none; }
+.module-details summary h2 { display: inline-block; margin: 0; }
+.module-details summary h2::before { content: "▾ "; color: var(--text-muted); }
+.module-details:not([open]) summary h2::before { content: "▸ "; }
+
 .lookup-hint { margin-top: 18px; font-size: 0.8rem; }
 
 /* Sofort-Vorschau: zeigt den gefundenen Lerninhalt direkt an, statt nur die
@@ -452,6 +462,17 @@ select, input[type="text"] {
 .rating-good { border-color: var(--green); color: var(--green); }
 .rating-easy { border-color: var(--accent); color: var(--accent); }
 
+.confidence-row button kbd, .rating-row button kbd {
+  display: inline-block;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: 0.75rem;
+  font-family: inherit;
+  margin-right: 4px;
+  opacity: 0.75;
+}
 .confidence-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .confidence-row button { padding: 12px 4px; font-size: 0.9rem; }
 .confidence-sicher { border-color: var(--green); color: var(--green); }

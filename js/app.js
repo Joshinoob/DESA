@@ -220,6 +220,28 @@
     }
   });
 
+  // Tastenkürzel für den Lernmodus: reduziert die Karteikarten-Session auf reine
+  // Zifferntasten (wie in Anki/anderen SRS-Tools üblich) statt jedes Mal die Maus/den
+  // Finger zum Button bewegen zu müssen — bei zig Karten pro Session macht das einen
+  // spürbaren Unterschied. Ein einziger, dauerhafter Listener statt pro Karte neu
+  // registriert: er prüft bei jedem Tastendruck nur, ob die passende Zeile gerade
+  // sichtbar ist, und ist sonst ein No-op (kein Aufräumen beim Seitenwechsel nötig).
+  document.addEventListener("keydown", function (e) {
+    const tag = document.activeElement && document.activeElement.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+    const revealRow = document.getElementById("reveal-row");
+    if (revealRow && !revealRow.classList.contains("hidden")) {
+      const sel = { "1": ".confidence-sicher", "2": ".confidence-unsicher", "3": ".confidence-keine" }[e.key];
+      if (sel) { e.preventDefault(); const btn = document.querySelector(sel); if (btn) btn.click(); }
+      return;
+    }
+    const ratingRow = document.getElementById("rating-row");
+    if (ratingRow && !ratingRow.classList.contains("hidden")) {
+      const sel = { "1": ".rating-again", "2": ".rating-hard", "3": ".rating-good", "4": ".rating-easy" }[e.key];
+      if (sel) { e.preventDefault(); const btn = document.querySelector(sel); if (btn) btn.click(); }
+    }
+  });
+
   // ---------- Routing ----------
   function router() {
     const hash = location.hash || "#/dashboard";
@@ -321,29 +343,42 @@
       );
     }).join("");
 
+    // Schwierige Karten und Wissenslücken sind jetzt IMMER sichtbar (mit
+    // Leerzustand-Text statt komplett zu verschwinden) und stehen als eigene
+    // "Fokus"-Karten direkt unter der CTA-Zeile, statt weiter unten in der Seite
+    // begraben zu sein — das war zuvor nicht auffindbar, wenn (noch) leer.
     const difficultCards = window.SRS.getDifficultCards(FLASHCARDS, progress, 12);
-    const difficultHtml = difficultCards.length === 0 ? "" :
+    const difficultHtml =
+      '<div class="focus-card">' +
       '<h2>Schwierige Karten (' + difficultCards.length + ')</h2>' +
-      '<p class="muted">Zuletzt mit „Nochmal" oder „Schwer" bewertet.</p>' +
-      '<ul class="gap-list">' +
-      difficultCards.map(function (c) {
-        return '<li class="gap-item"><span>' + escapeHtml(c.front) + '<span class="gap-source"> — ' + escapeHtml(moduleById(c.module).title) + "</span></span></li>";
-      }).join("") +
-      "</ul>" +
-      '<div class="cta-row"><a class="btn btn-secondary" href="#/learn-session/difficult">Schwierige Karten üben</a></div>';
+      (difficultCards.length === 0 ?
+        '<p class="muted">Aktuell keine Karte mit „Nochmal" oder „Schwer" bewertet — guter Stand!</p>' :
+        '<p class="muted">Zuletzt mit „Nochmal" oder „Schwer" bewertet.</p>' +
+        '<ul class="gap-list">' +
+        difficultCards.slice(0, 6).map(function (c) {
+          return '<li class="gap-item"><span>' + escapeHtml(c.front) + '<span class="gap-source"> — ' + escapeHtml(moduleById(c.module).title) + "</span></span></li>";
+        }).join("") +
+        "</ul>" +
+        (difficultCards.length > 6 ? '<p class="muted">… und ' + (difficultCards.length - 6) + ' weitere.</p>' : "") +
+        '<div class="cta-row"><a class="btn btn-sm btn-secondary" href="#/learn-session/difficult">Schwierige Karten üben</a></div>') +
+      "</div>";
 
     const gaps = window.SRS.loadGaps();
-    const gapsHtml = gaps.length === 0 ? "" :
+    const gapsHtml =
+      '<div class="focus-card">' +
       '<h2>Offene Wissenslücken (' + gaps.length + ')</h2>' +
-      '<p class="muted">Begriffe, die du markiert hast, zu denen es aber noch keine Karteikarte gibt.</p>' +
-      '<ul class="gap-list">' +
-      gaps.map(function (g) {
-        return (
-          '<li class="gap-item"><span>' + escapeHtml(g.term) + (g.source ? '<span class="gap-source"> — aus: ' + escapeHtml(g.source) + "</span>" : "") + "</span>" +
-          '<button class="btn btn-sm btn-secondary" data-remove-gap="' + escapeHtml(g.term) + '">Erledigt</button></li>'
-        );
-      }).join("") +
-      "</ul>";
+      (gaps.length === 0 ?
+        '<p class="muted">Noch keine offenen Wissenslücken. Tippe/klicke beim Lernen ein unbekanntes Wort an — findet sich dazu keine Karte, landet der Begriff hier.</p>' :
+        '<p class="muted">Begriffe, die du markiert hast, zu denen es aber noch keine Karteikarte gibt.</p>' +
+        '<ul class="gap-list">' +
+        gaps.map(function (g) {
+          return (
+            '<li class="gap-item"><span>' + escapeHtml(g.term) + (g.source ? '<span class="gap-source"> — aus: ' + escapeHtml(g.source) + "</span>" : "") + "</span>" +
+            '<button class="btn btn-sm btn-secondary" data-remove-gap="' + escapeHtml(g.term) + '">Erledigt</button></li>'
+          );
+        }).join("") +
+        "</ul>") +
+      "</div>";
 
     const streak = window.SRS.getStreak();
     app.innerHTML =
@@ -361,12 +396,13 @@
       '<a class="btn btn-primary" href="#/learn-session/all">Jetzt lernen (' + sessionSize + ")</a>" +
       '<a class="btn btn-secondary" href="#/test-session/mixed">Prüfungssimulation starten</a>' +
       "</div>" +
-      '<h2>Module</h2>' +
+      '<div class="focus-grid">' + difficultHtml + gapsHtml + "</div>" +
+      '<details class="module-details" open>' +
+      '<summary><h2>Module im Detail (' + CURRICULUM.length + ')</h2></summary>' +
       '<div class="table-scroll"><table class="module-table"><thead><tr><th>Modul</th><th>Karten</th><th>Begonnen</th><th>Beherrschung</th><th>Letzter Test</th><th></th></tr></thead><tbody>' +
       moduleRows +
       "</tbody></table></div>" +
-      difficultHtml +
-      gapsHtml +
+      "</details>" +
       '<p class="muted"><a href="#" id="show-onboarding-link">Kurzanleitung erneut anzeigen</a></p>' +
       "</main>";
 
@@ -484,17 +520,17 @@
       '<div class="' + backClass + '" id="flashcard-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + backContent + "</div>" +
       "</div>" +
       '<div class="cta-row confidence-row" id="reveal-row">' +
-      '<button class="btn confidence-sicher" data-confidence="sicher">Weiß ich sicher</button>' +
-      '<button class="btn confidence-unsicher" data-confidence="unsicher">Unsicher</button>' +
-      '<button class="btn confidence-keine" data-confidence="keine">Keine Ahnung</button>' +
+      '<button class="btn confidence-sicher" data-confidence="sicher"><kbd>1</kbd> Weiß ich sicher</button>' +
+      '<button class="btn confidence-unsicher" data-confidence="unsicher"><kbd>2</kbd> Unsicher</button>' +
+      '<button class="btn confidence-keine" data-confidence="keine"><kbd>3</kbd> Keine Ahnung</button>' +
       "</div>" +
       '<div class="rating-row hidden" id="rating-row">' +
-      '<button class="btn rating-again" data-rating="again">Nochmal</button>' +
-      '<button class="btn rating-hard" data-rating="hard">Schwer</button>' +
-      '<button class="btn rating-good" data-rating="good">Gut</button>' +
-      '<button class="btn rating-easy" data-rating="easy">Leicht</button>' +
+      '<button class="btn rating-again" data-rating="again"><kbd>1</kbd> Nochmal</button>' +
+      '<button class="btn rating-hard" data-rating="hard"><kbd>2</kbd> Schwer</button>' +
+      '<button class="btn rating-good" data-rating="good"><kbd>3</kbd> Gut</button>' +
+      '<button class="btn rating-easy" data-rating="easy"><kbd>4</kbd> Leicht</button>' +
       "</div>" +
-      '<p class="lookup-hint muted">Tipp: tippe/klicke ein unklares Wort (z.B. „PRIS“) an, um es nachzuschlagen.</p>' +
+      '<p class="lookup-hint muted">Tipp: tippe/klicke ein unklares Wort (z.B. „PRIS“) an, um es nachzuschlagen. Am PC gehen auch die Zifferntasten.</p>' +
       "</main>";
     wrapAllLookupSources();
 
@@ -984,6 +1020,7 @@
     app.innerHTML =
       nav(homeRoute) +
       '<main class="container narrow">' +
+      '<a class="back-link" href="#/' + homeRoute + '">← Trainer verlassen</a>' +
       '<div class="session-progress">' + escapeHtml(algo.title) + " · Schritt " + (state.index + 1) + " / " + algo.steps.length + "</div>" +
       '<ol class="algo-timeline">' + revealedHtml + "</ol>" +
       '<p class="algo-question">Was ist der nächste Schritt?</p>' +
@@ -996,15 +1033,24 @@
       "</main>";
 
     let chosenCorrect = null;
+    let chosenRow = null;
     document.querySelectorAll('input[name="algo-option"]').forEach(function (input) {
       input.addEventListener("change", function () {
         document.getElementById("algo-check-btn").disabled = false;
-        chosenCorrect = input.closest(".option-row").getAttribute("data-correct") === "1";
+        chosenRow = input.closest(".option-row");
+        chosenCorrect = chosenRow.getAttribute("data-correct") === "1";
       });
     });
+    // { once: true } ist hier entscheidend: der Button wird nach "Prüfen" per
+    // btn.onclick auf "Weiter" umfunktioniert (gleiches DOM-Element) — ohne
+    // once:true bliebe dieser Listener zusätzlich aktiv und würde beim zweiten
+    // Klick ("Weiter") nochmal mitfeuern (State doppelt gepusht, Punktzahl doppelt
+    // gezählt, Schritt erscheint 2x in der Timeline).
     document.getElementById("algo-check-btn").addEventListener("click", function () {
       document.querySelectorAll(".option-row").forEach(function (row) {
-        row.classList.add(row.getAttribute("data-correct") === "1" ? "option-correct" : "option-wrong-disabled");
+        if (row.getAttribute("data-correct") === "1") row.classList.add("option-correct");
+        else if (row === chosenRow) row.classList.add("option-wrong-selected");
+        else row.classList.add("option-wrong-disabled");
         row.querySelector("input").disabled = true;
       });
       if (chosenCorrect) state.correct++;
@@ -1016,7 +1062,7 @@
         state.index++;
         renderAlgorithmQuizStep();
       };
-    });
+    }, { once: true });
   }
 
   // ---------- Vergleichstabellen ----------
