@@ -341,5 +341,235 @@ window.ALGORITHMS = [
       "Kortisol hemmt im Sinne einer negativen Rückkopplung sowohl die hypothalamische CRH- als auch die hypophysäre ACTH-Freisetzung (kurzer und langer Feedback-Loop)",
       "Bei anhaltendem chirurgischem Stress überwiegt zunächst der positive Antrieb (Schmerz/Zytokine) über die Feedback-Hemmung, sodass die Kortisolspiegel postoperativ über Stunden bis Tage erhöht bleiben – Grundlage der perioperativen Stressantwort und Substitutionsindikation bei NNR-Insuffizienz"
     ]
+  },
+  {
+    id: "phys-frank-starling",
+    title: "Frank-Starling-Mechanismus und Regulation des Herzzeitvolumens (Preload, Afterload, Kontraktilität)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology (Herz als Pumpe; Herzzeitvolumen und venöser Rückstrom); Ganong's Review of Medical Physiology",
+    steps: [
+      "Auslöser: gesteigerter venöser Rückstrom (z.B. Volumengabe, Beinhochlagerung) → Zunahme des enddiastolischen Ventrikelvolumens (Preload/Vorlast)",
+      "Die vermehrte Ventrikelfüllung dehnt die Myokardfasern → Sarkomerlänge nähert sich dem Optimum (ca. 2,0–2,2 µm) mit günstigerer Aktin-Myosin-Überlappung",
+      "Längenabhängige Aktivierung: Dehnung erhöht die Ca2+-Empfindlichkeit der Myofilamente (u.a. über Titin und verringerten Filamentabstand) → mehr Querbrücken pro Schlag",
+      "Ergebnis: kräftigere Kontraktion und größeres Schlagvolumen – das Herz wirft aus, was ihm zufließt; so wird das Auswurfvolumen von rechtem und linkem Ventrikel aufeinander abgestimmt",
+      "Afterload (Nachlast = systolische Wandspannung, nach Laplace proportional zu Druck × Radius / Wanddicke): ein Anstieg senkt bei gleicher Vorlast das Schlagvolumen – besonders ausgeprägt beim insuffizienten Ventrikel",
+      "Kontraktilität (Inotropie, vorlastunabhängig): Sympathikus über β1 → cAMP/PKA → gesteigerter Ca2+-Einstrom (L-Typ) und schnellere SR-Wiederaufnahme (Phospholamban/SERCA) → Frank-Starling-Kurve verschiebt sich nach oben/links",
+      "Herzzeitvolumen = Herzfrequenz × Schlagvolumen; im Fließgleichgewicht entspricht es dem venösen Rückstrom, der vom Gradienten zwischen mittlerem systemischem Füllungsdruck und rechtsatrialem Druck bestimmt wird (Guyton-Modell)",
+      "Grenze: auf dem flachen Teil der Kurve (z.B. Herzinsuffizienz, bereits optimale Füllung) steigert weiteres Volumen das Schlagvolumen kaum, erhöht aber die Füllungsdrücke (Stauung) – physiologische Grundlage der Volumenreagibilität (Fluid Responsiveness)"
+    ]
+  },
+  {
+    id: "phys-reizleitung-herz",
+    title: "Erregungsbildung und Erregungsleitung des Herzens (SA-Knoten → AV-Knoten → His-Bündel → Purkinje-Fasern)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology (Rhythmische Erregung des Herzens); Ganong's Review of Medical Physiology",
+    steps: [
+      "Sinusknoten (Wand des rechten Vorhofs nahe der Einmündung der V. cava superior) besitzt kein stabiles Ruhepotential (ca. −55 bis −60mV): spontane diastolische Depolarisation (Phase 4) v.a. durch den Funny-Strom (If, HCN-Kanäle) und T-Typ-Ca2+-Kanäle",
+      "Bei Erreichen der Schwelle (ca. −40mV) öffnen L-Typ-Ca2+-Kanäle → langsamer, Ca2+-getragener Aufstrich des Aktionspotentials; Repolarisation durch K+-Ausstrom – der Sinusknoten ist als schnellster Schrittmacher der primäre Taktgeber (Ruhefrequenz unter vagalem Grundtonus meist 60–100/min)",
+      "Die Erregung breitet sich über das Vorhofmyokard (und bevorzugte internodale Leitungswege) aus → Vorhofdepolarisation (P-Welle) und Vorhofkontraktion",
+      "AV-Knoten: einzige physiologische elektrische Verbindung zwischen Vorhöfen und Kammern (das bindegewebige Herzskelett isoliert sonst); sehr langsame Leitung → Verzögerung um ca. 0,1s (Hauptanteil der PQ-Zeit)",
+      "Funktion der AV-Verzögerung: Vorhofkontraktion kann die Kammerfüllung vor der Ventrikelsystole abschließen; zugleich Schutz der Kammern vor sehr hohen Vorhoffrequenzen (z.B. Vorhofflimmern)",
+      "His-Bündel → rechter und linker Tawara-Schenkel entlang des Kammerseptums → Purkinje-Fasern mit sehr hoher Leitungsgeschwindigkeit (ca. 1,5–4m/s)",
+      "Nahezu synchrone Depolarisation der Kammermuskulatur von endokardial nach epikardial und von der Herzspitze zur Basis (QRS-Komplex) → koordinierte, effektive Kammerkontraktion",
+      "Hierarchie der Automatie: fällt der Sinusknoten aus, übernehmen sekundäre (AV-Knoten/junktional, ca. 40–60/min) bzw. tertiäre Zentren (Purkinje-/Kammerersatzrhythmus, ca. 15–40/min); normalerweise werden sie durch die schnellere Sinusfrequenz unterdrückt (Overdrive-Suppression)",
+      "Autonome Modulation: Sympathikus (β1) steigert If und Ca2+-Ströme → steilere Phase 4, höhere Frequenz, schnellere AV-Überleitung; Vagus (M2) öffnet K+-Kanäle (IK,ACh) und vermindert If → Hyperpolarisation, Frequenzabnahme, verlängerte AV-Überleitung"
+    ]
+  },
+  {
+    id: "phys-koronare-autoregulation",
+    title: "Koronare Durchblutungsregulation (Autoregulation und metabolische Kopplung)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology (Koronarkreislauf); Duncker & Bache, Physiol Rev 2008 (Regulation of coronary blood flow during exercise); Goodwill et al., Compr Physiol 2017",
+    steps: [
+      "Ausgangslage: das Myokard extrahiert bereits in Ruhe einen sehr hohen Anteil des angebotenen Sauerstoffs (ca. 70 %, koronarvenöse Sättigung entsprechend niedrig) → ein erhöhter O2-Bedarf kann kaum über mehr Extraktion, sondern fast nur über mehr Koronarfluss gedeckt werden",
+      "Auslöser: gesteigerter myokardialer O2-Verbrauch (Herzfrequenz, Kontraktilität, Wandspannung) oder Abfall des koronaren Perfusionsdrucks",
+      "Metabolische Regulation (dominierend): Anfall vasodilatierender Metaboliten und Signale – Adenosin (aus ATP-Abbau), Abfall des Gewebe-PO2, Anstieg von CO2/H+, Öffnung ATP-abhängiger K+-Kanäle (K_ATP) der glatten Gefäßmuskulatur",
+      "Diese Signale dilatieren die Widerstandsarteriolen → Koronarfluss steigt proportional zum O2-Bedarf (Kopplung von Angebot und Verbrauch)",
+      "Druck-Autoregulation: myogene Reaktion der Arteriolen plus metabolische Faktoren halten den Koronarfluss über einen mittleren Perfusionsdruckbereich (etwa 60–140mmHg, Literaturangaben schwanken) weitgehend konstant; darunter wird der Fluss druckpassiv",
+      "Endothelvermittelte, flussabhängige Dilatation (NO, Prostazyklin) vergrößert zusätzlich die vorgeschalteten Leitungsgefäße",
+      "Neurale Einflüsse sind untergeordnet: α1-vermittelte Vasokonstriktion wird unter Belastung von der metabolischen Vasodilatation überspielt; indirekt steigert der Sympathikus den Fluss über den erhöhten Stoffwechsel",
+      "Mechanische Besonderheit: der linke Ventrikel wird überwiegend in der Diastole perfundiert (systolische Kompression intramyokardialer Gefäße) – Koronarperfusionsdruck ≈ diastolischer Aortendruck − LVEDP; Tachykardie (verkürzte Diastole), Hypotonie und hoher LVEDP gefährden v.a. das Subendokard",
+      "Bei maximaler Vasodilatation ist die Koronarreserve erschöpft (z.B. distal einer hochgradigen Stenose) → Fluss nur noch druckabhängig, Ischämie bei weiterem Druckabfall oder Bedarfsanstieg"
+    ]
+  },
+  {
+    id: "phys-hypoxische-vasokonstriktion",
+    title: "Hypoxische pulmonale Vasokonstriktion (Euler-Liljestrand-Mechanismus) und V/Q-Matching",
+    category: "Physiologie-Mechanismen",
+    source: "Sylvester et al., Physiol Rev 2012 (Hypoxic pulmonary vasoconstriction); Lumb & Slinger, Anesthesiology 2015; Nunn's Applied Respiratory Physiology",
+    steps: [
+      "Auslöser: alveoläre Hypoxie in einer schlecht ventilierten Lungenregion (z.B. Atelektase, Pneumonie, nicht beatmeter Lungenflügel bei Ein-Lungen-Ventilation) – der alveoläre PO2 ist der wichtigste Reiz, der gemischtvenöse PO2 trägt weniger bei",
+      "Sensor: die glatten Muskelzellen der kleinen präkapillären Pulmonalarterien selbst; die mitochondriale Atmungskette verändert bei Hypoxie die Bildung reaktiver Sauerstoffspezies/den Redoxzustand der Zelle",
+      "Das veränderte Redoxsignal hemmt sauerstoffsensitive spannungsabhängige K+-Kanäle (u.a. Kv1.5, Kv2.1) → Membrandepolarisation",
+      "Depolarisation öffnet L-Typ-Ca2+-Kanäle, zusätzlich Ca2+-Freisetzung aus dem SR und Ca2+-Sensitisierung (Rho-Kinase) → Kontraktion der präkapillären Widerstandsgefäße",
+      "Lokale Vasokonstriktion leitet Blut aus der hypoxischen Region in gut ventilierte Lungenareale um → verbessertes Ventilations-Perfusions-Verhältnis, Verminderung des Shunts und der arteriellen Hypoxämie",
+      "Zeitverlauf: erste Phase innerhalb von Sekunden mit Maximum nach etwa 15 Minuten; bei anhaltender Hypoxie zweite, langsamere Phase (etwa ab 30–60 Minuten) mit weiterer Widerstandszunahme",
+      "Globale alveoläre Hypoxie (Höhe, generalisierte Hypoventilation) → HPV in der gesamten Lunge → Anstieg des pulmonalvaskulären Widerstands, pulmonale Hypertonie und Rechtsherzbelastung (Extremform: Höhenlungenödem; chronisch: Gefäßumbau)",
+      "Modulation: volatile Anästhetika hemmen HPV dosisabhängig (moderne Substanzen bei ≤1 MAC nur gering), ebenso systemische Vasodilatatoren (z.B. Nitroprussid, Nitroglycerin, Ca2+-Antagonisten) und Alkalose/Hypokapnie; i.v.-Anästhetika wie Propofol beeinflussen HPV kaum – relevant für die Oxygenierung bei Ein-Lungen-Ventilation"
+    ]
+  },
+  {
+    id: "phys-o2-bindungskurve",
+    title: "Sauerstoff-Hämoglobin-Bindungskurve und ihre Verschiebung (Bohr-Effekt, 2,3-BPG, Temperatur, pH)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology (Transport von O2 und CO2 im Blut); West's Respiratory Physiology",
+    steps: [
+      "Hämoglobin (HbA, α2β2) bindet an seinen vier Häm-Gruppen (Fe2+) je ein O2-Molekül; kooperative Bindung – Übergang von der T-Form (tense, niedrige Affinität) zur R-Form (relaxed, hohe Affinität) – erzeugt die sigmoidale Bindungskurve",
+      "Kennpunkte (normale Bedingungen): PaO2 ca. 100mmHg → SaO2 ca. 97–98 %; PO2 ca. 60mmHg → SaO2 ca. 90 %; gemischtvenös PO2 ca. 40mmHg → SvO2 ca. 75 %; P50 (PO2 bei 50 % Sättigung) ca. 26–27mmHg",
+      "Flacher oberer Kurventeil: sichere O2-Beladung in der Lunge trotz Schwankungen des alveolären PO2; steiler mittlerer Teil: große O2-Abgabe im Gewebe bei nur geringem PO2-Abfall",
+      "Rechtsverschiebung (P50 ↑, Affinität ↓): Azidose/H+-Anstieg, PCO2-Anstieg, Temperaturanstieg und erhöhtes 2,3-BPG (bindet an die β-Ketten des Desoxy-Hb und stabilisiert die T-Form) → erleichterte O2-Abgabe",
+      "Bohr-Effekt im Gewebe: metabolisch gebildetes CO2 und H+ verschieben die Kurve nach rechts → vermehrte O2-Abgabe; in der Lunge verschiebt die CO2-Abatmung die Kurve nach links → verbesserte O2-Aufnahme (komplementär: Haldane-Effekt – Desoxy-Hb bindet mehr CO2 und H+)",
+      "Linksverschiebung (P50 ↓, Affinität ↑): Alkalose/Hypokapnie (z.B. Hyperventilation), Hypothermie, erniedrigtes 2,3-BPG (gelagerte Erythrozytenkonzentrate), fetales Hämoglobin, CO-Hb und Met-Hb → hohe Sättigung, aber erschwerte O2-Abgabe ans Gewebe",
+      "Adaptation über 2,3-BPG: chronische Hypoxie (Höhe, Anämie) steigert die erythrozytäre 2,3-BPG-Bildung → Rechtsverschiebung; transfundierte Erythrozyten regenerieren ihr in der Lagerung verlorenes 2,3-BPG erst über Stunden bis wenige Tage",
+      "Klinische Bedeutung: O2-Gehalt CaO2 = (Hb × SaO2 × Hüfner-Zahl ca. 1,34–1,39ml O2/g Hb) + 0,003 × PaO2 (mmHg), O2-Angebot DO2 = HZV × CaO2 – die Lage der Kurve bestimmt, wie viel des transportierten O2 im Gewebe tatsächlich abgegeben wird (z.B. CO-Vergiftung: Linksverschiebung plus verminderte Transportkapazität)"
+    ]
+  },
+  {
+    id: "phys-adh-osmoregulation",
+    title: "ADH/Vasopressin-vermittelte Osmoregulation (Wasserhaushalt)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology (Harnkonzentrierung, Regulation von Osmolarität und Natriumkonzentration); Bankir et al., J Intern Med 2017 (Vasopressin: physiology, assessment and osmosensation)",
+    steps: [
+      "Auslöser: Anstieg der Plasmaosmolalität (z.B. Wasserdefizit, Hypernatriämie) – sehr empfindlicher Regelkreis: bereits ca. 1 % Änderung führt zur Anpassung; Schwelle der ADH-Freisetzung etwa 280–285mOsm/kg",
+      "Sensor: Osmorezeptoren in den zirkumventrikulären Organen der Lamina terminalis (v.a. Organum vasculosum laminae terminalis, OVLT, und Subfornikalorgan) ohne Blut-Hirn-Schranke registrieren die Hyperosmolalität",
+      "Die Osmorezeptoren aktivieren magnozelluläre Neurone der Nuclei supraopticus und paraventricularis im Hypothalamus, die ADH bilden, entlang des Tractus hypothalamohypophysialis transportieren und aus dem Hypophysenhinterlappen freisetzen",
+      "Nicht-osmotische Stimuli: arterielle Barorezeptoren und atriale Dehnungsrezeptoren bei Hypovolämie/Hypotonie (weniger empfindlich als die Osmoregulation, relevant etwa ab ca. 10 % Volumenverlust, dann aber sehr starke ADH-Freisetzung); außerdem Übelkeit, Schmerz, chirurgischer Stress, Hypoxie, Opioide → perioperativ häufig erhöhte ADH-Spiegel",
+      "ADH bindet an V2-Rezeptoren (Gs-gekoppelt) der Hauptzellen im Sammelrohr → cAMP/PKA → Einbau von Aquaporin-2-Kanälen in die apikale Membran; Wasseraustritt basolateral über Aquaporin-3/-4 entlang des Gradienten zum hypertonen Nierenmark",
+      "Zusätzlich steigert ADH die Harnstoffpermeabilität des inneren medullären Sammelrohrs (UT-A) und unterstützt so den osmotischen Gradienten im Nierenmark",
+      "Ergebnis: Rückresorption freien Wassers, konzentrierter Harn (maximal ca. 1200mOsm/kg) mit kleinem Volumen; parallel Durstgefühl (Osmorezeptoren, zusätzlich Angiotensin II am Subfornikalorgan; Durstschwelle etwas höher als die ADH-Schwelle) → Wasseraufnahme",
+      "Negative Rückkopplung: sinkende Osmolalität hemmt die ADH-Freisetzung → Aquaporin-2 wird endozytiert → Ausscheidung verdünnten Harns (minimal ca. 50mOsm/kg)",
+      "Hohe ADH-Konzentrationen wirken zusätzlich über V1a-Rezeptoren (Gq-gekoppelt, glatte Gefäßmuskulatur) vasokonstriktorisch – Grundlage des Vasopressin-Einsatzes im vasoplegischen/septischen Schock; Störungen: SIADH (Hyponatriämie) bzw. Diabetes insipidus (zentral/renal)"
+    ]
+  },
+  {
+    id: "phys-kalium-homoeostase",
+    title: "Kalium-Homöostase (interne Verteilung und renale Regulation)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology (Renale Regulation von Kalium, Calcium, Phosphat, Magnesium); Palmer & Clegg, Am J Kidney Dis 2019 (Core Curriculum Potassium Homeostasis)",
+    steps: [
+      "Verteilung: ca. 98 % des Körperkaliums liegen intrazellulär (ca. 140–150mmol/l), nur ca. 2 % extrazellulär (Serum ca. 3,5–5,0mmol/l); der Gradient wird von der Na+/K+-ATPase (3 Na+ hinaus, 2 K+ hinein) aufrechterhalten und bestimmt das Ruhemembranpotential – schon kleine Änderungen des Serum-K+ verändern die Erregbarkeit von Herz und Muskulatur",
+      "Auslöser: K+-Belastung (Nahrung, Infusion, Zellzerfall) → Anstieg des Serum-K+",
+      "Schnelle interne Bilanz (Minuten): Insulin aktiviert die Na+/K+-ATPase (v.a. Skelettmuskel und Leber) → K+-Verschiebung nach intrazellulär; ebenso β2-adrenerge Stimulation (Adrenalin, cAMP-vermittelt) und Aldosteron – therapeutisch genutzt mit Insulin/Glukose und β2-Mimetika",
+      "Weitere Verschiebungsfaktoren: Alkalose verschiebt K+ nach intrazellulär, (v.a. mineralische) Azidose nach extrazellulär; Hyperosmolalität, Zelluntergang (Rhabdomyolyse, Hämolyse, Tumorlyse) und Succinylcholin (Depolarisation; normal ca. 0,5mmol/l Anstieg, massiv bei Rezeptor-Hochregulation) erhöhen das Serum-K+",
+      "Langsamere externe Bilanz (Stunden): ca. 90 % der täglichen K+-Ausscheidung erfolgt renal – K+ wird frei filtriert, der Großteil im proximalen Tubulus (ca. 2/3) und im dicken aufsteigenden Henle-Schenkel (NKCC2) relativ konstant rückresorbiert",
+      "Die eigentliche Feinregulation erfolgt im distalen Nephron (spätes distales Konvolut, Verbindungstubulus, kortikales Sammelrohr): Hauptzellen nehmen K+ basolateral über die Na+/K+-ATPase auf und sezernieren es apikal über ROMK- und flussabhängige BK-Kanäle; die Na+-Rückresorption über ENaC schafft das lumennegative Potential als Triebkraft",
+      "Hyperkaliämie stimuliert direkt (unabhängig vom Renin-Angiotensin-System) die Zona glomerulosa → Aldosteron steigert ENaC-Aktivität, Na+/K+-ATPase und apikale K+-Kanäle → gesteigerte K+-Sekretion (negative Rückkopplung); zusätzlich fördern hoher distaler Na+-Zufluss und hoher Tubulusfluss die Sekretion",
+      "Bei K+-Mangel wird die Sekretion gedrosselt und Typ-A-Schaltzellen resorbieren K+ über die apikale H+/K+-ATPase – die Niere spart Kalium jedoch weniger effizient als Natrium, daher entwickelt sich bei fehlender Zufuhr oder Verlusten (Diuretika, Erbrechen, Diarrhoe) leicht eine Hypokaliämie"
+    ]
+  },
+  {
+    id: "phys-zerebrale-autoregulation",
+    title: "Regulation der Hirndurchblutung (Druck-Autoregulation, metabolische Kopplung, CO2-/O2-Reaktivität)",
+    category: "Physiologie-Mechanismen",
+    source: "Claassen et al., Physiol Rev 2021 (Regulation of cerebral blood flow in humans); Miller's Anesthesia (Zerebrale Physiologie); Guyton & Hall Physiology",
+    steps: [
+      "Ausgangslage: Das Gehirn (ca. 2 % des Körpergewichts) erhält ca. 15 % des HZV (Hirndurchblutung ca. 50ml/100g/min, CMRO2 ca. 3–3,5ml/100g/min) und hat kaum O2-/Glukosereserven → konstante Perfusion ist essenziell; zerebraler Perfusionsdruck CPP = MAP − ICP (bzw. − ZVD, falls höher)",
+      "Druck-Autoregulation (myogen, Bayliss-Effekt): steigender Perfusionsdruck dehnt die Arteriolen → reflektorische Vasokonstriktion; fallender Druck → Vasodilatation; die Anpassung erfolgt innerhalb weniger Sekunden",
+      "Autoregulationsbereich: klassisch ca. 50–150mmHg MAP (Lassen); neuere Daten zeigen ein schmaleres, individuell sehr variables Plateau, bei chronischer Hypertonie nach rechts verschoben; unterhalb → druckpassive Minderperfusion/Ischämie, oberhalb → Hyperperfusion, Störung der Blut-Hirn-Schranke, Hirnödem",
+      "Metabolische Kopplung (neurovaskuläre Kopplung): gesteigerte neuronale Aktivität setzt lokal vasodilatierende Signale frei (u.a. K+, H+, Adenosin, NO, Prostanoide, Astrozyten-Signale) → Hirndurchblutung folgt dem Stoffwechsel (CMRO2 sinkt z.B. unter Hypothermie um ca. 6–7 % pro °C sowie unter Propofol/Barbituraten, steigt bei Krampfanfällen)",
+      "CO2-Reaktivität: CO2 diffundiert frei über die Blut-Hirn-Schranke und senkt den perivaskulären pH → Vasodilatation; zwischen PaCO2 ca. 20–80mmHg nahezu linear ca. 1–2ml/100g/min pro mmHg (grob 2–4 % pro mmHg) – Hypokapnie konstringiert, Hyperkapnie dilatiert (Anstieg von zerebralem Blutvolumen und ICP)",
+      "Adaptation: bei anhaltender Hypo-/Hyperventilation normalisiert sich der Liquor-pH über Stunden durch Anpassung des Liquor-Bicarbonats → Wirkung der Hyperventilation lässt nach (Rebound-Gefahr bei zu rascher Normalisierung); ausgeprägte Hypokapnie birgt Ischämierisiko",
+      "O2-Reaktivität: oberhalb eines PaO2 von ca. 60mmHg bleibt die Hirndurchblutung weitgehend konstant; darunter steiler Anstieg der Hirndurchblutung durch hypoxische Vasodilatation",
+      "Störung: Schädel-Hirn-Trauma, Subarachnoidalblutung, Schlaganfall und Sepsis können die Autoregulation aufheben (druckpassiver Fluss); volatile Anästhetika dilatieren dosisabhängig direkt und schwächen die Autoregulation v.a. oberhalb von ca. 1 MAC, Propofol erhält sie weitgehend – die CO2-Reaktivität bleibt unter Narkose meist erhalten"
+    ]
+  },
+  {
+    id: "phys-schilddruesen-achse",
+    title: "Hypothalamus-Hypophysen-Schilddrüsen-Achse (inkl. Low-T3-Syndrom bei kritischer Erkrankung)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology (Schilddrüsenhormone); Van den Berghe, Thyroid 2014 (Non-thyroidal illness in the ICU); Endotext: The Non-Thyroidal Illness Syndrome",
+    steps: [
+      "Der Nucleus paraventricularis des Hypothalamus setzt Thyreotropin-Releasing-Hormon (TRH) in das hypophysäre Pfortadersystem frei",
+      "TRH bindet an Gq-gekoppelte TRH-Rezeptoren der thyreotropen Zellen im Hypophysenvorderlappen → Freisetzung von TSH (Thyreotropin)",
+      "TSH bindet an Gs-gekoppelte TSH-Rezeptoren der Thyreozyten → cAMP-Anstieg → Stimulation von Wachstum und allen Schritten der Hormonsynthese und -freisetzung",
+      "Hormonsynthese: Iodidaufnahme über den basolateralen Na+/I−-Symporter (NIS), Oxidation und Einbau in Tyrosinreste des Thyreoglobulins durch die Thyreoperoxidase (TPO) → MIT/DIT, Kopplung zu T4 (DIT+DIT) und T3 (MIT+DIT), Speicherung im Kolloid",
+      "Freisetzung: Endozytose und Proteolyse des Thyreoglobulins → Sekretion überwiegend von T4 (ca. 90 %), weniger T3; im Plasma zu >99 % proteingebunden (TBG, Transthyretin, Albumin), nur die freie Fraktion ist wirksam",
+      "Periphere Aktivierung: Dejodasen Typ 1 (Leber, Niere) und Typ 2 (u.a. ZNS, Hypophyse, Muskulatur) wandeln T4 in das aktive T3 um (Großteil des zirkulierenden T3 entsteht so); Typ-3-Dejodase inaktiviert T4 zu reverse T3 (rT3) und T3 zu T2",
+      "T3 bindet an nukleäre Schilddrüsenhormonrezeptoren → Gentranskription: Steigerung von Grundumsatz, O2-Verbrauch und Wärmebildung, gesteigerte β-adrenerge Empfindlichkeit des Herzens (positive Chrono-/Inotropie)",
+      "Negative Rückkopplung: T3 (auch lokal in Hypophyse/Hypothalamus aus T4 über Typ-2-Dejodase gebildet) hemmt die TRH- und TSH-Freisetzung",
+      "Kritische Erkrankung (Non-Thyroidal-Illness-/Low-T3-Syndrom): akut verminderte Typ-1- und gesteigerte Typ-3-Dejodase-Aktivität (u.a. zytokinvermittelt) → T3 ↓, rT3 ↑ bei normalem, nicht ansteigendem TSH; bei prolongierter Erkrankung zusätzlich zentral verminderte TRH-/TSH-Sekretion mit T4-Abfall (prognostisch ungünstig) – eine routinemäßige Hormonsubstitution wird nicht empfohlen"
+    ]
+  },
+  {
+    id: "phys-calcium-phosphat",
+    title: "Calcium-Phosphat-Homöostase (Parathormon, Vitamin D, Calcitonin, FGF23)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology (Parathormon, Calcitonin, Calcium- und Phosphatstoffwechsel, Vitamin D); Ganong's Review of Medical Physiology",
+    steps: [
+      "Verteilung: ca. 99 % des Calciums liegen im Knochen (Hydroxylapatit); Plasma-Gesamtcalcium ca. 2,2–2,6mmol/l, davon ca. 50 % ionisiert (biologisch aktiv, ca. 1,1–1,3mmol/l), ca. 40 % proteingebunden (v.a. Albumin), ca. 10 % komplexgebunden (z.B. Citrat, Phosphat)",
+      "Auslöser/Sensor: Abfall des ionisierten Calciums wird vom Calcium-sensitiven Rezeptor (CaSR, G-Protein-gekoppelt) der Hauptzellen der Nebenschilddrüse registriert → gesteigerte Parathormon-(PTH-)Sekretion innerhalb von Minuten (ausreichend Magnesium ist für PTH-Sekretion und -Wirkung erforderlich)",
+      "PTH am Knochen: rasche Mobilisation von Calcium aus der Knochenflüssigkeit, langfristig über RANKL-Expression der Osteoblasten Aktivierung der Osteoklasten → Knochenresorption mit Freisetzung von Calcium und Phosphat",
+      "PTH an der Niere: gesteigerte Calcium-Rückresorption im distalen Tubulus/Verbindungstubulus; gleichzeitig Hemmung der Phosphat-Rückresorption im proximalen Tubulus (Internalisierung der Na+-Phosphat-Kotransporter) → Phosphaturie",
+      "PTH stimuliert die renale 1α-Hydroxylase im proximalen Tubulus → aus 25-OH-Vitamin-D (Cholecalciferol aus Haut/Nahrung, in der Leber 25-hydroxyliert) entsteht das aktive 1,25-(OH)2-Vitamin-D3 (Calcitriol)",
+      "Calcitriol steigert die intestinale Calcium- und Phosphatresorption, unterstützt die Knochenmineralisierung und hemmt die PTH-Synthese (Rückkopplung)",
+      "Ergebnis: Anstieg des ionisierten Calciums → verstärkte CaSR-Aktivierung → PTH-Sekretion sinkt (negative Rückkopplung); hohes Calcium stimuliert zusätzlich Calcitonin aus den parafollikulären C-Zellen der Schilddrüse, das die Osteoklasten hemmt (beim Erwachsenen physiologisch von geringer Bedeutung)",
+      "Phosphatregulation: Osteozyten sezernieren bei Phosphat- bzw. Calcitriol-Anstieg FGF23 → (mit Kofaktor Klotho) Phosphaturie und Hemmung der 1α-Hydroxylase → Calcitriol sinkt",
+      "Klinische Bedeutung: Alkalose (z.B. Hyperventilation) steigert die Albuminbindung und senkt das ionisierte Calcium; Citrat aus Blutprodukten (Massivtransfusion) bindet Calcium; nach Thyreoidektomie/Parathyreoidektomie drohen Hypokalzämie und Tetanie"
+    ]
+  },
+  {
+    id: "phys-thermoregulation",
+    title: "Zentrale Thermoregulation und Mechanismus der perioperativen Hypothermie",
+    category: "Physiologie-Mechanismen",
+    source: "Sessler, Lancet 2016 (Perioperative thermoregulation and heat balance); Sessler, Anesthesiology 2000 (Perioperative heat balance); Guyton & Hall Physiology (Regulation der Körpertemperatur)",
+    steps: [
+      "Afferenz: Kälte- und Wärmerezeptoren in Haut, tiefen Geweben, Rückenmark und ZNS; Kältesignale v.a. über Aδ-Fasern, Wärmesignale v.a. über C-Fasern, Aufstieg überwiegend im Tractus spinothalamicus",
+      "Zentrale Integration im Hypothalamus (v.a. präoptische Region/vorderer Hypothalamus): Vergleich der integrierten Temperatur mit Schwellenwerten; der Bereich zwischen Schwitz- und Vasokonstriktionsschwelle (Interthreshold Range) beträgt normalerweise nur ca. 0,2–0,4 °C um ca. 37 °C",
+      "Kälteabwehr: Verhalten (effektivste Maßnahme), dann sympathische, α1-vermittelte Vasokonstriktion v.a. der arteriovenösen Shunts in Fingern/Zehen → verminderte Wärmeabgabe",
+      "Bei weiterer Abkühlung Wärmebildung: zitterfreie Thermogenese (braunes Fettgewebe, β3/UCP1 – v.a. bei Neugeborenen relevant) und Kältezittern (Shivering) mit deutlich gesteigertem O2-Verbrauch",
+      "Wärmeabwehr: Schwitzen (sympathisch-cholinerge Innervation) und aktive kutane Vasodilatation → Wärmeabgabe durch Verdunstung",
+      "Unter Allgemeinanästhesie: Vasokonstriktions- und Zitterschwelle sinken um ca. 2–3 °C, die Schwitzschwelle steigt leicht → Interthreshold Range erweitert sich auf ca. 2–4 °C (der Patient verhält sich innerhalb dieses Bereichs poikilotherm); auch Neuraxialverfahren senken die Schwellen und blockieren Vasokonstriktion/Zittern unterhalb des Blockniveaus",
+      "Phase 1 – Umverteilung (erste Stunde): anästhesiebedingte Vasodilatation hebt den tonischen Kern-Schale-Gradienten auf → Wärme fließt vom Körperkern in die Peripherie → Kerntemperatur fällt um ca. 1–1,5 °C bei nahezu unverändertem Gesamtwärmeinhalt",
+      "Phase 2 – lineare Phase (etwa 2.–4. Stunde): Wärmeverlust (v.a. Strahlung und Konvektion, zusätzlich Verdunstung/Konduktion) übersteigt die unter Narkose um ca. 20–30 % verminderte metabolische Wärmeproduktion → langsamer, stetiger Abfall",
+      "Phase 3 – Plateau: Erreichen der abgesenkten Vasokonstriktionsschwelle (typischerweise Kerntemperatur um 34–35 °C) → thermoregulatorische Vasokonstriktion stellt den Kern-Schale-Gradienten wieder her → Kerntemperatur stabilisiert sich; Prävention v.a. durch Vorwärmen (vermindert die Umverteilung) und aktive Wärmung (Warmluft)"
+    ]
+  },
+  {
+    id: "phys-fibrinolyse",
+    title: "Fibrinolyse-System (Plasminogen-Plasmin, tPA und ihre Hemmung)",
+    category: "Physiologie-Mechanismen",
+    source: "Guyton & Hall Physiology (Hämostase und Blutgerinnung); Ganong's Review of Medical Physiology; Longstaff & Kolev, J Thromb Haemost 2015 (Basic mechanisms and regulation of fibrinolysis)",
+    steps: [
+      "Auslöser: Fibrinbildung im Gerinnsel; Endothelzellen setzen Gewebe-Plasminogenaktivator (tPA) frei – verstärkt durch Thrombin, Bradykinin, venöse Stase, Stress/Adrenalin und Desmopressin",
+      "Plasminogen (in der Leber gebildet) und tPA binden über Lysin-Bindungsstellen (Kringle-Domänen) an Fibrin; die Plasminogenaktivierung durch tPA wird in Gegenwart von Fibrin um ein Vielfaches beschleunigt → Fibrinolyse bleibt lokal auf das Gerinnsel begrenzt (zweiter Aktivator: Urokinase, uPA, v.a. im Gewebe)",
+      "Das gebildete Plasmin (Serinprotease) spaltet Fibrin (sowie Fibrinogen und die Faktoren V und VIII) → Fibrin(ogen)-Spaltprodukte; aus quervernetztem (Faktor-XIIIa-)Fibrin entstehen D-Dimere als Marker von Gerinnungsaktivierung plus Fibrinolyse",
+      "Positive Rückkopplung: angedautes Fibrin exponiert zusätzliche C-terminale Lysinreste → noch mehr Plasminogen- und tPA-Bindung → beschleunigte Lyse",
+      "Hemmung auf Aktivatorebene: Plasminogenaktivator-Inhibitor-1 (PAI-1, aus Endothel und Thrombozyten; Akute-Phase-Protein) inaktiviert tPA und uPA",
+      "Hemmung auf Plasminebene: α2-Antiplasmin inaktiviert freies Plasmin rasch (fibringebundenes Plasmin ist teilweise geschützt; α2-Antiplasmin wird durch Faktor XIIIa ins Gerinnsel eingebaut); TAFI (durch den Thrombin-Thrombomodulin-Komplex aktiviert) entfernt C-terminale Lysine vom Fibrin und bremst so die Plasminogenbindung",
+      "Physiologisches Gleichgewicht: kontrollierter Umbau und Abbau des Gerinnsels mit Rekanalisierung des Gefäßes nach abgeschlossener Blutstillung",
+      "Pathophysiologie: bei schwerem Trauma/Schock massive tPA-Freisetzung und PAI-1-Verbrauch (u.a. durch aktiviertes Protein C) → Hyperfibrinolyse (viskoelastisch als Lyse nachweisbar); postoperativ und in der Sepsis dagegen PAI-1-Anstieg → Fibrinolyse-Shutdown mit Thrombose-/Mikrothromboseneigung",
+      "Pharmakologie: Tranexamsäure (Lysin-Analogon) blockiert die Lysin-Bindungsstellen des Plasminogens → keine Bindung an Fibrin, antifibrinolytisch (beim Trauma möglichst früh, innerhalb von 3 Stunden); rekombinanter tPA (Alteplase) wirkt umgekehrt als Thrombolytikum"
+    ]
+  },
+  {
+    id: "phys-leberdurchblutung-habr",
+    title: "Regulation der Leberdurchblutung – Hepatic Arterial Buffer Response (HABR)",
+    category: "Physiologie-Mechanismen",
+    source: "Lautt, Hepatic Circulation: Physiology and Pathophysiology (NCBI Bookshelf, 2009); Eipel et al., World J Gastroenterol 2010 (The hepatic arterial buffer response revisited); Guyton & Hall Physiology (Leber)",
+    steps: [
+      "Ausgangslage: die Leber erhält ca. 25 % des HZV, davon ca. 75 % über die Pfortader (nährstoffreich, teilweise desoxygeniert, niedriger Druck) und ca. 25 % über die A. hepatica (hoher Druck); beide Zuflüsse liefern etwa je die Hälfte des Sauerstoffs",
+      "Der Pfortaderfluss wird von der Leber selbst nicht reguliert, sondern entspricht dem Abstrom aus den Splanchnikusorganen (Darm, Milz, Pankreas) und hängt damit vom splanchnischen Gefäßtonus ab (z.B. vermindert bei Hypovolämie/Sympathikusaktivierung)",
+      "Im Mall-Raum, der die terminalen Äste von A. hepatica und Pfortader umgibt, wird kontinuierlich Adenosin gebildet und durch den Blutfluss ausgewaschen",
+      "Auslöser: Abnahme des Pfortaderflusses → geringere Auswaschung → Adenosin reichert sich im Mall-Raum an",
+      "Adenosin dilatiert die hepatischen Arteriolen → Anstieg des arteriellen Leberflusses, der einen Teil des Pfortaderflussverlusts kompensiert (tierexperimentell etwa 25–60 %)",
+      "Umgekehrt steigert ein erhöhter Pfortaderfluss die Adenosin-Auswaschung → Konstriktion der A. hepatica; die Reaktion ist einseitig – die Pfortader kann Änderungen des arteriellen Zuflusses nicht ausgleichen",
+      "Zweck: Konstanthaltung des Gesamtleberflusses (wichtig u.a. für die flussabhängige Clearance von Hormonen und Medikamenten mit hoher Extraktionsrate, z.B. Propofol, Lidocain) – nicht primär die O2-Versorgung, die die Leber v.a. über eine gesteigerte O2-Extraktion sichert",
+      "Klinische Bedeutung: HABR ist bei Endotoxinämie/Sepsis beeinträchtigt; Isofluran und Sevofluran erhalten den arteriellen Leberfluss weitgehend, Halothan reduziert ihn deutlich; nach Lebertransplantation kann ein hoher Pfortaderfluss über die HABR eine arterielle Minderperfusion begünstigen (z.B. Splenic-Artery-Steal)"
+    ]
+  },
+  {
+    id: "phys-starling-kapillaraustausch",
+    title: "Kapillärer Flüssigkeitsaustausch – Starling-Prinzip und Glykokalyx-Modell",
+    category: "Physiologie-Mechanismen",
+    source: "Levick & Michel, Cardiovasc Res 2010 (Microvascular fluid exchange and the revised Starling principle); Woodcock & Woodcock, Br J Anaesth 2012; Guyton & Hall Physiology (Mikrozirkulation und Lymphsystem)",
+    steps: [
+      "Klassische Starling-Gleichung: Filtration Jv = Kf × [(Pc − Pi) − σ × (πc − πi)] – bestimmt durch hydrostatische Drücke (Kapillare Pc, Interstitium Pi), onkotische Drücke (π) und den Reflexionskoeffizienten σ für Proteine",
+      "Revidiertes Modell: die semipermeable Barriere ist die endotheliale Glykokalyx; wirksam ist der onkotische Gradient zwischen Plasma und dem nahezu proteinfreien Raum unter der Glykokalyx – nicht der zum gesamten Interstitium",
+      "Im Fließgleichgewicht findet in den meisten Kapillaren über die gesamte Länge eine geringe Nettofiltration statt; eine dauerhafte venöse Rückresorption, wie im klassischen Modell angenommen, gibt es dort nicht",
+      "Das filtrierte Volumen wird über das Lymphsystem (mehrere Liter pro Tag) in den Kreislauf zurückgeführt; Ödemschutz durch steigenden interstitiellen Druck, gesteigerten Lymphfluss und Auswaschung interstitieller Proteine",
+      "Nur vorübergehende Rückresorption: bei akutem Abfall des Kapillardrucks (z.B. Blutung) wird kurzzeitig interstitielle Flüssigkeit rückresorbiert (Autotransfusion), bis sich ein neues Gleichgewicht einstellt",
+      "Kontextsensitivität (nach dem revidierten Modell): bei niedrigem Kapillardruck (Hypovolämie) verbleiben Kristalloide wie Kolloide weitgehend intravasal, bei normalem/hohem Kapillardruck steigern beide die Filtration – gilt als Erklärung für die in Studien geringer als erwartet ausgefallenen Volumeneffekt-Unterschiede zwischen Kolloiden und Kristalloiden",
+      "Schädigung der Glykokalyx (Sepsis, Ischämie-Reperfusion, großer chirurgischer Eingriff, Hypervolämie mit ANP-Freisetzung, Hyperglykämie) → erhöhte Permeabilität, interstitielles Ödem und kapilläres Leck"
+    ]
   }
 ];
