@@ -371,21 +371,14 @@ select, input[type="text"] {
 }
 .gap-item .gap-source { color: var(--text-muted); font-size: 0.78rem; }
 
-.focus-tabs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin: 16px 0 24px; overflow: hidden; }
-.focus-tab-bar { display: flex; }
-.focus-tab-btn {
-  flex: 1;
-  padding: 12px 14px;
-  border: none;
-  border-bottom: 2px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text-muted);
-  font-family: inherit;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-.focus-tab-btn.active { background: var(--surface); color: var(--text); border-bottom-color: var(--accent-2); font-weight: 600; }
-.focus-tab-panel { padding: 16px 18px; }
+.focus-tabs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin: 16px 0 24px; padding: 4px 18px; }
+.focus-tabs summary { cursor: pointer; list-style: none; padding: 10px 0; font-weight: 600; }
+.focus-tabs summary::-webkit-details-marker { display: none; }
+.focus-tabs summary::before { content: "▸ "; color: var(--text-muted); }
+.focus-tabs[open] summary::before { content: "▾ "; }
+.focus-tab-panel { padding: 4px 0 16px; }
+.focus-tab-panel h3 { font-size: 0.95rem; margin: 14px 0 6px; }
+.focus-tab-panel h3:first-child { margin-top: 4px; }
 
 .module-details summary { cursor: pointer; list-style: none; }
 .module-details summary::-webkit-details-marker { display: none; }

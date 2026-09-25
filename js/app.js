@@ -345,8 +345,8 @@
 
     // Schwierige Karten und Wissenslücken sind jetzt IMMER sichtbar (mit
     // Leerzustand-Text statt komplett zu verschwinden) und stehen ganz oben im
-    // Dashboard als Tabs (ein Reiter zeigt jeweils den Inhalt, statt beide
-    // Listen gleichzeitig und dauerhaft Platz beanspruchen zu lassen) — vorher
+    // Dashboard als EIN gemeinsamer, einklappbarer Reiter (statt zwei
+    // dauerhaft sichtbaren Tabs, die oben zu viel Platz beanspruchen) — vorher
     // waren sie weiter unten und bei leerem Zustand komplett unauffindbar.
     const difficultCards = window.SRS.getDifficultCards(FLASHCARDS, progress, 12);
     const difficultPanelHtml =
@@ -375,17 +375,17 @@
         }).join("") +
         "</ul>");
 
-    // Standard-Reiter: der mit tatsächlich etwas zu tun (falls nur einer leer ist).
-    const defaultTab = difficultCards.length === 0 && gaps.length > 0 ? "gaps" : "difficult";
+    // Nur aufgeklappt, wenn es tatsächlich etwas zu review'n gibt — sonst bleibt
+    // der Reiter geschlossen und beansprucht ganz oben nur eine Zeile.
+    const hasFocusItems = difficultCards.length > 0 || gaps.length > 0;
     const focusTabsHtml =
-      '<div class="focus-tabs">' +
-      '<div class="focus-tab-bar">' +
-      '<button class="focus-tab-btn' + (defaultTab === "difficult" ? " active" : "") + '" data-tab="difficult">Schwierige Karten (' + difficultCards.length + ')</button>' +
-      '<button class="focus-tab-btn' + (defaultTab === "gaps" ? " active" : "") + '" data-tab="gaps">Wissenslücken (' + gaps.length + ')</button>' +
+      '<details class="focus-tabs"' + (hasFocusItems ? " open" : "") + '>' +
+      '<summary>Schwierige Karten (' + difficultCards.length + ') &amp; Wissenslücken (' + gaps.length + ')</summary>' +
+      '<div class="focus-tab-panel">' +
+      "<h3>Schwierige Karten</h3>" + difficultPanelHtml +
+      "<h3>Wissenslücken</h3>" + gapsPanelHtml +
       "</div>" +
-      '<div class="focus-tab-panel' + (defaultTab === "difficult" ? "" : " hidden") + '" data-panel="difficult">' + difficultPanelHtml + "</div>" +
-      '<div class="focus-tab-panel' + (defaultTab === "gaps" ? "" : " hidden") + '" data-panel="gaps">' + gapsPanelHtml + "</div>" +
-      "</div>";
+      "</details>";
 
     const streak = window.SRS.getStreak();
     app.innerHTML =
@@ -419,13 +419,6 @@
       });
     });
 
-    document.querySelectorAll(".focus-tab-btn").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        const tab = btn.getAttribute("data-tab");
-        document.querySelectorAll(".focus-tab-btn").forEach(function (b) { b.classList.toggle("active", b === btn); });
-        document.querySelectorAll(".focus-tab-panel").forEach(function (p) { p.classList.toggle("hidden", p.getAttribute("data-panel") !== tab); });
-      });
-    });
   }
 
   // ---------- Learn ----------
