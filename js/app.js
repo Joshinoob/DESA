@@ -254,6 +254,7 @@
     else if (route === "test") renderTestSetup();
     else if (route === "test-session") startTestSession(arg);
     else if (route === "progress") renderProgress();
+    else if (route === "fokus") renderFocusPage();
     else if (route === "algorithms") renderAlgorithmList();
     else if (route === "physiologie") renderPhysiologyList();
     else if (route === "algorithm") renderAlgorithmReference(arg);
@@ -302,6 +303,60 @@
     );
   }
 
+  // ---------- Fokus (Schwierige Karten & Wissenslücken) ----------
+  // Eigene, per Klick auf den Dashboard-Reiter erreichbare Seite statt einer
+  // Inline-Ausklappung — hält das Dashboard oben kompakt (nur eine klickbare
+  // Zeile) und gibt den beiden Listen trotzdem genug Raum, wenn man sie
+  // tatsächlich braucht.
+  function getFocusData() {
+    const difficultCards = window.SRS.getDifficultCards(FLASHCARDS, progress, 12);
+    const gaps = window.SRS.loadGaps();
+    return { difficultCards: difficultCards, gaps: gaps };
+  }
+
+  function renderFocusPage() {
+    const focus = getFocusData();
+    const difficultHtml =
+      (focus.difficultCards.length === 0 ?
+        '<p class="muted">Aktuell keine Karte mit „Nochmal" oder „Schwer" bewertet — guter Stand!</p>' :
+        '<p class="muted">Zuletzt mit „Nochmal" oder „Schwer" bewertet.</p>' +
+        '<ul class="gap-list">' +
+        focus.difficultCards.map(function (c) {
+          return '<li class="gap-item"><span>' + escapeHtml(c.front) + '<span class="gap-source"> — ' + escapeHtml(moduleById(c.module).title) + "</span></span></li>";
+        }).join("") +
+        "</ul>" +
+        '<div class="cta-row"><a class="btn btn-sm btn-secondary" href="#/learn-session/difficult">Schwierige Karten üben</a></div>');
+
+    const gapsHtml =
+      (focus.gaps.length === 0 ?
+        '<p class="muted">Noch keine offenen Wissenslücken. Tippe/klicke beim Lernen ein unbekanntes Wort an — findet sich dazu keine Karte, landet der Begriff hier.</p>' :
+        '<p class="muted">Begriffe, die du markiert hast, zu denen es aber noch keine Karteikarte gibt.</p>' +
+        '<ul class="gap-list">' +
+        focus.gaps.map(function (g) {
+          return (
+            '<li class="gap-item"><span>' + escapeHtml(g.term) + (g.source ? '<span class="gap-source"> — aus: ' + escapeHtml(g.source) + "</span>" : "") + "</span>" +
+            '<button class="btn btn-sm btn-secondary" data-remove-gap="' + escapeHtml(g.term) + '">Erledigt</button></li>'
+          );
+        }).join("") +
+        "</ul>");
+
+    app.innerHTML =
+      nav("dashboard") +
+      '<main class="container narrow">' +
+      '<a class="back-link" href="#/dashboard">← Zum Dashboard</a>' +
+      "<h1>Schwierige Karten &amp; Wissenslücken</h1>" +
+      "<h2>Schwierige Karten (" + focus.difficultCards.length + ")</h2>" + difficultHtml +
+      "<h2>Wissenslücken (" + focus.gaps.length + ")</h2>" + gapsHtml +
+      "</main>";
+
+    document.querySelectorAll("[data-remove-gap]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        window.SRS.removeGap(btn.getAttribute("data-remove-gap"));
+        renderFocusPage();
+      });
+    });
+  }
+
   // ---------- Dashboard ----------
   function renderDashboard() {
     let totalCards = FLASHCARDS.length;
@@ -343,56 +398,20 @@
       );
     }).join("");
 
-    // Schwierige Karten und Wissenslücken sind jetzt IMMER sichtbar (mit
-    // Leerzustand-Text statt komplett zu verschwinden) und stehen ganz oben im
-    // Dashboard als EIN gemeinsamer, einklappbarer Reiter (statt zwei
-    // dauerhaft sichtbaren Tabs, die oben zu viel Platz beanspruchen) — vorher
-    // waren sie weiter unten und bei leerem Zustand komplett unauffindbar.
-    const difficultCards = window.SRS.getDifficultCards(FLASHCARDS, progress, 12);
-    const difficultPanelHtml =
-      (difficultCards.length === 0 ?
-        '<p class="muted">Aktuell keine Karte mit „Nochmal" oder „Schwer" bewertet — guter Stand!</p>' :
-        '<p class="muted">Zuletzt mit „Nochmal" oder „Schwer" bewertet.</p>' +
-        '<ul class="gap-list">' +
-        difficultCards.slice(0, 6).map(function (c) {
-          return '<li class="gap-item"><span>' + escapeHtml(c.front) + '<span class="gap-source"> — ' + escapeHtml(moduleById(c.module).title) + "</span></span></li>";
-        }).join("") +
-        "</ul>" +
-        (difficultCards.length > 6 ? '<p class="muted">… und ' + (difficultCards.length - 6) + ' weitere.</p>' : "") +
-        '<div class="cta-row"><a class="btn btn-sm btn-secondary" href="#/learn-session/difficult">Schwierige Karten üben</a></div>');
-
-    const gaps = window.SRS.loadGaps();
-    const gapsPanelHtml =
-      (gaps.length === 0 ?
-        '<p class="muted">Noch keine offenen Wissenslücken. Tippe/klicke beim Lernen ein unbekanntes Wort an — findet sich dazu keine Karte, landet der Begriff hier.</p>' :
-        '<p class="muted">Begriffe, die du markiert hast, zu denen es aber noch keine Karteikarte gibt.</p>' +
-        '<ul class="gap-list">' +
-        gaps.map(function (g) {
-          return (
-            '<li class="gap-item"><span>' + escapeHtml(g.term) + (g.source ? '<span class="gap-source"> — aus: ' + escapeHtml(g.source) + "</span>" : "") + "</span>" +
-            '<button class="btn btn-sm btn-secondary" data-remove-gap="' + escapeHtml(g.term) + '">Erledigt</button></li>'
-          );
-        }).join("") +
-        "</ul>");
-
-    // Nur aufgeklappt, wenn es tatsächlich etwas zu review'n gibt — sonst bleibt
-    // der Reiter geschlossen und beansprucht ganz oben nur eine Zeile.
-    const hasFocusItems = difficultCards.length > 0 || gaps.length > 0;
-    const focusTabsHtml =
-      '<details class="focus-tabs"' + (hasFocusItems ? " open" : "") + '>' +
-      '<summary>Schwierige Karten (' + difficultCards.length + ') &amp; Wissenslücken (' + gaps.length + ')</summary>' +
-      '<div class="focus-tab-panel">' +
-      "<h3>Schwierige Karten</h3>" + difficultPanelHtml +
-      "<h3>Wissenslücken</h3>" + gapsPanelHtml +
-      "</div>" +
-      "</details>";
+    // Schwierige Karten und Wissenslücken stehen ganz oben im Dashboard als
+    // EIN klickbarer Reiter, der auf eine eigene Seite führt (#/fokus) — bewusst
+    // KEIN Inline-Ausklappen mehr, damit das Dashboard oben kompakt eine Zeile
+    // bleibt statt bei Inhalt gleich mehrere Listen mit anzuzeigen.
+    const focus = getFocusData();
+    const focusTabHtml =
+      '<a class="focus-tab-link" href="#/fokus">Schwierige Karten (' + focus.difficultCards.length + ') &amp; Wissenslücken (' + focus.gaps.length + ') <span class="focus-tab-arrow">→</span></a>';
 
     const streak = window.SRS.getStreak();
     app.innerHTML =
       nav("dashboard") +
       '<main class="container">' +
       '<h1>Dein DESA-Lernstand</h1>' +
-      focusTabsHtml +
+      focusTabHtml +
       '<div class="stat-cards">' +
       '<div class="stat-card"><div class="stat-value">' + (streak > 0 ? "🔥 " + streak : streak) + '</div><div class="stat-label">Tage-Streak</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + totalStarted + " / " + totalCards + '</div><div class="stat-label">Karten begonnen</div></div>' +
@@ -411,13 +430,6 @@
       "</details>" +
       '<p class="muted"><a href="#" id="show-onboarding-link">Kurzanleitung erneut anzeigen</a></p>' +
       "</main>";
-
-    document.querySelectorAll("[data-remove-gap]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        window.SRS.removeGap(btn.getAttribute("data-remove-gap"));
-        renderDashboard();
-      });
-    });
 
   }
 
