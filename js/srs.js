@@ -1,12 +1,31 @@
-// Spaced-Repetition-Engine (vereinfachtes Leitner-System mit 6 Boxen).
+// Spaced-Repetition-Engine: SM-2-artiger Ease-Factor-Algorithmus (wie SuperMemo-2/Anki)
+// statt starrer Box-Intervalle. Jede Karte hat ein individuelles Intervall (Tage) und
+// einen Ease-Faktor, der sich mit jeder Bewertung anpasst — leichte Karten wachsen
+// schneller über größere Intervalle, schwierige bleiben kürzer getaktet, statt pauschal
+// derselben festen Stufenfolge zu folgen. Das ist die am breitesten evidenzbasierte und
+// in der Praxis (u.a. Anki, über Jahrzehnte an Millionen Nutzern empirisch verfeinert)
+// bewährte Variante gegenüber einem reinen Fixintervall-Leitner-System.
 // Speichert Fortschritt und Testergebnisse in localStorage (rein lokal, kein Server).
 (function () {
   const PROGRESS_KEY = "desa_progress_v1";
   const RESULTS_KEY = "desa_testresults_v1";
 
-  // Intervall in Tagen je Box (Box 0 = neu/gerade falsch beantwortet -> sofort wieder fällig)
-  const BOX_INTERVALS = [0, 1, 3, 7, 16, 35];
-  const MAX_BOX = BOX_INTERVALS.length - 1;
+  const EASE_DEFAULT = 2.5;
+  const EASE_MIN = 1.3;
+  const INTERVAL_CAP_DAYS = 120; // Prüfungsvorbereitung hat einen Horizont von Monaten, kein unbegrenztes Wachstum nötig
+  // Alte Fixintervalle, NUR noch zur Migration bestehender Fortschrittsdaten (Nutzer, die
+  // vor dem Umstieg auf den Ease-Factor-Algorithmus schon Karten gelernt hatten) sowie zur
+  // Herleitung der Lernphasen-Anzeige (Neu/Lernend/Jung/Reif) aus dem aktuellen Intervall.
+  const LEGACY_BOX_INTERVALS = [0, 1, 3, 7, 16, 35];
+
+  function stageFromInterval(days) {
+    if (days >= 35) return 5;
+    if (days >= 16) return 4;
+    if (days >= 7) return 3;
+    if (days >= 3) return 2;
+    if (days >= 1) return 1;
+    return 0;
+  }
 
   function loadProgress() {
     try {
@@ -49,7 +68,15 @@
   }
 
   function getCardState(progress, cardId) {
-    return progress[cardId] || { box: 0, due: todayISO(), reps: 0, lapses: 0 };
+    const raw = progress[cardId];
+    if (!raw) return { interval: 0, ease: EASE_DEFAULT, box: 0, due: todayISO(), reps: 0, lapses: 0 };
+    // Migration: Datensätze aus der Zeit vor dem Ease-Factor-Algorithmus kennen nur
+    // "box", kein "interval"/"ease" — Startintervall aus der bisherigen Box ableiten,
+    // damit kein bereits erarbeiteter Fortschritt verloren geht.
+    const interval = typeof raw.interval === "number" ? raw.interval :
+      LEGACY_BOX_INTERVALS[Math.min(typeof raw.box === "number" ? raw.box : 0, LEGACY_BOX_INTERVALS.length - 1)];
+    const ease = typeof raw.ease === "number" ? raw.ease : EASE_DEFAULT;
+    return Object.assign({}, raw, { interval: interval, ease: ease, box: stageFromInterval(interval) });
   }
 
   function isDue(state) {
@@ -57,31 +84,39 @@
   }
 
   // rating: "again" | "hard" | "good" | "easy"
+  // SM-2-artige Anpassung: "again" senkt den Ease-Faktor deutlich und setzt das Intervall
+  // zurück (Karte erscheint sofort erneut); "hard" senkt Ease leicht bei nur langsamem
+  // Intervallwachstum; "good" folgt der klassischen SM-2-Formel Intervall = Intervall × Ease;
+  // "easy" erhöht zusätzlich den Ease-Faktor und multipliziert mit einem Easy-Bonus (1,3) —
+  // dieselben Grundprinzipien wie bei Anki, das diese Parameter über Jahre an sehr großen
+  // Nutzerzahlen empirisch validiert hat.
   function reviewCard(progress, cardId, rating) {
     const state = getCardState(progress, cardId);
-    let box = state.box;
+    let ease = state.ease;
+    let interval = state.interval;
     let lapses = state.lapses || 0;
     let reps = (state.reps || 0) + 1;
-    let dueDays;
 
     if (rating === "again") {
-      box = 0;
+      ease = Math.max(EASE_MIN, ease - 0.2);
+      interval = 0; // sofort wieder fällig (erscheint erneut in dieser Session)
       lapses += 1;
-      dueDays = 0; // sofort wieder fällig (erscheint erneut in dieser Session)
     } else if (rating === "hard") {
-      box = Math.max(1, box);
-      dueDays = BOX_INTERVALS[box];
+      ease = Math.max(EASE_MIN, ease - 0.15);
+      interval = interval > 0 ? Math.max(1, Math.round(interval * 1.2)) : 1;
     } else if (rating === "good") {
-      box = Math.min(MAX_BOX, box + 1);
-      dueDays = BOX_INTERVALS[box];
+      interval = interval > 0 ? Math.round(interval * ease) : 1;
     } else if (rating === "easy") {
-      box = Math.min(MAX_BOX, box + 2);
-      dueDays = Math.round(BOX_INTERVALS[box] * 1.3);
+      ease = ease + 0.15;
+      interval = interval > 0 ? Math.round(interval * ease * 1.3) : 4;
     }
+    interval = Math.min(interval, INTERVAL_CAP_DAYS);
 
     const newState = {
-      box: box,
-      due: addDays(new Date(), dueDays).toISOString(),
+      interval: interval,
+      ease: ease,
+      box: stageFromInterval(interval),
+      due: addDays(new Date(), interval).toISOString(),
       reps: reps,
       lapses: lapses,
       lastReview: todayISO(),
@@ -120,7 +155,7 @@
   function scheduleSoon(progress, cardId) {
     const existing = progress[cardId];
     if (!existing) {
-      progress[cardId] = { box: 0, due: todayISO(), reps: 0, lapses: 0, lastReview: null };
+      progress[cardId] = { interval: 0, ease: EASE_DEFAULT, box: 0, due: todayISO(), reps: 0, lapses: 0, lastReview: null };
     } else {
       const tomorrow = addDays(new Date(), 1).toISOString();
       const dueSooner = new Date(existing.due) < new Date(tomorrow) ? existing.due : tomorrow;
@@ -332,8 +367,8 @@
   }
 
   window.SRS = {
-    BOX_INTERVALS: BOX_INTERVALS,
-    MAX_BOX: MAX_BOX,
+    EASE_DEFAULT: EASE_DEFAULT,
+    EASE_MIN: EASE_MIN,
     loadProgress: loadProgress,
     saveProgress: saveProgress,
     loadResults: loadResults,

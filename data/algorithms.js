@@ -25,6 +25,14 @@ window.ALGORITHMS = [
       "Bei weiterhin schockbarem Rhythmus nach dem 5. Schock: zweite Amiodaron-Dosis 150mg i.v./i.o. (bei Amiodaron-Kontraindikation/-Unverträglichkeit alternativ Lidocain); bei anhaltend refraktärem VF/pVT Wechsel der Defibrillator-Pad-Position (anterior-posterior) oder Doppel-Sequenz-Defibrillation erwägen",
       "Parallel reversible Ursachen suchen und behandeln (4H: Hypoxie, Hypovolämie, Hypo-/Hyperkaliämie/metabolisch, Hypo-/Hyperthermie; 4T: Herzbeuteltamponade, Toxine, Thrombose koronar/pulmonal, Spannungspneumothorax)",
       "Bei ROSC: Post-Reanimationsbehandlung einleiten (Oxygenierung/Ventilation optimieren, Blutdruck sichern, 12-Kanal-EKG, Ursache gezielt behandeln)"
+    ],
+    // Kurzlabels für die visuelle Flowchart-Übersicht (siehe renderAlgoFlowchart in app.js) —
+    // bewusst knapp gehalten, der volle Wortlaut steht weiterhin in der Timeline darunter.
+    flowLabels: [
+      "Alarmieren + Defi anfordern", "CPR beginnen (30:2)", "Monitor/Defi anschließen",
+      "Rhythmus: VF/pVT", "1. Schock", "CPR 2 Min", "Weiter schockbar → 2. Schock",
+      "CPR 2 Min", "3. Schock → Adrenalin + Amiodaron", "CPR-Zyklus fortführen",
+      "Nach 5. Schock: 2. Amiodaron / Pad-Wechsel", "4H/4T behandeln", "ROSC → Post-Reanimation"
     ]
   },
   {
@@ -44,6 +52,12 @@ window.ALGORITHMS = [
       "Parallel reversible Ursachen suchen und behandeln (4H: Hypoxie, Hypovolämie, Hypo-/Hyperkaliämie/metabolisch, Hypo-/Hyperthermie; 4T: Herzbeuteltamponade, Toxine, Thrombose koronar/pulmonal, Spannungspneumothorax)",
       "Bei Wechsel zu schockbarem Rhythmus (VF/pVT) → sofort in den Schockbar-Algorithmus wechseln",
       "Bei ROSC: Post-Reanimationsbehandlung einleiten"
+    ],
+    flowLabels: [
+      "Alarmieren + Defi anfordern", "CPR beginnen (30:2)", "Monitor/Defi anschließen",
+      "Rhythmus: PEA/Asystolie", "CPR + Adrenalin sofort", "CPR 2 Min",
+      "Weiter nicht schockbar", "Adrenalin alle 3–5 Min", "4H/4T behandeln",
+      "Wechsel zu schockbar? → Algorithmus wechseln", "ROSC → Post-Reanimation"
     ]
   },
   {
@@ -62,6 +76,13 @@ window.ALGORITHMS = [
       "Maskenbeatmung NICHT erfolgreich (weder Intubation noch SGA noch Maske möglich) → Team-Ansage 'CICO' (Can't Intubate, Can't Oxygenate) explizit und laut aussprechen, um sofortigen Wechsel zu Plan D auszulösen",
       "Plan D: Sofortiger chirurgischer Atemweg (Front-of-Neck-Access) ohne weitere Verzögerung – standardisierte Skalpell-Bougie-Tubus-Technik: vertikaler Hautschnitt über der Membrana cricothyroidea, horizontale Stichinzision der Membran, Bougie einführen, Tubus über Bougie vorschieben",
       "Nach Atemwegssicherung: Oxygenierung mit Kapnographie bestätigen, Ereignis dokumentieren, Patient/Team nachbesprechen (Debriefing), Atemwegs-Alertkarte für Patient/Akte ausstellen"
+    ],
+    flowLabels: [
+      "Plan A: Lagerung + Videolaryngoskopie", "Intubation (max. 3+1 Versuche)",
+      "Misserfolg → Oxygenierung + optimieren", "Plan B: SGA 2. Generation",
+      "SGA erfolgreich → weiter/Intubation via SGA", "SGA erfolglos → Plan C: Maske",
+      "Maske erfolgreich → aufwachen/planen", "Maske erfolglos → CICO ausrufen",
+      "Plan D: Chirurgischer Atemweg (FONA)", "Sicherung bestätigen, Debriefing"
     ]
   },
   {
@@ -80,6 +101,12 @@ window.ALGORITHMS = [
       "Antihistaminikum und Kortikosteroid sind laut aktueller RCUK-Leitlinie 2021 NICHT mehr Teil der Akuttherapie der ersten Stunden (kein belegter Nutzen für Akutverlauf) – allenfalls sehr nachrangig/unterstützend nach Stabilisierung erwägen, niemals Adrenalin verzögern oder ersetzen",
       "Mastzelltryptase abnehmen (sofort, nach 1–2h, nach 24h zur Bestätigung)",
       "Nach Stabilisierung: Überwachung wegen möglicher biphasischer Reaktion, allergologische Abklärung veranlassen"
+    ],
+    flowLabels: [
+      "Auslöser stoppen", "Hilfe + ABCDE", "Adrenalin (i.v. titriert im OP / i.m. sonst)",
+      "Lagerung + O2", "i.v.-Zugang + Volumen", "Keine Besserung → Adrenalin wiederholen",
+      "Refraktär → Adrenalin-Infusion", "Antihistaminikum/Steroid nur nachrangig",
+      "Tryptase abnehmen", "Überwachung + Abklärung"
     ]
   },
   {
@@ -98,6 +125,12 @@ window.ALGORITHMS = [
       "Hyperkaliämie behandeln (Calcium, Insulin/Glukose, Hyperventilation), Arrhythmien behandeln",
       "Ausreichende Diurese sicherstellen (Rhabdomyolyse-/Myoglobinurie-Risiko)",
       "Verlegung auf Intensivstation, spätere MH-Abklärung (Muskelbiopsie/Gentest) und Familienberatung veranlassen"
+    ],
+    flowLabels: [
+      "Trigger stoppen", "Hilfe + Dantrolen anfordern", "Hyperventilation 100% O2",
+      "OP beenden/unterbrechen", "Dantrolen 2,5mg/kg", "Aktive Kühlung",
+      "Monitoring (Temp, EtCO2, K+, CK)", "Hyperkaliämie/Arrhythmien behandeln",
+      "Diurese sichern", "ITS + MH-Abklärung"
     ]
   },
   {
@@ -118,6 +151,13 @@ window.ALGORITHMS = [
       "Reanimation fortsetzen, ggf. deutlich länger als üblich – Erholung nach Lipidgabe kann verzögert eintreten",
       "Bei therapierefraktärem Kreislaufstillstand: kardiopulmonalen Bypass/ECMO erwägen, falls verfügbar",
       "Nach Stabilisierung: engmaschige Überwachung (Rezidivrisiko durch Rückverteilung), Dokumentation"
+    ],
+    flowLabels: [
+      "Frühzeichen → Gabe stoppen", "Atemweg + O2", "Krampf → Benzodiazepin",
+      "Kollaps → ALS (reduziertes Adrenalin)", "Vasopressin/CCB/BB vermeiden",
+      "Lidocain vermeiden, Amiodaron statt", "Lipidemulsion-Bolus", "Lipid-Infusion fortführen",
+      "Instabil → Bolus wiederholen", "Reanimation verlängert fortsetzen",
+      "Refraktär → Bypass/ECMO", "Überwachung + Dokumentation"
     ]
   },
   {
