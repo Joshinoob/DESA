@@ -278,6 +278,7 @@
   function nav(activeRoute) {
     const items = [
       ["dashboard", "Dashboard"],
+      ["fokus", "Wissenslücken"],
       ["learn", "Lernen"],
       ["test", "Test"],
       ["algorithms", "Algorithmen"],
@@ -304,10 +305,8 @@
   }
 
   // ---------- Fokus (Schwierige Karten & Wissenslücken) ----------
-  // Eigene, per Klick auf den Dashboard-Reiter erreichbare Seite statt einer
-  // Inline-Ausklappung — hält das Dashboard oben kompakt (nur eine klickbare
-  // Zeile) und gibt den beiden Listen trotzdem genug Raum, wenn man sie
-  // tatsächlich braucht.
+  // Eigene Seite, erreichbar über den Reiter "Wissenslücken" ganz oben in der
+  // Hauptnavigation (nicht mehr nur als Link innerhalb des Dashboards).
   function getFocusData() {
     const difficultCards = window.SRS.getDifficultCards(FLASHCARDS, progress, 12);
     const gaps = window.SRS.loadGaps();
@@ -341,7 +340,7 @@
         "</ul>");
 
     app.innerHTML =
-      nav("dashboard") +
+      nav("fokus") +
       '<main class="container narrow">' +
       '<a class="back-link" href="#/dashboard">← Zum Dashboard</a>' +
       "<h1>Schwierige Karten &amp; Wissenslücken</h1>" +
@@ -398,20 +397,11 @@
       );
     }).join("");
 
-    // Schwierige Karten und Wissenslücken stehen ganz oben im Dashboard als
-    // EIN klickbarer Reiter, der auf eine eigene Seite führt (#/fokus) — bewusst
-    // KEIN Inline-Ausklappen mehr, damit das Dashboard oben kompakt eine Zeile
-    // bleibt statt bei Inhalt gleich mehrere Listen mit anzuzeigen.
-    const focus = getFocusData();
-    const focusTabHtml =
-      '<a class="focus-tab-link" href="#/fokus">Schwierige Karten (' + focus.difficultCards.length + ') &amp; Wissenslücken (' + focus.gaps.length + ') <span class="focus-tab-arrow">→</span></a>';
-
     const streak = window.SRS.getStreak();
     app.innerHTML =
       nav("dashboard") +
       '<main class="container">' +
       '<h1>Dein DESA-Lernstand</h1>' +
-      focusTabHtml +
       '<div class="stat-cards">' +
       '<div class="stat-card"><div class="stat-value">' + (streak > 0 ? "🔥 " + streak : streak) + '</div><div class="stat-label">Tage-Streak</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + totalStarted + " / " + totalCards + '</div><div class="stat-label">Karten begonnen</div></div>' +
