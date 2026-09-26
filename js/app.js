@@ -35,10 +35,14 @@
     const s = m.subtopics.find(function (s) { return s.id === subtopicId; });
     return s ? s.title : subtopicId;
   }
+  // div.textContent/innerHTML escaped zuverlässig &, < und > (als HTML-Textknoten-Inhalt),
+  // NICHT aber " und ' — diese Funktion wird aber im ganzen Code auch innerhalb doppelt
+  // gequoteter HTML-Attribute (data-*, aria-label) verwendet, wo ein wörtliches "
+  // das Attribut vorzeitig beenden würde. Daher zusätzlich manuell ersetzen.
   function escapeHtml(str) {
     const div = document.createElement("div");
     div.textContent = str;
-    return div.innerHTML;
+    return div.innerHTML.split('"').join("&quot;").split("'").join("&#39;");
   }
 
   // Strukturiertes Steckbrief-Layout (Medikamenten-Karten): jedes Feld ein eigener,
