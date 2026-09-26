@@ -528,6 +528,13 @@
       '<div class="flashcard-front lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.front) + "</div>" +
       '<div class="' + backClass + '" id="flashcard-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + backContent + "</div>" +
       "</div>" +
+      // Optionales, nicht gespeichertes Notizfeld VOR dem Aufdecken: der Generierungs-
+      // Effekt (aktives Formulieren einer Antwort verbessert das Behalten gegenüber
+      // reinem Wiedererkennen) — bewusst als einzeiliger, standardmäßig eingeklappter
+      // Link umgesetzt statt eines permanent sichtbaren Pflichtfelds, damit der sonst
+      // sehr kompakte Karteikarten-Ablauf nicht zusätzlich überladen wird.
+      '<button type="button" class="scratch-toggle muted" id="scratch-toggle">✏️ Kurz aufschreiben, bevor du aufdeckst (optional)</button>' +
+      '<textarea class="scratch-input hidden" id="scratch-input" rows="2" placeholder="Nur für dich – wird nirgends gespeichert oder ausgewertet…"></textarea>' +
       // 3 Konfidenzstufen (auf ausdrücklichen Nutzerwunsch wiederhergestellt) —
       // wichtig ist, dass nie alle 7 Buttons gleichzeitig sichtbar sind: erst die
       // 3 Konfidenz-Buttons, nach dem Aufdecken (reveal-row wird versteckt) dann
@@ -548,6 +555,15 @@
       '<p class="lookup-hint muted">Tipp: tippe/klicke ein unklares Wort (z.B. „PRIS“) an, um es nachzuschlagen. Am PC gehen auch die Zifferntasten.</p>' +
       "</main>";
     wrapAllLookupSources();
+
+    const scratchToggle = document.getElementById("scratch-toggle");
+    if (scratchToggle) {
+      scratchToggle.addEventListener("click", function () {
+        document.getElementById("scratch-input").classList.remove("hidden");
+        document.getElementById("scratch-input").focus();
+        scratchToggle.classList.add("hidden");
+      }, { once: true });
+    }
 
     // Konfidenz-Auswahl deckt die Karte sofort auf (kein zusätzlicher Klick) —
     // erfasst aber vorab die Selbsteinschätzung, um sie später mit dem
@@ -977,6 +993,84 @@
     );
   }
 
+  // Original, selbst generiertes Inline-SVG-Flussdiagramm aus den vorhandenen
+  // Schritt-Kurzlabels (flowLabels in algorithms.js) — keine externen Bilder, daher kein
+  // Lizenzrisiko. Ergänzt die Text-Timeline um eine kompakte visuelle Gesamtübersicht
+  // (Dual-Coding-Prinzip: Bild + Text verbessert nachweislich das Behalten gegenüber Text
+  // allein), ersetzt sie aber nicht — der volle Wortlaut steht weiterhin darunter.
+  // revealedCount (optional): im Trainer-Modus genutzt für ein Occlusion-Prinzip — nur
+  // bereits aufgedeckte Schritte werden mit ihrem echten Label gezeigt, der aktuelle
+  // Schritt erscheint als "?"-Box, alles danach wird noch nicht angezeigt. Erzwingt
+  // aktives Erinnern an die räumliche Position im Ablauf statt passives Wiedererkennen.
+  function renderAlgoFlowchartSVG(algo, revealedCount) {
+    if (!algo.flowLabels || !algo.flowLabels.length) return "";
+    const isQuizMode = typeof revealedCount === "number";
+    const labels = isQuizMode ?
+      algo.flowLabels.slice(0, revealedCount).concat(revealedCount < algo.flowLabels.length ? ["?"] : []) :
+      algo.flowLabels;
+    const boxWidth = 280;
+    const totalWidth = boxWidth + 20;
+    const lineHeight = 15;
+    const gapY = 20;
+    const boxMinHeight = 36;
+    const maxCharsPerLine = 30;
+
+    function wrapLabel(text) {
+      const words = text.split(" ");
+      const lines = [];
+      let current = "";
+      words.forEach(function (w) {
+        const test = current ? current + " " + w : w;
+        if (test.length > maxCharsPerLine && current) {
+          lines.push(current);
+          current = w;
+        } else {
+          current = test;
+        }
+      });
+      if (current) lines.push(current);
+      return lines;
+    }
+
+    let y = 10;
+    const boxes = labels.map(function (label, i) {
+      const isCurrent = isQuizMode && label === "?";
+      const lines = isCurrent ? ["?"] : wrapLabel(label);
+      const height = Math.max(boxMinHeight, lines.length * lineHeight + 16);
+      const isDecision = !isCurrent && (/→/.test(label) || /^Plan /.test(label));
+      const box = { y: y, height: height, lines: lines, isDecision: isDecision, isCurrent: isCurrent };
+      y += height + gapY;
+      return box;
+    });
+    const totalHeight = y - gapY + 10;
+    const midX = totalWidth / 2;
+
+    const boxesSvg = boxes.map(function (b) {
+      const cls = "flow-box " + (b.isCurrent ? "flow-box-current" : b.isDecision ? "flow-box-decision" : "flow-box-action");
+      const textSvg = b.lines.map(function (line, li) {
+        const ty = b.y + b.height / 2 - ((b.lines.length - 1) * lineHeight) / 2 + li * lineHeight + 4;
+        return '<text x="' + midX + '" y="' + ty + '" text-anchor="middle" class="flow-text' + (b.isCurrent ? " flow-text-current" : "") + '">' + escapeHtml(line) + "</text>";
+      }).join("");
+      return '<rect x="10" y="' + b.y + '" width="' + boxWidth + '" height="' + b.height + '" rx="8" class="' + cls + '"></rect>' + textSvg;
+    }).join("");
+
+    const arrowsSvg = boxes.slice(0, -1).map(function (b, i) {
+      const fromY = b.y + b.height;
+      const toY = boxes[i + 1].y;
+      return (
+        '<line x1="' + midX + '" y1="' + fromY + '" x2="' + midX + '" y2="' + (toY - 7) + '" class="flow-arrow-line"></line>' +
+        '<polygon points="' + (midX - 5) + "," + (toY - 7) + " " + (midX + 5) + "," + (toY - 7) + " " + midX + "," + toY + '" class="flow-arrow-head"></polygon>'
+      );
+    }).join("");
+
+    return (
+      '<div class="algo-flowchart">' +
+      '<svg viewBox="0 0 ' + totalWidth + " " + totalHeight + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ablaufdiagramm: ' + escapeHtml(algo.title) + '">' +
+      arrowsSvg + boxesSvg +
+      "</svg></div>"
+    );
+  }
+
   function renderAlgorithmReference(id) {
     const algo = algorithmById(id);
     if (!algo) { renderAlgorithmList(); return; }
@@ -995,6 +1089,7 @@
       '<a class="back-link" href="#/' + homeRoute + '">← ' + (homeRoute === "physiologie" ? "Alle Physiologie-Mechanismen" : "Alle Algorithmen") + '</a>' +
       "<h1>" + escapeHtml(algo.title) + "</h1>" +
       '<p class="muted">Quelle: ' + escapeHtml(algo.source) + "</p>" +
+      renderAlgoFlowchartSVG(algo) +
       '<ol class="algo-timeline">' + stepsHtml + "</ol>" +
       '<div class="cta-row"><a class="btn btn-primary" href="#/algorithm-quiz/' + algo.id + '">Als Trainer üben</a></div>' +
       "</main>";
@@ -1039,7 +1134,7 @@
       '<main class="container narrow">' +
       '<a class="back-link" href="#/' + homeRoute + '">← Trainer verlassen</a>' +
       '<div class="session-progress">' + escapeHtml(algo.title) + " · Schritt " + (state.index + 1) + " / " + algo.steps.length + "</div>" +
-      '<ol class="algo-timeline">' + revealedHtml + "</ol>" +
+      (algo.flowLabels ? renderAlgoFlowchartSVG(algo, state.revealed.length) : '<ol class="algo-timeline">' + revealedHtml + "</ol>") +
       '<p class="algo-question">Was ist der nächste Schritt?</p>' +
       '<div class="options" id="algo-options">' +
       options.map(function (opt, i) {

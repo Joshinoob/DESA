@@ -379,6 +379,31 @@ select, input[type="text"] {
 
 .lookup-hint { margin-top: 18px; font-size: 0.8rem; }
 
+.scratch-toggle {
+  display: block;
+  margin: 10px 0 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: left;
+}
+.scratch-input {
+  display: block;
+  width: 100%;
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  resize: vertical;
+}
+
 /* Sofort-Vorschau: zeigt den gefundenen Lerninhalt direkt an, statt nur die
    Warteschlange umzusortieren — der Wissensdurst wird sofort gestillt. */
 .lookup-modal-backdrop {
@@ -541,6 +566,17 @@ select, input[type="text"] {
 }
 .algo-step.done .algo-step-num { background: rgba(63, 178, 127, 0.2); color: var(--green); }
 .algo-question { font-size: 1rem; font-weight: 600; margin: 10px 0 14px; }
+
+.algo-flowchart { margin: 16px 0; display: flex; justify-content: center; }
+.algo-flowchart svg { width: 100%; max-width: 340px; height: auto; display: block; }
+.flow-box { stroke-width: 1.5; }
+.flow-box-action { fill: var(--surface-2); stroke: var(--accent); }
+.flow-box-decision { fill: var(--surface-2); stroke: var(--orange); }
+.flow-box-current { fill: var(--surface); stroke: var(--text-muted); stroke-dasharray: 4 3; }
+.flow-text-current { font-weight: 700; fill: var(--text-muted); }
+.flow-text { fill: var(--text); font-size: 12px; font-family: inherit; }
+.flow-arrow-line { stroke: var(--text-muted); stroke-width: 1.5; }
+.flow-arrow-head { fill: var(--text-muted); }
 
 @media (max-width: 640px) {
   .algo-grid { grid-template-columns: 1fr; }
