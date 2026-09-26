@@ -371,22 +371,6 @@ select, input[type="text"] {
 }
 .gap-item .gap-source { color: var(--text-muted); font-size: 0.78rem; }
 
-.focus-tab-link {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin: 16px 0 24px;
-  padding: 14px 18px;
-  font-weight: 600;
-  color: var(--text);
-  text-decoration: none;
-}
-.focus-tab-link:hover { background: var(--surface-2); }
-.focus-tab-arrow { color: var(--text-muted); font-weight: 400; }
-
 .module-details summary { cursor: pointer; list-style: none; }
 .module-details summary::-webkit-details-marker { display: none; }
 .module-details summary h2 { display: inline-block; margin: 0; }
