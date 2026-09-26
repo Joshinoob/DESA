@@ -561,7 +561,7 @@
         document.getElementById("reveal-step-label").classList.add("hidden");
         document.getElementById("rating-row").classList.remove("hidden");
         document.getElementById("rating-step-label").classList.remove("hidden");
-      });
+      }, { once: true });
     });
     document.querySelectorAll("#rating-row button").forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -575,7 +575,7 @@
         learnQueue.shift();
         if (rating === "again") learnQueue.splice(Math.min(3, learnQueue.length), 0, card);
         renderLearnCard();
-      });
+      }, { once: true });
     });
   }
 
