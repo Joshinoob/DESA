@@ -28,7 +28,7 @@ window.TABLES = [
       ["Succinylcholin", "Depolarisierend", "Agonist am nikotinischen ACh-Rezeptor der motorischen Endplatte → anhaltende Depolarisation der Endplattenregion → Na+-Kanäle inaktivieren und bleiben refraktär (Depolarisationsblock, Phase I); bei sehr hoher Dosis/verlängerter Exposition Übergang in einen atypischen, kompetitiven-artigen Phase-II-Block", "1–1,5mg/kg", "30–60s", "5–10min", "Pseudocholinesterase", "Keines spezifisch"],
       ["Rocuronium", "Aminosteroid", "Kompetitiver Antagonist am nikotinischen ACh-Rezeptor → blockiert die ACh-Bindungsstelle, ohne den Rezeptor zu aktivieren → keine Depolarisation, schlaffe Lähmung", "0,6mg/kg (RSI 1,2mg/kg)", "60–90s (RSI)", "30–60min", "Hepatisch", "Sugammadex"],
       ["Vecuronium", "Aminosteroid", "Kompetitiver Antagonist am nikotinischen ACh-Rezeptor (wie Rocuronium)", "0,08–0,1mg/kg", "2,5–3min", "30–40min", "Hepatisch/renal", "Sugammadex"],
-      ["Pancuronium", "Aminosteroid", "Kompetitiver Antagonist am nikotinischen ACh-Rezeptor; zusätzlich leichte vagolytische Wirkung am kardialen M2-Rezeptor (Tachykardie)", "0,08–0,1mg/kg", "2–4min", "60–120min (lang)", "Renal (~80%)", "Sugammadex/Neostigmin"],
+      ["Pancuronium", "Aminosteroid", "Kompetitiver Antagonist am nikotinischen ACh-Rezeptor; zusätzlich leichte vagolytische Wirkung am kardialen M2-Rezeptor (Tachykardie)", "0,08–0,1mg/kg", "2–4min", "60–120min (lang)", "Renal (~80%)", "Neostigmin (Sugammadex für Pancuronium NICHT zugelassen)"],
       ["Atracurium", "Benzylisochinolin", "Kompetitiver Antagonist am nikotinischen ACh-Rezeptor; strukturbedingt Histaminfreisetzung möglich", "0,5mg/kg", "2–3min", "20–35min", "Hofmann-Elimination (organunabhängig)", "NUR Neostigmin (kein Sugammadex!)"],
       ["Cisatracurium", "Benzylisochinolin", "Kompetitiver Antagonist am nikotinischen ACh-Rezeptor; als Stereoisomer von Atracurium kaum Histaminfreisetzung", "0,15–0,2mg/kg", "~2min", "~45min", "Hofmann-Elimination (organunabhängig)", "NUR Neostigmin (kein Sugammadex!)"],
       ["Mivacurium", "Benzylisochinolin", "Kompetitiver Antagonist am nikotinischen ACh-Rezeptor", "0,15–0,2mg/kg", "2–3min", "15–20min (kürzeste)", "Pseudocholinesterase", "Neostigmin"]
@@ -39,7 +39,7 @@ window.TABLES = [
     title: "Lokalanästhetika im Überblick",
     columns: ["Substanz", "Typ", "Wirkmechanismus", "pKa (Wirkeintritt↑)", "Wirkdauer", "Max. Einzeldosis", "Besonderheit"],
     rows: [
-      ["Lidocain", "Amid", "Neutrale (nicht-ionisierte) Form diffundiert durch die Nervenmembran, protoniert sich intrazellulär und blockiert von innen spannungsabhängige Na+-Kanäle → verminderte Aufstrichgeschwindigkeit des Aktionspotentials → Hemmung der Impulsfortleitung. Rasche Kanalbindung/-dissoziation ('fast-in, fast-out') → geringe Kardiotoxizität", "7,9", "1–2h", "3–4,5 mg/kg (7 mg/kg mit Adrenalin)", "Geringstes LAST-Risiko der Amide"],
+      ["Lidocain", "Amid", "Neutrale (nicht-ionisierte) Form diffundiert durch die Nervenmembran, protoniert sich intrazellulär und blockiert von innen spannungsabhängige Na+-Kanäle → verminderte Aufstrichgeschwindigkeit des Aktionspotentials → Hemmung der Impulsfortleitung. Rasche Kanalbindung/-dissoziation ('fast-in, fast-out') → geringe Kardiotoxizität", "7,9", "1–2h", "3–4,5 mg/kg (7 mg/kg mit Adrenalin)", "Deutlich geringere Kardiotoxizität als Bupivacain (kein 'fast-in, slow-out'); insgesamt geringste systemische Toxizität der Amide hat aber Prilocain (schnellste Metabolisierung)"],
       ["Bupivacain", "Amid", "Wie Lidocain Na+-Kanal-Blockade von intrazellulär, jedoch sehr langsame Dissoziation vom Kanal ('fast-in, slow-out') → Kanal bleibt zwischen Aktionspotentialen blockiert → ausgeprägte Kardiotoxizität bei systemischer Exposition", "8,1", "4–8h (lang)", "~2 mg/kg", "Höchste Kardiotoxizität ('fast-in, slow-out')"],
       ["Levobupivacain", "Amid (S-Enantiomer)", "Gleicher Na+-Kanal-Mechanismus wie Bupivacain; das reine S-Enantiomer bindet kardiale Na+-Kanäle mit geringerer Affinität als das R-Enantiomer im Racemat → geringere Kardiotoxizität", "8,1", "4–8h", "150 mg", "Geringere Kardiotoxizität als Bupivacain"],
       ["Ropivacain", "Amid (S-Enantiomer)", "Na+-Kanal-Blockade wie Bupivacain, aber geringere Lipophilie → schwächere Blockade dicker, schnell leitender motorischer Aδ/Aα-Fasern relativ zu dünnen sensorischen C-Fasern → sensomotorische Dissoziation; zusätzlich intrinsische Vasokonstriktion", "8,1", "4–6h", "2,5–3 mg/kg", "Sensomotorische Dissoziation, geringere Toxizität"],
@@ -60,11 +60,11 @@ window.TABLES = [
       ["Niedermolekulares Heparin", "Protamin", "Nur partiell (~60%) wirksam"],
       ["Vitamin-K-Antagonisten", "Vitamin K + PPSB", "Vitamin K wirkt erst nach Stunden – PPSB für Soforteffekt"],
       ["Dabigatran", "Idarucizumab", "Spezifisch, sofortige vollständige Reversierung"],
-      ["Faktor-Xa-Inhibitoren (Apixaban/Rivaroxaban)", "Andexanet alfa", "Rebound-Anstieg der Anti-Xa-Aktivität möglich"],
+      ["Faktor-Xa-Inhibitoren (Apixaban/Rivaroxaban)", "PPSB (25–50 IE/kg); Andexanet alfa nur eingeschränkt verfügbar", "Andexanet alfa wegen Thromboserisiko (ANNEXA-I) Ende 2025 in USA vom Markt genommen; Rebound-Anstieg der Anti-Xa-Aktivität nach Andexanet möglich"],
       ["Paracetamol", "N-Acetylcystein", "Am wirksamsten <8h nach Einnahme"],
       ["Betablocker", "Glukagon", "Wirkt β-Rezeptor-unabhängig"],
       ["Kalziumkanalblocker/Hyperkaliämie", "Kalzium (Chlorid/Gluconat)", "Membranstabilisierung, senkt Kalium nicht"],
-      ["Lokalanästhetika-Systemtoxizität (LAST)", "Lipidemulsion 20% (Intralipid)", "Bolus 1,5 ml/kg, dann 0,25 ml/kg/min"],
+      ["Lokalanästhetika-Systemtoxizität (LAST)", "Lipidemulsion 20% (Intralipid)", "Patient <70kg: Bolus 1,5 ml/kg, dann 0,25 ml/kg/min. Patient ≥70kg (ASRA 2020, feste Dosierung statt Gewichtsbezug): Bolus 100 ml über 2–3min, dann Infusion 200–250 ml über 15–20min"],
       ["Maligne Hyperthermie", "Dantrolen", "Einzige spezifische Therapie, initial 2,5 mg/kg"],
       ["Methämoglobinämie", "Methylenblau", "Kontraindiziert bei G6PD-Mangel"],
       ["Cyanidvergiftung", "Hydroxocobalamin", "Verursacht harmlose Rotfärbung von Haut/Urin"],
@@ -74,12 +74,12 @@ window.TABLES = [
   {
     id: "nuechternheit",
     title: "Präoperative Nüchternheitszeiten: Erwachsene vs. Kinder",
-    columns: ["Nahrungsart", "Erwachsene (ESAIC)", "Kinder (APAGBI 2022)", "Besonderheit"],
+    columns: ["Nahrungsart", "Erwachsene (ESAIC)", "Kinder (ESAIC 2022 Pädiatrie-Leitlinie)", "Besonderheit"],
     rows: [
-      ["Klare Flüssigkeiten (Wasser, klarer Tee/Saft ohne Fruchtfleisch, schwarzer Kaffee)", "2 Stunden", "1 Stunde", "Gilt auch vor elektiver Sectio; Kaugummikauen/Bonbon unmittelbar vorher rechtfertigt KEINE OP-Verschiebung; letzte Stunde bei Kindern max. ca. 3ml/kg"],
-      ["Muttermilch", "–", "3 Stunden", "Häufigster Grund für unnötig lange Kinder-Nüchternzeiten in der Praxis"],
-      ["Säuglingsnahrung (Formula) / Kuhmilch", "6 Stunden (als feste Nahrung gewertet)", "6 Stunden", "Kuhmilch pharmakokinetisch wie feste Nahrung behandeln (Kaseingehalt)"],
-      ["Leichte Mahlzeit", "6 Stunden", "6 Stunden", "–"],
+      ["Klare Flüssigkeiten (Wasser, klarer Tee/Saft ohne Fruchtfleisch, schwarzer Kaffee)", "2 Stunden", "1 Stunde", "'6-4-3-1-Regel' (ESAIC 2022): 1h klare Flüssigkeiten. Gilt auch vor elektiver Sectio; Kaugummikauen/Bonbon unmittelbar vorher rechtfertigt KEINE OP-Verschiebung; letzte Stunde bei Kindern max. ca. 3ml/kg"],
+      ["Muttermilch", "–", "3 Stunden", "'6-4-3-1-Regel': 3h Muttermilch – häufigster Grund für unnötig lange Kinder-Nüchternzeiten in der Praxis"],
+      ["Säuglingsnahrung (Formula-/Fertignahrung)", "–", "4 Stunden", "'6-4-3-1-Regel': 4h Formulanahrung – NICHT mit fester Nahrung gleichsetzen (kürzer als früher gelehrte 6h)"],
+      ["Kuhmilch / Leichte Mahlzeit", "6 Stunden", "6 Stunden", "'6-4-3-1-Regel': 6h – Kuhmilch wird wie feste Nahrung behandelt (Kaseingehalt), anders als Formulanahrung"],
       ["Fetthaltige/schwere Mahlzeit, Fleisch", "8 Stunden", "8 Stunden", "Verzögerte Magenentleerung durch hohen Fettanteil"]
     ]
   },

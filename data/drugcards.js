@@ -114,15 +114,15 @@
       profile: {
         klasse: "i.v. Benzodiazepin (ultrakurzwirksam)",
         mechanismus: "Positiv allosterischer Modulator des GABA-A-Rezeptors (Benzodiazepin-Bindungsstelle), strukturell mit Esterase-Sollbruchstelle",
-        indikation: "Prozedurale Sedierung; Ein-/Erhaltung Allgemeinanästhesie (zulassungsabhängig)",
-        dosierung: "Individuelle Titration (Alter, ASA, Begleitmedikation) – kein fixes mg/kg-Schema, siehe Fachinfo",
-        pharmakokinetik: "Sehr schneller Wirkeintritt; Abbau durch Gewebe-Carboxylesterase-1 → inaktiv (organunabhängig, kein CYP450); kontextsens. HWZ 6–7min",
+        indikation: "In der EU zugelassen für prozedurale Sedierung bei Erwachsenen (Byfavo); Nutzung zur Ein-/Erhaltung der Allgemeinanästhesie außerhalb der EU-Zulassung bzw. länderabhängig",
+        dosierung: "Prozedurale Sedierung Erwachsene: initial 5mg langsam i.v. über ≥1min, bei Bedarf Repetition 2,5mg alle ≥2min bis zur gewünschten Sedierungstiefe; ältere/geschwächte Patienten (ASA III/IV): initial 2,5mg, Repetition 1mg – kein fixes mg/kg-Schema, individuelle Titration nach Fachinfo",
+        pharmakokinetik: "Sehr schneller Wirkeintritt; Abbau überwiegend durch gewebe-/blutständige Carboxylesterase-1 (v.a. leberreich) zu inaktivem Metaboliten – dadurch weitgehend unabhängig von hepatischer/renaler Funktion, ABER bei schwerer Leberinsuffizienz verminderte Esteraseaktivität mit reduzierter Clearance möglich (Dosisreduktion/engmaschige Titration); kontextsens. HWZ 6–7min",
         nebenwirkungen: "Hypotonie, Atemdepression, Bradykardie, Übelkeit/Erbrechen; gelegentlich Schluckauf, Hypothermie, Anaphylaxie",
-        kontraindikationen: "Überempfindlichkeit Benzodiazepine, instabile Myasthenia gravis, Schwangerschaft meiden",
+        kontraindikationen: "Überempfindlichkeit Benzodiazepine, Überempfindlichkeit gegen Dextran (Hilfsstoff Dextran-40 in der Formulierung – Anaphylaxierisiko), instabile Myasthenia gravis, Schwangerschaft meiden",
         interaktionen: "↑ZNS-/Atemdepression mit Opioiden/Sedativa",
         antidot: "Flumazenil",
-        cave: "Esterase-Metabolismus = organunabhängig (wie Remifentanil bei Opioiden) – zentraler Unterschied zu Midazolam",
-        quelle: "EU-Zulassung/Fachinfo Byfavo (EMA)"
+        cave: "Enthält Dextran-40 als Hilfsstoff → bei bekannter Dextran-Überempfindlichkeit kontraindiziert (Anaphylaxierisiko); Esterase-Metabolismus reduziert Organabhängigkeit deutlich, ist aber – anders als bei Remifentanil – bei schwerer Leberinsuffizienz nicht völlig unabhängig",
+        quelle: "Fachinfo Byfavo (EMA/EU-Zulassung)"
       }
     },
     {
@@ -134,7 +134,7 @@
         klasse: "Benzodiazepin (kurzwirksam)",
         mechanismus: "Positiv allosterischer Modulator des GABA-A-Rezeptors an der Benzodiazepin-Bindungsstelle",
         indikation: "Prämedikation, Sedierung, Kombinationsnarkose, ICU-Sedierung, Status epilepticus",
-        dosierung: "Prämedikation i.m. 0,07–0,1mg/kg; Sedierung i.v. 0,3–0,5mg/kg (titrieren); Kombinationsnarkose 0,03–0,1mg/kg bzw. 0,03–0,1mg/kg/h",
+        dosierung: "Prämedikation i.m. 0,07–0,1mg/kg; Sedierung i.v. 0,03–0,05mg/kg in Schritten titrieren (Gesamtdosis meist 0,05–0,1mg/kg); Kombinationsnarkose 0,03–0,1mg/kg bzw. 0,03–0,1mg/kg/h",
         pharmakokinetik: "Wirkeintritt i.v. 1–2min; hepatisch CYP3A4 → aktiver Metabolit; wasserlöslich sauer, lipophil bei physiol. pH",
         nebenwirkungen: "Atemdepression (+Opioide), Hypotonie, paradoxe Reaktion (Alte/Kinder), anterograde Amnesie",
         kontraindikationen: "Myasthenia gravis, schwere Ateminsuffizienz, Schlafapnoe; Leberinsuffizienz (↑Wirkdauer)",
@@ -190,14 +190,14 @@
       profile: {
         klasse: "Selektiver α2-Adrenozeptor-Agonist",
         mechanismus: "Agonismus an präsynaptischen α2-Rezeptoren im ZNS (Locus coeruleus) → ↓Noradrenalinfreisetzung → Sedierung/Anxiolyse/Analgesie ohne relevante Atemdepression",
-        indikation: "ICU-Sedierung (Ziel RASS 0 bis -3, erweckbar), Adjuvans Regional-/Allgemeinanästhesie",
+        indikation: "EU-zugelassen für ICU-Sedierung erwachsener Patienten (Ziel RASS 0 bis -3, erweckbar); Einsatz als Adjuvans in Regional-/Allgemeinanästhesie ist off-label",
         dosierung: "Initial 0,7µg/kg/h, Titration 0,2–1,4µg/kg/h; kein Bolus bei ICU-Umstellung",
         pharmakokinetik: "Wirkeintritt ~15min bis Steady State; hepatisch (Glucuronidierung, CYP2A6), renale Ausscheidung; ↓Dosis bei Leberinsuffizienz",
         nebenwirkungen: "Bradykardie, Hypotonie (initial ggf. Hypertonie durch α2B), Mundtrockenheit",
         kontraindikationen: "AV-Block II/III ohne Schrittmacher, unkontrollierte Hypotonie, akutes zerebrovaskuläres Ereignis",
         interaktionen: "↑Sedierung/Hypotonie mit ZNS-Dämpfern/Antihypertensiva",
         antidot: "Keines",
-        cave: "Einziges gängiges ICU-Sedativum ohne relevante Atemdepression – Sedierung bei Nicht-Intubierten möglich",
+        cave: "SPICE-III-Studie (NEJM 2019, frühe Dexmedetomidin-Sedierung beatmeter ICU-Patienten): kein Mortalitätsvorteil, aber mehr unerwünschte Ereignisse (Bradykardie, Hypotonie, Asystolie-Fälle) als Standardsedierung – kein Sedierungsstandard 'per se' besser, differenzierte Indikationsstellung nötig. Sedierung bei Nicht-Intubierten ohne relevante Atemdepression möglich",
         quelle: "Fachinfo Dexdor"
       }
     },
@@ -235,7 +235,7 @@
       kontraindikationen: "Überempfindlichkeit, schwere Ateminsuffizienz ohne Beatmungsmöglichkeit, aktuelle/kürzliche MAO-Hemmer-Therapie, erhöhter Hirndruck bei Spontanatmung",
       interaktionen: "CYP3A4-Inhibitoren (Azol-Antimykotika, Makrolide) verstärken die Wirkung; additive ZNS-/Atemdepression mit Sedativa/Alkohol",
       antidot: "Naloxon",
-      cave: "Schnelle hochdosierte Bolusgabe kann eine Thoraxrigidität (\"wooden chest\") mit Beatmungsproblemen auslösen – Prüfungsklassiker",
+      cave: "Schnelle hochdosierte Bolusgabe kann eine Thoraxrigidität (\"wooden chest\") mit Beatmungsproblemen auslösen – Prüfungsklassiker. Wie alle µ-Agonisten: Risiko opioidinduzierter Hyperalgesie bei hochdosierter/langer Anwendung sowie Risiko einer Opioidgebrauchsstörung (OUD) bei wiederholter Exposition – Dosis/Dauer kritisch prüfen, multimodale Analgesie bevorzugen",
       quelle: "Fachinfo Fentanyl B. Braun/-hameln Injektionslösung"
     }
   },
@@ -311,7 +311,7 @@
       kontraindikationen: "Überempfindlichkeit, akutes Abdomen, schwere Ateminsuffizienz, paralytischer Ileus, akute hepatische Porphyrie, gleichzeitige MAO-Hemmer-Therapie",
       interaktionen: "Additive ZNS-/Atemdepression mit Sedativa/Alkohol; Kumulation aktiver Metaboliten bei Niereninsuffizienz",
       antidot: "Naloxon",
-      cave: "Aktiver Metabolit Morphin-6-Glucuronid kumuliert bei Niereninsuffizienz → verlängerte/verstärkte Atemdepression trotz unauffälliger Morphin-Clearance",
+      cave: "Aktiver Metabolit Morphin-6-Glucuronid kumuliert bei Niereninsuffizienz → verlängerte/verstärkte Atemdepression trotz unauffälliger Morphin-Clearance. Referenzsubstanz für opioidinduzierte Hyperalgesie bei Langzeit-/Hochdosistherapie sowie Risiko einer Opioidgebrauchsstörung (OUD) – regelmäßige Reevaluation der Indikation",
       quelle: "Fachinfo Morphin-ratiopharm/Morphin Merck Injektionslösung"
     }
   },
@@ -349,7 +349,7 @@
       kontraindikationen: "Überempfindlichkeit, schwere Ateminsuffizienz, paralytischer Ileus, mittelschwere bis schwere Leberinsuffizienz, akutes Abdomen, MAO-Hemmer",
       interaktionen: "CYP3A4-Inhibitoren/-Induktoren beeinflussen den Wirkspiegel deutlich; additive Atemdepression mit Sedativa",
       antidot: "Naloxon",
-      cave: "Die Fixkombination Oxycodon/Naloxon nutzt den hohen First-Pass-Effekt von oralem Naloxon, um die opioidbedingte Obstipation zu reduzieren, ohne die systemische Analgesie zu mindern",
+      cave: "Die Fixkombination Oxycodon/Naloxon nutzt den hohen First-Pass-Effekt von oralem Naloxon, um die opioidbedingte Obstipation zu reduzieren, ohne die systemische Analgesie zu mindern. Wie alle µ-Agonisten: Risiko opioidinduzierter Hyperalgesie und einer Opioidgebrauchsstörung (OUD) bei Langzeittherapie – regelmäßige Indikationsprüfung",
       quelle: "Fachinfo Oxycodon-HCl-ratiopharm Retardtabletten/Hartkapseln"
     }
   },
@@ -387,7 +387,7 @@
       kontraindikationen: "Überempfindlichkeit, MAO-Hemmer aktuell/<14 Tage (Risiko exzitatorischer Krise/Serotonin-Syndrom), Niereninsuffizienz (relativ), Kinder <16 Jahre parenteral",
       interaktionen: "Serotonin-Syndrom-Risiko mit SSRI/SNRI/MAO-Hemmern; additive ZNS-Depression mit Sedativa",
       antidot: "Naloxon",
-      cave: "Einziges gängiges Opioid mit relevantem Serotonin-Syndrom-Risiko – Norpethidin-Kumulation bei wiederholter Gabe oder Niereninsuffizienz kann Krampfanfälle auslösen, die durch Naloxon nicht antagonisiert werden",
+      cave: "Trägt (wie Tramadol) ein relevantes Serotonin-Syndrom-Risiko – Norpethidin-Kumulation bei wiederholter Gabe oder Niereninsuffizienz kann zusätzlich Krampfanfälle auslösen, die durch Naloxon nicht antagonisiert werden",
       quelle: "Fachinfo Pethidin-hameln/Dolantin"
     }
   },
@@ -514,14 +514,14 @@
       klasse: "Nicht-Opioid-Analgetikum (Pyrazolon-Derivat) mit analgetischer, antipyretischer und spasmolytischer Wirkung",
       mechanismus: "Hemmung der zentralen und peripheren Prostaglandinsynthese (schwache COX-Hemmung) sowie zusätzliche Aktivierung des endogenen Cannabinoid-/Opioidsystems, die zur ausgeprägten spasmolytischen und analgetischen Wirkung beiträgt",
       indikation: "starke akute/chronische Schmerzen, Koliken (spasmolytisch), hohes Fieber bei Versagen anderer Maßnahmen",
-      dosierung: "Erwachsene/Jugendliche >53kg Einzeldosis 500–1000mg (bis 2500mg) p.o./i.v., bis 4x/d, Tageshöchstdosis 5000mg; i.v.-Injektion langsam (max. 500mg/min), besser als Kurzinfusion wegen Hypotonierisiko",
+      dosierung: "Erwachsene/Jugendliche >53kg Einzeldosis 500–1000mg (bis 2500mg), bis 4x/d; Tageshöchstdosis oral 4000mg, parenteral (i.v.) 5000mg – Grenzen route-abhängig unterschiedlich, nicht gleichsetzen; i.v.-Injektion langsam (max. 500mg/min), besser als Kurzinfusion wegen Hypotonierisiko",
       pharmakokinetik: "Wirkeintritt i.v. rasch (~30min) · Prodrug mit rascher Hydrolyse zum aktiven Metaboliten 4-Methylaminoantipyrin (MAA) · hepatischer Metabolismus, renale Elimination",
       nebenwirkungen: "Agranulozytose (selten, potenziell lebensbedrohlich), Hypotonie v.a. bei zu schneller i.v.-Injektion, anaphylaktoide Reaktionen, geringe Thrombozytenaggregationshemmung",
       kontraindikationen: "Störungen der Knochenmarkfunktion/hämatopoetische Erkrankungen, Pyrazolon-/Pyrazolidin-Überempfindlichkeit, akute hepatische Porphyrie, Glucose-6-Phosphat-Dehydrogenase-Mangel, letztes Schwangerschaftstrimenon",
       interaktionen: "Verstärkt die Wirkung von Cumarin-Antikoagulanzien; senkt Ciclosporin-Spiegel; additive Hypotonie mit Antihypertensiva",
       antidot: "Keines",
       cave: "Agranulozytose-Risiko ist nicht dosisabhängig und auch bei kurzzeitiger Anwendung möglich – in den USA und UK deshalb nicht zugelassen; bei Fieber/Halsschmerzen unter Therapie sofort Blutbildkontrolle",
-      quelle: "Fachinfo Novalgin; BfArM-Risikoinformation Agranulozytose"
+      quelle: "Fachinfo Novalgin (Stand oral/parenteral getrennte Höchstdosen); BfArM-Risikoinformation Agranulozytose"
     }
   },
   {
@@ -613,10 +613,10 @@
       dosierung: "i.v. 1,0–1,5 mg/kg (RSI); Kinder ohne venösen Zugang i.m. 2–3 mg/kg",
       pharmakokinetik: "Wirkeintritt ~30–60s · Wirkdauer 5–10min · Hydrolyse durch Plasma-Pseudocholinesterase (Butyrylcholinesterase) · keine hepatische/renale Elimination nötig",
       nebenwirkungen: "Hyperkaliämie, Bradykardie/Arrhythmien, Muskelfaszikulationen, Muskelkater, Augen-/Hirn-/Magendruckanstieg, maligne Hyperthermie",
-      kontraindikationen: "MH-Disposition, Hyperkaliämierisiko (Verbrennung >24h, Immobilisation, neuromuskuläre Erkrankungen, Polytrauma), Pseudocholinesterasemangel, perforierende Augenverletzung, erhöhter Hirndruck",
+      kontraindikationen: "MH-Disposition, Hyperkaliämierisiko (Verbrennung >24h, Immobilisation, neuromuskuläre Erkrankungen, Polytrauma), Pseudocholinesterasemangel, perforierende Augenverletzung, erhöhter Hirndruck, elektive Anwendung bei Kindern/Jugendlichen (Boxed-Warning: Risiko eines hyperkaliämischen Herzstillstands bei unerkannter Myopathie, z.B. Muskeldystrophie Duchenne – bei Kindern nur bei zwingender Indikation wie RSI/Laryngospasmus)",
       interaktionen: "Verstärkte Hyperkaliämie mit anderen kaliumfreisetzenden Substanzen; Wirkverlängerung durch Cholinesterasehemmer",
       antidot: "Keines",
-      cave: "Bei Überdosierung/wiederholter Gabe kann ein nichtdepolarisierend-ähnlicher Phase-II-Block entstehen; wichtigster MH-Trigger neben volatilen Anästhetika",
+      cave: "Bei Überdosierung/wiederholter Gabe kann ein nichtdepolarisierend-ähnlicher Phase-II-Block entstehen; wichtigster MH-Trigger neben volatilen Anästhetika. Boxed-Warning (FDA)/Fachinfo-Warnhinweis: bei Kindern/Jugendlichen mit unerkannter Myopathie kann es zu akuter Rhabdomyolyse mit Hyperkaliämie und Herzstillstand kommen – elektiver Einsatz bei Kindern vermeiden",
       quelle: "Fachinfo Succinylcholin 2% Inresa"
     }
   },
@@ -729,8 +729,8 @@
       nebenwirkungen: "Tachykardie/Blutdruckanstieg (vagolytisch), verlängerte Blockade bei Niereninsuffizienz, kaum Histaminfreisetzung",
       kontraindikationen: "Überempfindlichkeit, schwere Niereninsuffizienz (relativ), Myasthenia gravis, fehlende Beatmungsmöglichkeit",
       interaktionen: "Wirkverstärkung durch volatile Anästhetika, Aminoglykoside; verstärkte Tachykardie mit anderen vagolytischen/sympathomimetischen Substanzen",
-      antidot: "Sugammadex; Neostigmin",
-      cave: "Einziges gängiges NMBA mit klinisch relevanter vagolytischer Wirkung (Tachykardie) – klassisches Prüfungsmerkmal; Kumulationsgefahr bei Niereninsuffizienz",
+      antidot: "Neostigmin (Standardreversal); Sugammadex ist für Pancuronium NICHT zugelassen (nur Rocuronium/Vecuronium) und allenfalls Off-Label-Option ohne gesicherte Dosierung",
+      cave: "Einziges gängiges NMBA mit klinisch relevanter vagolytischer Wirkung (Tachykardie) – klassisches Prüfungsmerkmal; Kumulationsgefahr bei Niereninsuffizienz. Reversal-Fallstrick: Sugammadex ist nur für Rocuronium/Vecuronium zugelassen, nicht für Pancuronium",
       quelle: "Fachinfo Pancuroniumbromid PANPHARMA 2 mg/ml"
     }
   },
@@ -742,7 +742,7 @@
     profile: {
       klasse: "Selektiver Relaxans-bindender Wirkstoff (modifiziertes γ-Cyclodextrin)",
       mechanismus: "Bildet einen festen 1:1-Einschlusskomplex mit steroidalen NMBA (hohe Affinität zu Rocuronium, geringer zu Vecuronium) im Plasma → Konzentrationsgradient entzieht der neuromuskulären Endplatte freies NMBA → rasche Wiederherstellung der neuromuskulären Übertragung",
-      indikation: "Aufhebung einer durch Rocuronium oder Vecuronium induzierten neuromuskulären Blockade bei Erwachsenen und Kindern ab 2 Jahren",
+      indikation: "Aufhebung einer durch Rocuronium oder Vecuronium induzierten neuromuskulären Blockade; ursprünglich zugelassen ab 2 Jahren (Kinder 2–17 Jahre nur Routine-Reversal, keine Hochdosis-Sofortreversal-Daten), seit 2025 EU-Zulassungserweiterung auch für Neugeborene/Säuglinge <2 Jahre – aktuellen Zulassungsstatus/Dosierung je Altersgruppe vor Anwendung prüfen",
       dosierung: "2 mg/kg (TOF-Count ≥2), 4 mg/kg (Post-Tetanic-Count 1–2), 16 mg/kg (sofortige Reversal ~3min nach Rocuronium-RSI-Dosis)",
       pharmakokinetik: "Wirkeintritt 1,5–3min · renale Elimination unverändert · bei schwerer Niereninsuffizienz stark verlängerte Elimination (Tage)",
       nebenwirkungen: "Dysgeusie, Kopfschmerz, Übelkeit, Überempfindlichkeit bis Anaphylaxie, Bradykardie (selten bis Asystolie), Rekurarisierung bei Unterdosierung",
@@ -765,10 +765,10 @@
       dosierung: "Reversal 0,03–0,07 mg/kg i.v. (max. 5 mg), immer in Kombination mit Glycopyrrolat (~0,2 mg pro 1 mg Neostigmin) oder Atropin",
       pharmakokinetik: "Wirkeintritt 1–5min i.v. · Wirkdauer 30–60min · hepatische Metabolisierung + renale Elimination · quartäres Amin → NICHT ZNS-gängig",
       nebenwirkungen: "Bradykardie, Hypersalivation, Bronchospasmus, Übelkeit/Erbrechen, Darmkoliken, cholinerge Krise bei Überdosierung",
-      kontraindikationen: "Mechanischer Darm-/Harnwegsverschluss, bestimmte Herzrhythmusstörungen, Überempfindlichkeit, zu tiefe Blockade (TOF=0)",
+      kontraindikationen: "Mechanischer Darm-/Harnwegsverschluss, bestimmte Herzrhythmusstörungen, Überempfindlichkeit, zu tiefe Blockade (TOF-Count <2 – bei TOF-Count 0/1 unzuverlässig bzw. Ceiling-Effekt)",
       interaktionen: "Antagonisiert nichtdepolarisierende NMBA, verlängert/verstärkt paradox die Wirkung von Succinylcholin; stets mit Anticholinergikum kombinieren",
       antidot: "Atropin (bei muskarinerger Überdosierung)",
-      cave: "Bei zu tiefer Blockade (TOF-Count 0) unwirksam bzw. verlängert die Blockade paradox – immer mit neuromuskulärem Monitoring und Anticholinergikum kombinieren",
+      cave: "Erst ab TOF-Count ≥2 zuverlässig wirksam (Ceiling-Effekt bei tieferer Blockade) – bei tieferer/nicht sicher einschätzbarer Blockade Sugammadex bevorzugen; immer mit neuromuskulärem Monitoring und Anticholinergikum kombinieren",
       quelle: "Fachinfo Neostigmin PANPHARMA 0,5 mg/ml"
     }
   },
@@ -863,7 +863,7 @@
       kontraindikationen: "Schwere Erregungsleitungsstörungen ohne Schrittmacher, Hypovolämie/dekompensierte Herzinsuffizienz, bekannte Amid-Allergie",
       interaktionen: "Verstärkte Kardiotoxizität mit anderen Antiarrhythmika/Betablockern; CYP3A4-Inhibitoren erhöhen Plasmaspiegel",
       antidot: "Lipidemulsion (Intralipid) bei LAST",
-      cave: "Geringstes LAST-Risiko unter den Amid-Lokalanästhetika, dennoch treten ZNS-Symptome (Krampf) typischerweise vor der Kardiotoxizität auf",
+      cave: "Deutlich geringeres Kardiotoxizitätsrisiko als Bupivacain (kein 'fast-in, slow-out'), aber NICHT das Amid mit dem insgesamt geringsten systemischen Toxizitätsrisiko – dieses hat aufgrund der schnellsten Metabolisierung Prilocain; bei Lidocain treten ZNS-Symptome (Krampf) typischerweise vor der Kardiotoxizität auf",
       quelle: "Fachinfo Lidocain-HCl B. Braun 2%"
     }
   },
@@ -934,7 +934,7 @@
       mechanismus: "Blockade spannungsabhängiger Na⁺-Kanäle der Nervenmembran; sein Metabolit o-Toluidin oxidiert Hämoglobin-Eisen zu Methämoglobin",
       indikation: "Infiltrations-/Leitungs-/i.v.-Regionalanästhesie (Bier-Block), EMLA-Creme (mit Lidocain) zur Oberflächenanästhesie",
       dosierung: "Maximaldosis ~600mg bzw. 8,5 mg/kg KG; keine Anwendung bei Kindern <6 Monaten",
-      pharmakokinetik: "Wirkeintritt schnell (~5min) · Wirkdauer 1–2h · hepatische/renale Metabolisierung zu o-Toluidin · geringste systemische Kardiotoxizität der Amide",
+      pharmakokinetik: "Wirkeintritt schnell (~5min) · Wirkdauer 1–2h · hepatische/renale Metabolisierung zu o-Toluidin · dank schnellster Metabolisierung insgesamt geringste systemische Toxizität/Kardiotoxizität der Amide (aber methämoglobinbildend, s. Cave)",
       nebenwirkungen: "Methämoglobinämie (dosisabhängig, klinisch relevant ab ~8 mg/kg), ZNS-Symptome bei Überdosierung, selten Allergie",
       kontraindikationen: "Angeborene/idiopathische Methämoglobinämie, Kinder <6 Monate, schwere Anämie, G6PD-Mangel (relativ)",
       interaktionen: "Verstärkte Methämoglobinbildung mit anderen Oxidantien (z.B. Sulfonamide, Nitrate)",
@@ -991,13 +991,13 @@
       klasse: "Kardiovaskuläres Sympathomimetikum, Katecholamin (Vasopressor)",
       mechanismus: "Direkter Agonist an α1- (stark) und β1-Adrenozeptoren (gering), kaum β2-Wirkung → Gq-vermittelte Vasokonstriktion (arteriell/venös) und geringe positive Inotropie/Chronotropie über Gs-cAMP",
       indikation: "Vasopressor 1. Wahl bei septischem/vasoplegischem Schock, andere distributive Schockformen, intraoperative Hypotonie",
-      dosierung: "0,05–0,5 µg/kg/min i.v. kontinuierlich, Titration nach MAP (Ziel meist ≥65 mmHg)",
+      dosierung: "0,05–0,5 µg/kg/min i.v. kontinuierlich, Titration nach MAP (Ziel i.d.R. ≥65 mmHg; bei vorbestehender chronischer Hypertonie individuell ggf. höherer Zielwert erwägen)",
       pharmakokinetik: "Wirkeintritt sofort (Sek.) · HWZ ~2–3 min · Metabolismus durch COMT/MAO · gut steuerbar",
       nebenwirkungen: "Reflexbradykardie, periphere/viszerale Minderperfusion, Arrhythmien, Extravasationsnekrosen",
       kontraindikationen: "Phäochromozytom, Tachyarrhythmien, unkorrigierte Hypovolämie (vor Volumengabe), Engwinkelglaukom (relativ)",
       interaktionen: "Verstärkte hypertensive Wirkung mit MAO-Hemmern/trizyklischen Antidepressiva, Arrhythmiegefahr mit halogenierten Inhalationsanästhetika",
       antidot: "Phentolamin (bei Paravasat)",
-      cave: "Extravasation kann ausgedehnte Hautnekrosen verursachen – zentralvenöse Gabe bevorzugen",
+      cave: "Extravasation kann ausgedehnte Hautnekrosen verursachen; zentralvenöser Zugang bleibt Standard, aktuelle Empfehlungen (u.a. Surviving Sepsis Campaign) erlauben aber einen kurzzeitigen peripheren Start über eine großlumige proximale Vene mit engmaschiger Überwachung, um die Vasopressor-Gabe nicht wegen fehlendem ZVK zu verzögern",
       quelle: "Fachinfo Arterenol/Noradrenalin-Aguettant; AMBOSS-SOP Kreislaufunterstützung"
     }
   },
@@ -1029,7 +1029,7 @@
       klasse: "Vasopressoranaloges Peptidhormon (ADH)",
       mechanismus: "Agonist an V1a-Rezeptoren glatter Gefäßmuskulatur (Gq → IP3/Ca2+ ↑ → Vasokonstriktion) und V2-Rezeptoren der Sammelrohre (Gs → cAMP → Aquaporin-Einbau → Antidiurese), catecholaminunabhängiger Wirkmechanismus",
       indikation: "Katecholamin-refraktärer septischer/vasodilatatorischer Schock (add-on zu Noradrenalin), vasoplegischer Schock nach Herzchirurgie",
-      dosierung: "Fixe Infusionsrate 0,01–0,04 U/min (i.d.R. 0,03 U/min) i.v., nicht nach Wirkung titrieren",
+      dosierung: "0,01–0,04 U/min i.v. (Start meist 0,03 U/min); anders als Katecholamine primär als niedrig dosierte Fixrate statt aggressiver Auftitration gedacht, moderate Anpassung innerhalb des Bereichs nach Klinik möglich; Dosen >0,04 U/min erhöhen das Ischämierisiko ohne gesicherten Zusatznutzen (VASST/VANISH) und sollten vermieden werden",
       pharmakokinetik: "Wirkeintritt Minuten · HWZ ~10–20 min · hepatische/renale Elimination",
       nebenwirkungen: "Periphere/splanchnische/koronare Ischämie, Hyponatriämie, Abfall des Herzzeitvolumens",
       kontraindikationen: "Koronare Herzkrankheit (relativ, strenge Indikation), chronische Nephritis mit Stickstoffretention",
@@ -1051,10 +1051,10 @@
       dosierung: "Varizenblutung initial 1–2 mg i.v. Bolus, dann 1 mg alle 4–6h (max. 5 Tage); HRS-1 0,85–1 mg alle 4–6h oder als Dauerinfusion",
       pharmakokinetik: "Wirkeintritt ~10 min · lange Wirkdauer 4–6h durch protrahierte Metabolisierung zu aktivem Vasopressin · hepatische/renale Elimination",
       nebenwirkungen: "Splanchnische/periphere Ischämie, Hyponatriämie, Bradykardie, Bauchschmerzen, schwere Ateminsuffizienz und Sepsis/septischer Schock bei HRS-1",
-      kontraindikationen: "Septischer Schock mit geringer kardialer Leistung, Schwangerschaft, ischämische kardiovaskuläre Erkrankung in der Anamnese",
+      kontraindikationen: "Septischer Schock mit geringer kardialer Leistung, Schwangerschaft, ischämische kardiovaskuläre Erkrankung in der Anamnese, ACLF Grad 3/hohe MELD-Werte bzw. Notwendigkeit intensiver respiratorischer Unterstützung (erhöhtes Risiko für Ateminsuffizienz, s. Cave)",
       interaktionen: "Verstärkte Bradykardie mit Betablockern, additive Wirkung mit QT-verlängernden Substanzen",
       antidot: "Keines",
-      cave: "Rote-Hand-Brief 2022: erhöhtes Risiko für schwere/letale Ateminsuffizienz und Sepsis/septischen Schock bei HRS-1 – engmaschiges Monitoring",
+      cave: "Rote-Hand-Brief 2022: erhöhtes Risiko für schwere/letale Ateminsuffizienz und Sepsis/septischen Schock bei HRS-1 – engmaschiges Monitoring, insbesondere Volumenstatus/Lungenödem. Bei ACLF-Patienten (v.a. Grad 3, hoher MELD) wurde in Studien ein erhöhtes Risiko respiratorischen Versagens unter Terlipressin beobachtet – Nutzen-Risiko streng abwägen, ggf. auf Intensivstation mit Beatmungsmöglichkeit einsetzen",
       quelle: "Fachinfo Glycylpressin; AkdÄ Rote-Hand-Brief 2022"
     }
   },
@@ -1219,7 +1219,7 @@
       klasse: "Endogenes Purinnukleosid, Antiarrhythmikum",
       mechanismus: "Agonist an kardialen A1-Adenosinrezeptoren → Gi-vermittelte Öffnung von K+-Kanälen (IK,Ado) und Hemmung des Ca2+-Einstroms im AV-Knoten → transiente Hyperpolarisation und Leitungsblock im AV-Knoten, wodurch Reentry-Tachykardien terminiert werden",
       indikation: "Terminierung paroxysmaler supraventrikulärer Tachykardien (AV-Knoten-Reentry), Differenzialdiagnose breiter/schmaler Tachykardien",
-      dosierung: "6 mg schneller i.v. Bolus (periphervenös, sofort nachspülen), bei Ausbleiben nach 1–2 min 12 mg, ggf. erneut 12 mg",
+      dosierung: "6 mg schneller i.v. Bolus (periphervenös, sofort nachspülen), bei Ausbleiben nach 1–2 min 12 mg, bei erneutem Ausbleiben dritte Dosis 18 mg (Eskalationsschema 6-12-18 mg, Resuscitation Council UK/ERC-Peri-Arrest-Arrhythmie-Algorithmus)",
       pharmakokinetik: "Wirkeintritt <10 Sek. · HWZ <10 Sek. (zelluläre Aufnahme/Desaminierung durch Adenosin-Desaminase) · extrem kurze Wirkdauer",
       nebenwirkungen: "Kurzzeitige Asystolie/AV-Block, Flush, Brustdruck, Dyspnoe, Bronchospasmus",
       kontraindikationen: "AV-Block II./III. Grades und Sick-Sinus-Syndrom ohne Schrittmacher, Asthma bronchiale/COPD, Vorhofflimmern mit Präexzitation (WPW)",
@@ -1295,7 +1295,7 @@
       klasse: "Herzglykosid",
       mechanismus: "Hemmt die Na+/K+-ATPase der Kardiomyozyten → intrazellulärer Na+-Anstieg → verminderter Na+/Ca2+-Austausch → erhöhte intrazelluläre Ca2+-Konzentration → positive Inotropie; zusätzlich vagomimetische Wirkung mit Verlangsamung der AV-Überleitung",
       indikation: "Frequenzkontrolle bei Vorhofflimmern/-flattern, chronische Herzinsuffizienz mit reduzierter Ejektionsfraktion (add-on)",
-      dosierung: "Aufsättigung z.B. 0,5 mg i.v., dann 0,25 mg nach 6–8h; Erhaltung 0,0625–0,25 mg/d, Ziel-Serumspiegel 0,8–2,0 ng/ml, Dosisreduktion bei Niereninsuffizienz",
+      dosierung: "Aufsättigung z.B. 0,5 mg i.v., dann 0,25 mg nach 6–8h; Erhaltung 0,0625–0,25 mg/d, Ziel-Serumspiegel deutlich niedriger als früher gelehrt: generell <1,2 ng/ml, bei Herzinsuffizienz sogar nur 0,5–0,9 ng/ml anstreben (höhere Spiegel mit erhöhter Mortalität assoziiert), Dosisreduktion bei Niereninsuffizienz",
       pharmakokinetik: "Wirkeintritt 5–30 min i.v. · HWZ ~36–48h · überwiegend renale Elimination unverändert · enge therapeutische Breite",
       nebenwirkungen: "Digitalisintoxikation (gastrointestinale Beschwerden, Sehstörungen/Xanthopsie, jegliche Arrhythmieform inkl. bidirektionale VT), Hyperkaliämie bei akuter Intoxikation",
       kontraindikationen: "Verdacht auf Digitalisintoxikation, Kammertachykardie/-flimmern, AV-Block II./III. Grades ohne Schrittmacher, WPW-Syndrom mit Vorhofflimmern, hypertrophe obstruktive Kardiomyopathie",
@@ -1543,13 +1543,13 @@
       klasse: "Antiemetikum, 5-HT3-Rezeptorantagonist (Setron)",
       mechanismus: "Selektive Blockade von 5-HT3-Rezeptoren peripher (vagale Afferenzen im GI-Trakt) und zentral in der Area postrema/Chemorezeptor-Triggerzone → Hemmung der serotoninvermittelten Emesis",
       indikation: "Prophylaxe/Therapie PONV, Chemotherapie-/Strahlentherapie-induzierte Emesis",
-      dosierung: "PONV-Prophylaxe 4 mg i.v. (Erwachsene); max. Einzeldosis i.v. 8 mg wegen QTc-Risiko; Kinder 0,1–0,15 mg/kg",
+      dosierung: "PONV-Prophylaxe 4 mg i.v. (Erwachsene); max. Einzeldosis i.v. 16 mg wegen QTc-Risiko (frühere höhere Einzeldosen wie 32 mg wegen QT-Verlängerung nicht mehr empfohlen); Kinder 0,1–0,15 mg/kg",
       pharmakokinetik: "Wirkeintritt wenige Minuten (i.v.) · HWZ ~3–5h · hepatischer Metabolismus (CYP3A4, 2D6, 1A2) · renale/biliäre Elimination der Metaboliten",
       nebenwirkungen: "Kopfschmerzen, Obstipation, dosisabhängige QTc-Verlängerung, Transaminasenanstieg",
       kontraindikationen: "Kongenitales Long-QT-Syndrom, gleichzeitige Gabe von Apomorphin",
       interaktionen: "QTc-verlängernde Substanzen erhöhen Torsade-de-pointes-Risiko, CYP3A4-Induktoren senken Plasmaspiegel",
       antidot: "Keines",
-      cave: "Dosisabhängige QTc-Verlängerung – i.v.-Einzeldosis auf 8 mg begrenzt, Vorsicht bei Elektrolytstörungen/vorbestehender QT-Verlängerung",
+      cave: "Dosisabhängige QTc-Verlängerung – i.v.-Einzeldosis auf 16 mg begrenzt, Vorsicht bei Elektrolytstörungen/vorbestehender QT-Verlängerung. Bei Anwendung im 1. Trimenon (z.B. Hyperemesis gravidarum) zeigten epidemiologische Studien ein leicht erhöhtes Risiko für orofaziale Spaltbildung – Indikation im 1. Trimenon streng abwägen",
       quelle: "Fachinfo Ondansetron-ratiopharm/Accord Injektionslösung"
     }
   },
@@ -1752,14 +1752,14 @@
       klasse: "Antifibrinolytikum (synthetisches Lysin-Analogon)",
       mechanismus: "Reversible Blockade der Lysinbindungsstellen am Plasminogen → Hemmung der Bindung von Plasminogen/Plasmin an Fibrin → Hemmung der Fibrinolyse und Stabilisierung des Blutgerinnsels",
       indikation: "Schwere Blutung/Massivtransfusion (Trauma), Blutungsprophylaxe in Herz-/orthopädischer Chirurgie, Hyperfibrinolyse, Menorrhagie",
-      dosierung: "1 g i.v. Kurzinfusion über 10 min (Erwachsene), ggf. gefolgt von 1 g über 8h (Trauma-Protokoll CRASH-2); Kinder 15 mg/kg; Dosisreduktion bei Niereninsuffizienz",
+      dosierung: "1 g i.v. Kurzinfusion über 10 min (Erwachsene), gefolgt von 1 g über 8h (Trauma-Protokoll CRASH-2/CRASH-3) – Gabe möglichst innerhalb von 3h nach Trauma/Blutungsbeginn, da nach diesem Zeitfenster kein Nutzen mehr belegt ist und ein erhöhtes Blutungs-/Mortalitätsrisiko diskutiert wird; Kinder 15 mg/kg; Dosisreduktion bei Niereninsuffizienz",
       pharmakokinetik: "Wirkeintritt sofort (i.v.) · HWZ ~2–3h · kaum Metabolisierung · nahezu vollständig unverändert renal eliminiert",
       nebenwirkungen: "Übelkeit/Erbrechen, dosisabhängige Krampfanfälle (v.a. bei sehr hoher Dosis/kardiochirurgischen Patienten), thromboembolische Ereignisse (kontrovers diskutiert)",
-      kontraindikationen: "Aktive thromboembolische Erkrankung, Krampfanfallanamnese, Niereninsuffizienz (Dosisanpassung), subarachnoidale Blutung, intrathekale/intraventrikuläre/intrazerebrale Anwendung",
+      kontraindikationen: "Aktive thromboembolische Erkrankung, Krampfanfallanamnese, Niereninsuffizienz (Dosisanpassung), subarachnoidale Blutung, intrathekale/intraventrikuläre/intrazerebrale Anwendung (Gefahr schwerster/tödlicher Myoklonus-Krampfanfälle)",
       interaktionen: "Erhöhtes Thromboserisiko in Kombination mit Faktor-IX-Komplex-Präparaten/oralen Kontrazeptiva",
       antidot: "Keines",
-      cave: "Krampfanfallrisiko ist dosisabhängig – bei hoher Dosis (v.a. kardiochirurgisch) erhöhtes Risiko postoperativer Krampfanfälle, empfohlene Dosierung nicht überschreiten",
-      quelle: "Fachinfo Cyklokapron; CRASH-2-Studie"
+      cave: "Rote-Hand-Brief/DHPC: wiederholte, teils tödliche Medikationsfehler durch versehentliche intrathekale/spinale Injektion statt Lokalanästhetikum (Verwechslungsgefahr durch ähnliche Ampullen/Spritzen) – strikte Trennung/Kennzeichnung von Tranexamsäure- und Lokalanästhetika-Spritzen im Regionalanästhesie-Setting. Krampfanfallrisiko ist zudem dosisabhängig – bei hoher Dosis (v.a. kardiochirurgisch) erhöhtes Risiko postoperativer Krampfanfälle, empfohlene Dosierung nicht überschreiten",
+      quelle: "Fachinfo Cyklokapron; CRASH-2/CRASH-3-Studien; AkdÄ Rote-Hand-Brief Tranexamsäure (Verwechslungsgefahr intrathekal)"
     }
   },
   {
@@ -1865,15 +1865,15 @@
     profile: {
       klasse: "Rekombinantes modifiziertes Faktor-Xa-Molekül, spezifisches Antidot für Faktor-Xa-Inhibitoren",
       mechanismus: "Katalytisch inaktive Faktor-Xa-Variante (Serin im aktiven Zentrum durch Alanin ersetzt) fungiert als Decoy und bindet direkte/indirekte Faktor-Xa-Inhibitoren mit hoher Affinität → Freisetzung von endogenem Faktor Xa und Wiederherstellung der Gerinnung",
-      indikation: "Notfallreversierung von Apixaban/Rivaroxaban bei lebensbedrohlicher/unkontrollierbarer Blutung",
+      indikation: "Notfallreversierung von Apixaban/Rivaroxaban bei lebensbedrohlicher/unkontrollierbarer Blutung – Verfügbarkeit seit Ende 2025 stark eingeschränkt (s. Cave), daher praktisch meist PPSB (4-Faktor-Prothrombinkomplex, 25–50 IE/kg) als Alternative",
       dosierung: "Niedrigdosis-Regime: Bolus 400 mg (~30 mg/min) + Infusion 4 mg/min über 120 min; Hochdosis-Regime: Bolus 800 mg + Infusion 8 mg/min über 120 min, abhängig von Substanz/Dosis/Zeit seit letzter Einnahme",
       pharmakokinetik: "Wirkeintritt binnen Minuten · kurze HWZ (~1h), Anti-Xa-Aktivität kann nach Infusionsende wieder ansteigen (Rebound) · renale/proteolytische Elimination",
-      nebenwirkungen: "Erhöhtes Risiko thromboembolischer Ereignisse, Infusionsreaktionen, Fieber",
-      kontraindikationen: "Keine absoluten bekannt (Nutzen-Risiko-Abwägung bei hohem Thromboserisiko)",
+      nebenwirkungen: "Erhöhtes Risiko thromboembolischer Ereignisse (in ANNEXA-I gegenüber PCC deutlich erhöht), Infusionsreaktionen, Fieber",
+      kontraindikationen: "Keine absoluten bekannt, aber wegen des in ANNEXA-I gezeigten Thromboserisikos strenge Nutzen-Risiko-Abwägung, insbesondere bei vorbestehendem hohem Thromboserisiko",
       interaktionen: "Reduziert Wirksamkeit einer nachfolgenden Heparingabe (Interferenz mit Anti-Xa-Assays)",
       antidot: "Entfällt (ist selbst Antidot)",
-      cave: "Rebound-Anstieg der Anti-Xa-Aktivität nach Infusionsende möglich – erneutes Blutungs-/Thromboserisiko nach Therapieende beachten",
-      quelle: "Fachinfo Ondexxya (EMA)"
+      cave: "Hersteller hat Andexanet alfa (Ondexxya/Andexxa) im Dezember 2025 wegen erhöhtem Thromboserisiko in der ANNEXA-I-Studie vom US-Markt genommen; EU-Zulassung/Verfügbarkeit war Ende 2025 in Überprüfung – vor Einsatz aktuellen Zulassungs-/Verfügbarkeitsstatus prüfen, PPSB ist die praktisch relevante Alternative. Zusätzlich weiterhin Rebound-Anstieg der Anti-Xa-Aktivität nach Infusionsende möglich",
+      quelle: "Fachinfo Ondexxya (EMA); ANNEXA-I-Studie (NEJM 2024); Herstellermitteilung zur Marktrücknahme (USA, Dez. 2025)"
     }
   },
   {
@@ -1949,8 +1949,8 @@
       kontraindikationen: "MH-Disposition, Maskeneinleitung (Atemwegsreizung, v.a. Kinder), bekannte Überempfindlichkeit",
       interaktionen: "Verstärkt nicht-depolarisierende Muskelrelaxanzien; MAC-Reduktion durch Opioide/N2O",
       antidot: "Keines (Dantrolen bei MH)",
-      cave: "Ausgeprägte Schleimhaut-/Atemwegsreizung macht Desfluran ungeeignet zur Einleitung – nur Erhaltungsnarkose, erfordert speziellen beheizten Verdampfer",
-      quelle: "Fachinfo Suprane (Baxter)"
+      cave: "Ausgeprägte Schleimhaut-/Atemwegsreizung macht Desfluran ungeeignet zur Einleitung – nur Erhaltungsnarkose, erfordert speziellen beheizten Verdampfer. Höchstes Treibhauspotenzial (GWP) aller volatilen Anästhetika – zunehmend aus Klima-/Nachhaltigkeitsgründen eingeschränkt bzw. aus Kliniken verbannt (z.B. NHS-Ausstieg, EU-F-Gase-Verordnung als regulatorischer Treiber); Verfügbarkeit je nach Klinik/Land prüfen",
+      quelle: "Fachinfo Suprane (Baxter); EU-F-Gase-Verordnung (2024/573); NHS/AAGBI Empfehlungen zu volatilen Anästhetika und Klimafolgen"
     }
   },
   {
@@ -2120,8 +2120,8 @@
       kontraindikationen: "Frauen im gebärfähigen Alter ohne strenges Schwangerschaftsverhütungsprogramm (hohes teratogenes Risiko), akute/chronische Lebererkrankung, Harnstoffzyklusdefekte, Porphyrie",
       interaktionen: "Hemmt Abbau anderer Antikonvulsiva (z.B. Lamotrigin); Meropenem senkt Valproat-Spiegel drastisch (Kombination vermeiden)",
       antidot: "Keines (L-Carnitin bei Hyperammonämie/schwerer Intoxikation, Hämodialyse möglich)",
-      cave: "Strenge Kontraindikation bei Frauen im gebärfähigen Alter wegen Teratogenität – zentraler Prüfungsklassiker; Kombination mit Meropenem senkt Valproat-Spiegel um bis zu 100%",
-      quelle: "Fachinfo Valproat-ratiopharm chrono; BfArM-Mustertext Valproat"
+      cave: "Strenge Kontraindikation bei Frauen im gebärfähigen Alter wegen Teratogenität – zentraler Prüfungsklassiker; Kombination mit Meropenem senkt Valproat-Spiegel um bis zu 100%. Seit EMA-Bewertung 2024 zusätzlicher Vorsichtshinweis zur Anwendung bei MÄNNERN: mögliches (schwächer belegtes) erhöhtes Risiko für neurologische Entwicklungsstörungen beim Kind bei väterlicher Valproat-Einnahme in den 3 Monaten vor Konzeption – Aufklärung auch bei männlichen Patienten mit Kinderwunsch",
+      quelle: "Fachinfo Valproat-ratiopharm chrono; BfArM-Mustertext Valproat; EMA PRAC-Bewertung Valproat und väterliche Exposition (2024)"
     }
   },
   {
@@ -2209,7 +2209,7 @@
       klasse: "Glykopeptid-Antibiotikum",
       mechanismus: "Bindung an D-Ala-D-Ala-Terminus der Peptidoglykan-Vorläufer → sterische Blockade der Transglykosylierung/Transpeptidierung → Hemmung der Zellwandsynthese grampositiver Bakterien",
       indikation: "Schwere Infektionen durch MRSA/multiresistente grampositive Erreger, perioperative Prophylaxe bei β-Laktam-Allergie/MRSA-Risiko, pseudomembranöse Kolitis (oral)",
-      dosierung: "i.v. 15–20mg/kg alle 8–12h (Talspiegel-gesteuert, Ziel 15–20mg/l bzw. AUC-basiert 400–600mg·h/l); Infusion über mind. 60 min (max. 10mg/min)",
+      dosierung: "i.v. 15–20mg/kg alle 8–12h; aktueller Standard (ASHP/IDSA/PIDS/SIDP 2020) ist AUC-gesteuertes Dosing mit Ziel-AUC24 400–600mg·h/l (Bayesian-Software oder 2-Punkt-Spiegel), da präziser und mit geringerer Nephrotoxizität als die ältere alleinige Talspiegel-Steuerung (historisch Ziel 15–20mg/l); Infusion über mind. 60 min (max. 10mg/min)",
       pharmakokinetik: "Wirkeintritt Stunden · HWZ ~4–6h (verlängert bei Niereninsuffizienz) · praktisch keine hepatische Metabolisierung · fast vollständig renal eliminiert",
       nebenwirkungen: "Nephrotoxizität, Ototoxizität, Red-Man-Syndrom (histaminvermittelt bei rascher Infusion), Thrombophlebitis, Neutropenie bei Langzeittherapie",
       kontraindikationen: "Überempfindlichkeit; Vorsicht bei vorbestehender Niereninsuffizienz/Ototoxizitätsrisiko",
@@ -2234,7 +2234,7 @@
       kontraindikationen: "Überempfindlichkeit gegen Penicilline/β-Laktame",
       interaktionen: "Verstärkt Wirkung von Vitamin-K-Antagonisten; verminderte Ausscheidung von Methotrexat (Toxizitätsrisiko)",
       antidot: "Keines",
-      cave: "Bei Penicillinallergie in der Anamnese strikte Abklärung des Reaktionstyps vor Gabe – hohe Kreuzreaktivität als Aminopenicillin-Derivat",
+      cave: "Bei Penicillinallergie in der Anamnese strikte Abklärung des Reaktionstyps vor Gabe – als Penicillin-Derivat (Ureidopenicillin) relevante Kreuzreaktivität mit anderen β-Laktamen möglich",
       quelle: "Fachinfo Piperacillin/Tazobactam Kalceks"
     }
   },
@@ -2399,14 +2399,14 @@
       klasse: "Muskelrelaxans (peripher wirksam)/spezifisches MH-Antidot",
       mechanismus: "Bindung an den Ryanodinrezeptor (RyR1) des sarkoplasmatischen Retikulums der Skelettmuskulatur → Hemmung der Ca2+-Freisetzung → Unterbrechung der Exzitations-Kontraktions-Kopplung und des hypermetabolen MH-Kreislaufs",
       indikation: "Maligne Hyperthermie (einzige spezifische Therapie), schwere chronische Spastik (andere Darreichungsform)",
-      dosierung: "Initial 2,5mg/kg i.v. rasch als Bolus, Wiederholung alle 5–15 min je nach klinischem Ansprechen bis Symptome sistieren; Gesamtdosis meist bis 10mg/kg (Einzelfälle höher)",
+      dosierung: "Initial 2,5mg/kg i.v. rasch als Bolus, Wiederholung alle 5–15 min je nach klinischem Ansprechen bis Symptome sistieren; Gesamtdosis meist bis 10mg/kg (Einzelfälle höher) – exakte Einzeldosis-/Tageshöchstgrenzen und Rekonstitutionsvolumen je nach verwendeter Formulierung (klassisches Pulver z.B. Dantrolen Inresa/Norgine vs. neuere schneller lösliche Formulierungen wie Ryanodex) unbedingt der jeweils aktuellen Fachinfo entnehmen",
       pharmakokinetik: "Wirkeintritt Minuten · HWZ ~4–8h · hepatische Metabolisierung · renale Elimination der Metabolite",
       nebenwirkungen: "Muskelschwäche, Phlebitis (hohe Osmolarität), Hepatotoxizität bei Langzeitgabe, Übelkeit",
       kontraindikationen: "Keine absolute Kontraindikation bei vitaler MH-Indikation; Vorsicht bei bestehender Leberfunktionsstörung",
       interaktionen: "Verstärkte Hyperkaliämie/Herzdepression in Kombination mit Kalziumkanalblockern (Verapamil) vermeiden",
       antidot: "(ist selbst Antidot bei maligner Hyperthermie)",
-      cave: "Einzige spezifische Therapie der malignen Hyperthermie – sofortige Verfügbarkeit eines Dantrolen-Vorrats ist Pflicht in jeder Einrichtung mit Triggersubstanzen; zentraler Prüfungsklassiker",
-      quelle: "Fachinfo Dantrolen i.v. (Norgine); Thieme AINS Update MH-Therapie 2019"
+      cave: "Einzige spezifische Therapie der malignen Hyperthermie – sofortige Verfügbarkeit eines Dantrolen-Vorrats ist Pflicht in jeder Einrichtung mit Triggersubstanzen; zentraler Prüfungsklassiker. Klassische Pulver-Formulierung erfordert große Rekonstitutionsvolumina (langsam bei MH-Notfall) – neuere, schneller lösliche/gebrauchsfertigere Formulierungen verkürzen die Zeit bis zur vollständigen Gabe deutlich; lokal verfügbare Formulierung und deren genaue Dosierungsgrenzen vorab kennen",
+      quelle: "Fachinfo Dantrolen i.v. (Norgine); Thieme AINS Update MH-Therapie 2019; Fachinformationen neuerer Dantrolen-Formulierungen (z.B. Ryanodex)"
     }
   },
   {

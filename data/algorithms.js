@@ -22,7 +22,8 @@ window.ALGORITHMS = [
       "CPR 2 Minuten fortsetzen",
       "Rhythmus erneut prüfen → weiterhin schockbar → 3. Schock abgeben, danach Adrenalin 1mg i.v./i.o. UND Amiodaron 300mg i.v./i.o.",
       "CPR 2 Minuten fortsetzen, danach Zyklus fortführen: Rhythmus prüfen → ggf. Schock → CPR 2min → Adrenalin 1mg alle 3–5 Minuten",
-      "Parallel reversible Ursachen suchen und behandeln (4H: Hypoxie, Hypovolämie, Hypo-/Hyperkaliämie/metabolisch, Hypothermie; 4T: Herzbeuteltamponade, Toxine, Thrombose koronar/pulmonal, Spannungspneumothorax)",
+      "Bei weiterhin schockbarem Rhythmus nach dem 5. Schock: zweite Amiodaron-Dosis 150mg i.v./i.o. (bei Amiodaron-Kontraindikation/-Unverträglichkeit alternativ Lidocain); bei anhaltend refraktärem VF/pVT Wechsel der Defibrillator-Pad-Position (anterior-posterior) oder Doppel-Sequenz-Defibrillation erwägen",
+      "Parallel reversible Ursachen suchen und behandeln (4H: Hypoxie, Hypovolämie, Hypo-/Hyperkaliämie/metabolisch, Hypo-/Hyperthermie; 4T: Herzbeuteltamponade, Toxine, Thrombose koronar/pulmonal, Spannungspneumothorax)",
       "Bei ROSC: Post-Reanimationsbehandlung einleiten (Oxygenierung/Ventilation optimieren, Blutdruck sichern, 12-Kanal-EKG, Ursache gezielt behandeln)"
     ]
   },
@@ -40,27 +41,27 @@ window.ALGORITHMS = [
       "CPR 2 Minuten fortsetzen",
       "Rhythmus erneut prüfen → weiterhin nicht schockbar → CPR fortsetzen",
       "Adrenalin 1mg i.v./i.o. alle 3–5 Minuten wiederholen",
-      "Parallel reversible Ursachen suchen und behandeln (4H/4T)",
+      "Parallel reversible Ursachen suchen und behandeln (4H: Hypoxie, Hypovolämie, Hypo-/Hyperkaliämie/metabolisch, Hypo-/Hyperthermie; 4T: Herzbeuteltamponade, Toxine, Thrombose koronar/pulmonal, Spannungspneumothorax)",
       "Bei Wechsel zu schockbarem Rhythmus (VF/pVT) → sofort in den Schockbar-Algorithmus wechseln",
       "Bei ROSC: Post-Reanimationsbehandlung einleiten"
     ]
   },
   {
     id: "schwieriger-atemweg",
-    title: "Schwieriger Atemweg / CICO-Algorithmus",
+    title: "Schwieriger Atemweg / CICO-Algorithmus (Plan A–D)",
     category: "Atemwegsmanagement",
-    source: "Difficult Airway Society (DAS) Unanticipated Difficult Intubation Algorithmus",
+    source: "Difficult Airway Society (DAS) Unanticipated Difficult Intubation Algorithmus, aktualisiert 2025",
     steps: [
-      "Plan A: Optimale Lagerung (Sniffing Position), Präoxygenierung, Standard-Laryngoskopie/Intubation vorbereiten",
-      "Intubationsversuch durchführen (Anzahl begrenzen, z.B. max. 3 Versuche + 1 durch erfahrenen Kollegen)",
-      "Bei Misserfolg → Oxygenierung sicherstellen (Maskenbeatmung zwischen Versuchen), nicht wiederholt ohne Optimierung versuchen",
-      "Plan B: Supraglottische Atemwegshilfe (Larynxmaske) einsetzen, Oxygenierung prüfen",
+      "Plan A: Optimale Lagerung (Sniffing Position), adäquate Präoxygenierung; Videolaryngoskopie als bevorzugte Erstlinien-Technik einsetzen (DAS 2025: Videolaryngoskopie statt konventioneller direkter Laryngoskopie als Standardansatz)",
+      "Intubationsversuch durchführen, Anzahl strikt begrenzen (max. 3 Versuche insgesamt + höchstens 1 weiterer Versuch durch erfahrenere/n Kollegin/Kollegen)",
+      "Bei Misserfolg → zwischen Versuchen Oxygenierung sicherstellen (Maskenbeatmung), Technik/Hilfsmittel optimieren (z.B. Bougie, andere Spateltechnik), nicht unverändert wiederholen",
+      "Plan B: Supraglottische Atemwegshilfe der 2. Generation einsetzen (max. 3 Insertionsversuche), Oxygenierung über SGA prüfen",
       "Oxygenierung über SGA erfolgreich → weiter mit SGA oder kontrollierte Intubation über/durch SGA (z.B. fiberoptisch) planen",
       "Oxygenierung über SGA NICHT erfolgreich → Plan C: Rückkehr zur Gesichtsmaskenbeatmung (2-Personen-Technik, Guedel-/Wendl-Tubus)",
       "Maskenbeatmung erfolgreich → Patienten aufwachen lassen oder alternative Atemwegssicherung in Ruhe planen",
-      "Maskenbeatmung NICHT erfolgreich (weder Intubation noch SGA noch Maske möglich) = CICO",
-      "Plan D: Sofortiger chirurgischer Atemweg (Front-of-Neck-Access / Notfall-Koniotomie) ohne weitere Verzögerung",
-      "Nach Atemwegssicherung: Oxygenierung mit Kapnographie bestätigen, Ereignis dokumentieren, Patient/Team nachbesprechen"
+      "Maskenbeatmung NICHT erfolgreich (weder Intubation noch SGA noch Maske möglich) → Team-Ansage 'CICO' (Can't Intubate, Can't Oxygenate) explizit und laut aussprechen, um sofortigen Wechsel zu Plan D auszulösen",
+      "Plan D: Sofortiger chirurgischer Atemweg (Front-of-Neck-Access) ohne weitere Verzögerung – standardisierte Skalpell-Bougie-Tubus-Technik: vertikaler Hautschnitt über der Membrana cricothyroidea, horizontale Stichinzision der Membran, Bougie einführen, Tubus über Bougie vorschieben",
+      "Nach Atemwegssicherung: Oxygenierung mit Kapnographie bestätigen, Ereignis dokumentieren, Patient/Team nachbesprechen (Debriefing), Atemwegs-Alertkarte für Patient/Akte ausstellen"
     ]
   },
   {
@@ -71,12 +72,12 @@ window.ALGORITHMS = [
     steps: [
       "Auslöser erkennen und sofort stoppen (z.B. verdächtiges Medikament/Blutprodukt/Kolloid stoppen)",
       "Hilfe rufen, ABCDE-Schema prüfen (Atemweg, Atmung, Kreislauf, Bewusstsein, Exposition)",
-      "Adrenalin 0,5mg i.m. (anterolateraler Oberschenkel) sofort bei Schock-/Atemwegszeichen/Bronchospasmus",
+      "Perioperativ/OP-Setting mit bereits liegendem i.v.-Zugang und kontinuierlichem Monitoring (RCUK/AAGBI 2021): Adrenalin i.v. in titrierten Boli (z.B. 50µg-Schritte, ggf. Perfusor) durch geübtes Personal als bevorzugter Weg statt i.m.; AUSSERHALB dieses Settings (kein i.v.-Zugang, keine kontinuierliche Überwachung) bleibt Adrenalin 0,5mg i.m. (anterolateraler Oberschenkel) die Erstlinie",
       "Patienten flach lagern mit erhöhten Beinen (bei Atemnot ggf. sitzend), hochdosiert Sauerstoff geben",
-      "i.v.-Zugang legen, zügige Volumengabe (kristalloid, z.B. 500–1000ml Bolus)",
-      "Keine Besserung nach 5 Minuten → Adrenalin 0,5mg i.m. wiederholen",
-      "Therapierefraktärer Schock → Adrenalin i.v. titriert durch erfahrenes Personal (Bolus/Infusion) erwägen",
-      "Zusätzlich Antihistaminikum und Kortikosteroid erwägen (unterstützend, nicht akut lebensrettend)",
+      "i.v.-Zugang legen (falls noch nicht vorhanden), zügige Volumengabe (kristalloid, z.B. 500–1000ml Bolus)",
+      "Keine Besserung nach 5 Minuten → Adrenalin-Gabe wiederholen (i.v. titriert bzw. i.m. 0,5mg, je nach Setting)",
+      "Therapierefraktärer Schock → Adrenalin-Infusion i.v. titriert durch erfahrenes Personal fortführen/steigern",
+      "Antihistaminikum und Kortikosteroid sind laut aktueller RCUK-Leitlinie 2021 NICHT mehr Teil der Akuttherapie der ersten Stunden (kein belegter Nutzen für Akutverlauf) – allenfalls sehr nachrangig/unterstützend nach Stabilisierung erwägen, niemals Adrenalin verzögern oder ersetzen",
       "Mastzelltryptase abnehmen (sofort, nach 1–2h, nach 24h zur Bestätigung)",
       "Nach Stabilisierung: Überwachung wegen möglicher biphasischer Reaktion, allergologische Abklärung veranlassen"
     ]
@@ -108,7 +109,8 @@ window.ALGORITHMS = [
       "Frühzeichen erkennen (periorales Kribbeln, metallischer Geschmack, Tinnitus, Verwirrtheit) → weitere Gabe sofort stoppen",
       "Hilfe holen, Atemweg sichern, 100% Sauerstoff geben, Hyperventilation/Azidose vermeiden",
       "Krampfanfälle mit Benzodiazepin behandeln (Propofol bei hämodynamischer Instabilität vermeiden, da kardiodepressiv)",
-      "Bei kardiovaskulärem Kollaps: Standard-ALS-Reanimation beginnen",
+      "Bei kardiovaskulärem Kollaps: Standard-ALS-Reanimation beginnen; falls Adrenalin nötig, REDUZIERTE Einzeldosen verwenden (ASRA 2020: ≤1µg/kg statt Standard-ALS-Dosis) – hochdosiertes Adrenalin kann die Wirksamkeit der Lipidemulsion beeinträchtigen und die Prognose verschlechtern",
+      "Vasopressin, Kalziumkanalblocker, Betablocker und andere Lokalanästhetika als Antiarrhythmikum VERMEIDEN (können LAST verschlimmern)",
       "Lidocain als Antiarrhythmikum VERMEIDEN (verschlimmert LAST) – Amiodaron bevorzugen",
       "20%ige Lipidemulsion sofort geben: Bolus 1,5ml/kg über 2–3 Minuten",
       "Im Anschluss Infusion mit 0,25ml/kg/min fortführen",
