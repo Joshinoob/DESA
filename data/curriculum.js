@@ -80,7 +80,8 @@ window.CURRICULUM = [
       { id: "sepsis-schock", title: "Sepsis & Schock" },
       { id: "sedierung-delir", title: "Sedierung & Delir" },
       { id: "nierenersatz", title: "Nierenersatzverfahren" },
-      { id: "ernaehrung", title: "Ernährung & Metabolik" }
+      { id: "ernaehrung", title: "Ernährung & Metabolik" },
+      { id: "post-intensive-care-syndrom", title: "Post-Intensive Care Syndrom (PICS)" }
     ]
   },
   {
