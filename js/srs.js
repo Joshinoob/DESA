@@ -204,6 +204,7 @@
   // Haken ("das kenne ich schon") für die schnelle Übersicht kurz vor der Prüfung.
   const LEARNED_DRUGS_KEY = "desa_learned_drugs_v1";
   const LEARNED_GUIDELINES_KEY = "desa_learned_guidelines_v1";
+  const LEARNED_LITERATURE_KEY = "desa_learned_literatur_v1";
 
   function loadLearnedSet(key) {
     try {
@@ -229,6 +230,8 @@
   function toggleLearnedDrug(id) { return toggleLearnedItem(LEARNED_DRUGS_KEY, id); }
   function loadLearnedGuidelines() { return loadLearnedSet(LEARNED_GUIDELINES_KEY); }
   function toggleLearnedGuideline(name) { return toggleLearnedItem(LEARNED_GUIDELINES_KEY, name); }
+  function loadLearnedLiterature() { return loadLearnedSet(LEARNED_LITERATURE_KEY); }
+  function toggleLearnedLiterature(name) { return toggleLearnedItem(LEARNED_LITERATURE_KEY, name); }
 
   // Konfidenz-Kalibrierung (Judgment of Learning): erfasst, ob die eigene
   // Sicherheitseinschätzung VOR dem Umdrehen der Karte mit dem tatsächlichen
@@ -394,6 +397,8 @@
     loadLearnedDrugs: loadLearnedDrugs,
     toggleLearnedDrug: toggleLearnedDrug,
     loadLearnedGuidelines: loadLearnedGuidelines,
-    toggleLearnedGuideline: toggleLearnedGuideline
+    toggleLearnedGuideline: toggleLearnedGuideline,
+    loadLearnedLiterature: loadLearnedLiterature,
+    toggleLearnedLiterature: toggleLearnedLiterature
   };
 })();

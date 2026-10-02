@@ -117,5 +117,20 @@ window.CURRICULUM = [
       { id: "gerinnung-transfusion", title: "Gerinnungsmanagement & Transfusion" },
       { id: "ethik-recht", title: "Ethik & Recht" }
     ]
+  },
+  {
+    // Zusätzliches Modul speziell für die deutsche Facharztprüfung Anästhesiologie:
+    // deutschlandspezifisches Recht/Regelwerk, das die europäische EDAIC/DESA-Prüfung
+    // nicht abdeckt (dort zählen nur die klinischen Inhalte, nicht nationales Recht).
+    id: "deutsches-recht",
+    title: "Deutsches Recht & Facharzt-Weiterbildung",
+    part: 2,
+    subtopics: [
+      { id: "btm-transfusionsrecht", title: "Betäubungsmittel- & Transfusionsrecht" },
+      { id: "hirntod-transplantationsrecht", title: "Transplantationsgesetz & Hirntod-Feststellung" },
+      { id: "medizinprodukte-arbeitsschutz", title: "Medizinprodukte- & Arbeitsschutzrecht" },
+      { id: "rettungsdienstrecht", title: "Rettungsdienst- & Notarztrecht" },
+      { id: "weiterbildung-qm", title: "Weiterbildungsordnung & Qualitätsmanagement" }
+    ]
   }
 ];

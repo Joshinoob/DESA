@@ -271,6 +271,10 @@
     else if (route === "leitlinie") renderGuidelineDetail(arg);
     else if (route === "leitlinien-durchgehen") startGuidelineWalkthrough(parseInt(arg, 10));
     else if (route === "leitlinien-test") startGuidelineQuiz(parseInt(arg, 10));
+    else if (route === "literatur") renderLiteratureList();
+    else if (route === "literatur-artikel") renderLiteratureDetail(arg);
+    else if (route === "literatur-durchgehen") startLiteratureWalkthrough(parseInt(arg, 10));
+    else if (route === "literatur-test") startLiteratureQuiz(parseInt(arg, 10));
     else if (route === "soe") renderSOEList();
     else if (route === "soe-case") renderSOEDetail(arg);
     else renderDashboard();
@@ -290,6 +294,7 @@
       ["tables", "Tabellen"],
       ["drugs", "Medikamente"],
       ["leitlinien", "Leitlinien"],
+      ["literatur", "Literatur"],
       ["soe", "Mündlich"],
       ["progress", "Fortschritt"]
     ];
@@ -1497,6 +1502,238 @@
       state.index++;
       state.answered = null;
       renderGuidelineQuizStep();
+    });
+  }
+
+  // ---------- Fachliteratur (selbst eingebrachte Fachzeitschriften-Artikel) ----------
+  // Exakt dasselbe Muster wie bei den Leitlinien-Karten (Gruppierung nach Quelle,
+  // Durchgehen-Modus, Testmodus, "Gelernt"-Abhaken) — nur mit eigenem ID-Präfix
+  // ("fc-lit-"/"mcq-lit-") und eigenem Gruppierungsfeld ("literatur" statt
+  // "guideline"), damit eigene und fremde Inhalte sich nicht vermischen. Aktuell
+  // leer: Karten entstehen erst, wenn der Nutzer eigene Fachartikel (PDF/Text)
+  // einbringt und daraus Zusammenfassungs- und Testkarten erstellt werden.
+  function literatureCards() {
+    return FLASHCARDS.filter(function (c) { return c.id.indexOf("fc-lit-") === 0; });
+  }
+
+  function literatureGroups() {
+    const groups = {};
+    literatureCards().forEach(function (c) { (groups[c.literatur] = groups[c.literatur] || []).push(c); });
+    return Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "de"); })
+      .map(function (name) { return { name: name, cards: groups[name] }; });
+  }
+
+  function mcqForLiterature(name) {
+    return MCQ.filter(function (q) { return q.literatur === name; });
+  }
+
+  function renderLiteratureList() {
+    const groups = literatureGroups();
+    const cards = literatureCards();
+    app.innerHTML = nav("literatur") + '<main class="container">' + "<h1>Fachliteratur</h1>";
+    if (cards.length === 0) {
+      app.innerHTML +=
+        '<p class="muted">Hier entstehen Zusammenfassungs- und Testkarten zu Fachartikeln, die du selbst einbringst — z.B. aktuelle Studien oder Übersichtsarbeiten aus Anästhesiologie-Zeitschriften, die (noch) nicht in offiziellen Leitlinien stecken.</p>' +
+        '<div class="algo-card">' +
+        '<div class="algo-card-title">So kommen deine Artikel hier rein</div>' +
+        '<p>Schick mir den Artikel als PDF oder eingefügten Text (z.B. in einer neuen Nachricht an Claude Code). Ich lese ihn, fasse die Kernaussagen als Karteikarten zusammen und ergänze dazu passende Testfragen — im selben Format wie die Leitlinien-Karten, mit Quellenangabe (Autoren, Zeitschrift, Jahr) statt Leitlinienname. Die Karten laufen danach ganz normal über die Spaced-Repetition im Lernmodus mit und erscheinen hier gruppiert nach Artikel, inklusive Durchgehen- und Testmodus wie bei den Leitlinien.</p>' +
+        "</div></main>";
+      return;
+    }
+    const learned = window.SRS.loadLearnedLiterature();
+    const groupsHtml = groups.map(function (g, idx) {
+      const isLearned = learned.indexOf(g.name) !== -1;
+      const quizCount = mcqForLiterature(g.name).length;
+      const itemsHtml = g.cards.map(function (c) {
+        return '<a class="drug-item guideline-item" href="#/literatur-artikel/' + c.id + '" data-name="' + escapeHtml((c.front + " " + g.name).toLowerCase()) + '">' + escapeHtml(c.front) + "</a>";
+      }).join("");
+      return (
+        '<div class="guideline-group' + (isLearned ? " guideline-group--learned" : "") + '">' +
+        '<h2>' + (isLearned ? '<span class="learned-check">✓</span> ' : "") + escapeHtml(g.name) + '<span class="muted"> · ' + g.cards.length + (g.cards.length === 1 ? " Karte" : " Karten") + "</span></h2>" +
+        '<div class="cta-row">' +
+        '<a class="btn btn-sm btn-primary" href="#/literatur-durchgehen/' + idx + '">Durchgehen</a>' +
+        (quizCount > 0 ? '<a class="btn btn-sm btn-secondary" href="#/literatur-test/' + idx + '">Testen (' + quizCount + ")</a>" : "") +
+        '<button class="btn btn-sm btn-secondary toggle-learned-literature" data-literatur="' + escapeHtml(g.name) + '">' + (isLearned ? "✓ Gelernt" : "Als gelernt markieren") + "</button>" +
+        "</div>" +
+        '<div class="drug-grid guideline-grid">' + itemsHtml + "</div>" +
+        "</div>"
+      );
+    }).join("");
+    app.innerHTML =
+      nav("literatur") +
+      '<main class="container">' +
+      "<h1>Fachliteratur</h1>" +
+      '<p class="muted">' + cards.length + " Karten aus " + groups.length + (groups.length === 1 ? " selbst eingebrachtem Artikel" : " selbst eingebrachten Artikeln") + " — <strong>" + learned.length + " von " + groups.length + "</strong> als gelernt markiert." +
+      "</p>" +
+      '<input type="text" id="literature-search" placeholder="Artikel oder Stichwort suchen…" autocomplete="off">' +
+      groupsHtml +
+      "</main>";
+    document.getElementById("literature-search").addEventListener("input", function (e) {
+      const q = e.target.value.trim().toLowerCase();
+      document.querySelectorAll(".guideline-group").forEach(function (groupEl) {
+        const items = groupEl.querySelectorAll(".guideline-item");
+        let anyVisible = false;
+        items.forEach(function (el) {
+          const match = q === "" || el.getAttribute("data-name").indexOf(q) !== -1;
+          el.classList.toggle("hidden", !match);
+          if (match) anyVisible = true;
+        });
+        groupEl.classList.toggle("hidden", !anyVisible);
+      });
+    });
+    document.querySelectorAll(".toggle-learned-literature").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        window.SRS.toggleLearnedLiterature(btn.getAttribute("data-literatur"));
+        renderLiteratureList();
+      });
+    });
+  }
+
+  function renderLiteratureDetail(id) {
+    const card = literatureCards().find(function (c) { return c.id === id; });
+    if (!card) { renderLiteratureList(); return; }
+    app.innerHTML =
+      nav("literatur") +
+      '<main class="container narrow">' +
+      '<a class="back-link" href="#/literatur">← Alle Fachartikel</a>' +
+      '<div class="session-progress">' + escapeHtml(card.literatur) + "</div>" +
+      "<h1>" + escapeHtml(card.front) + "</h1>" +
+      '<div class="flashcard" style="text-align:left">' +
+      '<div class="flashcard-back lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.back) + "</div>" +
+      "</div>" +
+      "</main>";
+    wrapAllLookupSources();
+  }
+
+  let literatureWalkState = null;
+
+  function startLiteratureWalkthrough(idx) {
+    const groups = literatureGroups();
+    const group = groups[idx];
+    if (!group) { renderLiteratureList(); return; }
+    literatureWalkState = { group: group, index: 0 };
+    renderLiteratureWalkStep();
+  }
+
+  function renderLiteratureWalkStep() {
+    const state = literatureWalkState;
+    const group = state.group;
+    if (state.index >= group.cards.length) {
+      const isLearned = window.SRS.loadLearnedLiterature().indexOf(group.name) !== -1;
+      app.innerHTML =
+        nav("literatur") +
+        '<main class="container narrow">' +
+        "<h1>" + escapeHtml(group.name) + " – fertig 🎉</h1>" +
+        "<p>Alle " + group.cards.length + " Karten zu diesem Artikel durchgegangen.</p>" +
+        '<div class="cta-row">' +
+        '<button class="btn ' + (isLearned ? "btn-primary" : "btn-secondary") + '" id="lit-finish-mark-learned">' + (isLearned ? "✓ Gelernt" : "Diesen Artikel kann ich") + "</button>" +
+        (mcqForLiterature(group.name).length > 0 ? '<a class="btn btn-secondary" href="#/literatur-test/' + literatureGroups().findIndex(function (g) { return g.name === group.name; }) + '">Jetzt testen</a>' : "") +
+        '<a class="btn btn-secondary" href="#/literatur">Zurück zur Übersicht</a>' +
+        "</div></main>";
+      document.getElementById("lit-finish-mark-learned").addEventListener("click", function () {
+        window.SRS.toggleLearnedLiterature(group.name);
+        renderLiteratureWalkStep();
+      });
+      return;
+    }
+    const card = group.cards[state.index];
+    app.innerHTML =
+      nav("literatur") +
+      '<main class="container narrow">' +
+      '<div class="session-progress">' + escapeHtml(group.name) + " · Karte " + (state.index + 1) + " / " + group.cards.length + "</div>" +
+      '<div class="flashcard">' +
+      '<div class="flashcard-front lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.front) + "</div>" +
+      '<div class="flashcard-back hidden lookup-source" id="lit-walk-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.back) + "</div>" +
+      "</div>" +
+      '<div class="cta-row" id="lit-walk-reveal-row"><button class="btn btn-primary" id="lit-walk-reveal-btn">Antwort zeigen</button></div>' +
+      '<div class="cta-row hidden" id="lit-walk-next-row"><button class="btn btn-primary" id="lit-walk-next-btn">Weiter</button></div>' +
+      "</main>";
+    wrapAllLookupSources();
+    document.getElementById("lit-walk-reveal-btn").addEventListener("click", function () {
+      document.getElementById("lit-walk-back").classList.remove("hidden");
+      document.getElementById("lit-walk-reveal-row").classList.add("hidden");
+      document.getElementById("lit-walk-next-row").classList.remove("hidden");
+    });
+    document.getElementById("lit-walk-next-btn").addEventListener("click", function () {
+      state.index++;
+      renderLiteratureWalkStep();
+    });
+  }
+
+  let literatureQuizState = null;
+
+  function startLiteratureQuiz(idx) {
+    const groups = literatureGroups();
+    const group = groups[idx];
+    const pool = group ? mcqForLiterature(group.name) : [];
+    if (!group || pool.length === 0) { renderLiteratureList(); return; }
+    literatureQuizState = { group: group, questions: shuffle(pool), index: 0, correct: 0, answered: null };
+    renderLiteratureQuizStep();
+  }
+
+  function renderLiteratureQuizStep() {
+    const state = literatureQuizState;
+    const total = state.questions.length;
+    if (state.index >= total) {
+      const isLearned = window.SRS.loadLearnedLiterature().indexOf(state.group.name) !== -1;
+      app.innerHTML =
+        nav("literatur") +
+        '<main class="container narrow">' +
+        "<h1>" + escapeHtml(state.group.name) + " – Test fertig</h1>" +
+        '<div class="score-circle">' + state.correct + "/" + total + "</div>" +
+        '<div class="cta-row">' +
+        '<button class="btn ' + (isLearned ? "btn-primary" : "btn-secondary") + '" id="lit-quiz-mark-learned">' + (isLearned ? "✓ Gelernt" : "Diesen Artikel kann ich") + "</button>" +
+        '<a class="btn btn-secondary" href="#/literatur">Zurück zur Übersicht</a>' +
+        "</div></main>";
+      document.getElementById("lit-quiz-mark-learned").addEventListener("click", function () {
+        window.SRS.toggleLearnedLiterature(state.group.name);
+        renderLiteratureQuizStep();
+      });
+      return;
+    }
+    const q = state.questions[state.index];
+    const answered = state.answered !== null;
+    const optionsHtml = q.options.map(function (opt, i) {
+      let cls = "option-row";
+      if (answered) {
+        if (i === q.correct) cls += " option-correct";
+        else if (i === state.answered) cls += " option-wrong-selected";
+        else cls += " option-wrong-disabled";
+      }
+      return (
+        '<label class="' + cls + '">' +
+        '<input type="radio" name="lit-option" value="' + i + '"' + (answered ? " disabled" : "") + ">" +
+        '<span>' + String.fromCharCode(65 + i) + ") " + escapeHtml(opt) + "</span>" +
+        "</label>"
+      );
+    }).join("");
+    const feedbackHtml = !answered ? "" :
+      '<div class="' + (state.answered === q.correct ? "correct-answer" : "wrong-answer") + '">' +
+      (state.answered === q.correct ? "Richtig! " : "Leider falsch. Richtig wäre: " + String.fromCharCode(65 + q.correct) + ") " + escapeHtml(q.options[q.correct])) +
+      "</div>" +
+      '<p class="explanation">' + escapeHtml(q.explanation) + "</p>";
+    app.innerHTML =
+      nav("literatur") +
+      '<main class="container narrow">' +
+      '<div class="session-progress">' + escapeHtml(state.group.name) + " · Frage " + (state.index + 1) + " / " + total + "</div>" +
+      '<div class="question-box"><p class="question-text">' + escapeHtml(q.question) + "</p>" +
+      '<div class="options">' + optionsHtml + "</div>" +
+      feedbackHtml +
+      "</div>" +
+      '<div class="cta-row"><button class="btn btn-primary" id="lit-next-btn">' + (state.index === total - 1 ? "Fertig" : "Weiter") + "</button></div>" +
+      "</main>";
+    document.querySelectorAll('input[name="lit-option"]').forEach(function (input) {
+      input.addEventListener("change", function () {
+        state.answered = parseInt(input.value, 10);
+        if (state.answered === q.correct) state.correct++;
+        renderLiteratureQuizStep();
+      });
+    });
+    document.getElementById("lit-next-btn").addEventListener("click", function () {
+      if (!answered) return;
+      state.index++;
+      state.answered = null;
+      renderLiteratureQuizStep();
     });
   }
 
