@@ -34,6 +34,10 @@ body {
   line-height: 1.5;
 }
 
+/* Während einer aktiven Lernkarte ausgeblendet (siehe routeTo() in js/app.js) —
+   schafft zusätzlichen Platz, ohne den Hinweis auf allen anderen Seiten zu verlieren. */
+body.learn-active .app-footer { display: none; }
+
 .storage-warning {
   background: var(--red);
   color: white;
@@ -379,30 +383,18 @@ select, input[type="text"] {
 
 .lookup-hint { margin-top: 18px; font-size: 0.8rem; }
 
-.scratch-toggle {
-  display: block;
-  margin: 10px 0 0;
-  padding: 0;
-  background: none;
-  border: none;
-  font-size: 0.8rem;
-  text-decoration: underline;
-  cursor: pointer;
-  text-align: left;
-}
-.scratch-input {
-  display: block;
-  width: 100%;
-  margin: 8px 0 0;
-  padding: 8px 10px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+/* Kompakte Navigation während einer aktiven Lernkarte (siehe nav(route, compact)):
+   nur Marke + Beenden-Link statt aller 12 Reiter, damit Karte und Bewertungs-Buttons
+   möglichst ohne Scrollen auf den Bildschirm passen. */
+.topnav-compact { padding: 10px 16px; justify-content: flex-start; gap: 14px; }
+.nav-exit-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 4px 8px;
   border-radius: var(--radius);
-  color: var(--text);
-  font-family: inherit;
-  font-size: 0.88rem;
-  resize: vertical;
 }
+.nav-exit-link:hover { background: var(--surface-2); color: var(--text); }
 
 /* Sofort-Vorschau: zeigt den gefundenen Lerninhalt direkt an, statt nur die
    Warteschlange umzusortieren — der Wissensdurst wird sofort gestillt. */
@@ -656,6 +648,15 @@ select, input[type="text"] {
   .container { padding: 16px; }
   .rating-row { grid-template-columns: repeat(2, 1fr); }
   .confidence-row { grid-template-columns: 1fr; }
+
+  /* Mehr von der Karte sichtbar ohne Scrollen: Lernkarte und Abstände auf dem
+     Handy spürbar enger takten als auf dem Desktop, wo der Platz kein Problem ist. */
+  .flashcard { padding: 18px 16px; min-height: 0; margin-top: 10px; }
+  .flashcard-back { margin-top: 14px; padding-top: 14px; }
+  .step-label { margin: 10px 0 5px; }
+  .cta-row { margin: 10px 0; }
+  .rating-row { margin-top: 10px; }
+  .rating-row button, .confidence-row button { padding: 10px 4px; }
 
   /* Tabellen werden auf dem Handy zu gestapelten Karten statt horizontal zu
      scrollen — sonst wirkt rechts immer etwas "abgeschnitten". */

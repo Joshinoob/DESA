@@ -56,6 +56,20 @@
     safeSetItem(PROGRESS_KEY, JSON.stringify(progress));
   }
 
+  // Schreibt NUR die eine geänderte Karte, gemergt auf den FRISCH von der Platte gelesenen
+  // Stand, statt den u.U. veralteten In-Memory-Snapshot des gesamten progress-Objekts
+  // zurückzuschreiben. Ohne das würde ein zweiter gleichzeitig offener Tab (z.B. Lernen in
+  // einem Tab, Dashboard in einem anderen) beim Speichern alle Änderungen überschreiben, die
+  // der jeweils andere Tab in der Zwischenzeit an ANDEREN Karten vorgenommen hat (Lost-Update).
+  // Der übergebene In-Memory-"progress" wird dabei direkt mit aktualisiert, damit die laufende
+  // Session (z.B. Dashboard-Zahlen) auch neue Karten aus dem anderen Tab sofort mitbekommt.
+  function saveProgressCard(progress, cardId, newState) {
+    const disk = loadProgress();
+    disk[cardId] = newState;
+    Object.keys(disk).forEach(function (k) { progress[k] = disk[k]; });
+    safeSetItem(PROGRESS_KEY, JSON.stringify(disk));
+  }
+
   function loadResults() {
     try {
       const raw = localStorage.getItem(RESULTS_KEY);
@@ -143,8 +157,7 @@
       lastReview: todayISO(),
       lastRating: rating
     };
-    progress[cardId] = newState;
-    saveProgress(progress);
+    saveProgressCard(progress, cardId, newState);
     recordActivityToday();
     return newState;
   }
@@ -175,15 +188,16 @@
   // Genutzt von der Nachschlage-Funktion, wenn ein Begriff als unklar markiert wird.
   function scheduleSoon(progress, cardId) {
     const existing = progress[cardId];
+    let newState;
     if (!existing) {
-      progress[cardId] = { interval: 0, ease: EASE_DEFAULT, box: 0, due: todayISO(), reps: 0, lapses: 0, lastReview: null };
+      newState = { interval: 0, ease: EASE_DEFAULT, box: 0, due: todayISO(), reps: 0, lapses: 0, lastReview: null };
     } else {
       const tomorrow = addDays(new Date(), 1).toISOString();
       const dueSooner = new Date(existing.due) < new Date(tomorrow) ? existing.due : tomorrow;
-      progress[cardId] = Object.assign({}, existing, { due: dueSooner });
+      newState = Object.assign({}, existing, { due: dueSooner });
     }
-    saveProgress(progress);
-    return progress[cardId];
+    saveProgressCard(progress, cardId, newState);
+    return newState;
   }
 
   const GAPS_KEY = "desa_gaps_v1";

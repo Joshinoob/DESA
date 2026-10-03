@@ -1,0 +1,14 @@
+{
+  "name": "DESA-Trainer",
+  "short_name": "DESA-Trainer",
+  "description": "Lern-App für die Vorbereitung auf EDAIC/DESA und die Facharztprüfung Anästhesiologie – komplett lokal, ohne Server.",
+  "start_url": "./#/dashboard",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1720",
+  "theme_color": "#0f1720",
+  "lang": "de",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
