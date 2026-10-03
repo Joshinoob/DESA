@@ -263,14 +263,14 @@
   document.addEventListener("keydown", function (e) {
     const tag = document.activeElement && document.activeElement.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-    const revealRow = document.getElementById("reveal-row");
-    if (revealRow && !revealRow.classList.contains("hidden")) {
+    const actionRow = document.getElementById("action-row");
+    if (!actionRow) return;
+    if (actionRow.getAttribute("data-mode") === "confidence") {
       const sel = { "1": ".confidence-sicher", "2": ".confidence-unsicher", "3": ".confidence-keine" }[e.key];
       if (sel) { e.preventDefault(); const btn = document.querySelector(sel); if (btn) btn.click(); }
       return;
     }
-    const ratingRow = document.getElementById("rating-row");
-    if (ratingRow && !ratingRow.classList.contains("hidden")) {
+    if (actionRow.getAttribute("data-mode") === "rating") {
       const sel = { "1": ".rating-again", "2": ".rating-hard", "3": ".rating-good", "4": ".rating-easy" }[e.key];
       if (sel) { e.preventDefault(); const btn = document.querySelector(sel); if (btn) btn.click(); }
     }
@@ -623,56 +623,62 @@
       '<div class="flashcard-front lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.front) + "</div>" +
       '<div class="' + backClass + '" id="flashcard-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + backContent + "</div>" +
       "</div>" +
-      // 3 Konfidenzstufen (auf ausdrücklichen Nutzerwunsch wiederhergestellt) —
-      // wichtig ist, dass nie alle 7 Buttons gleichzeitig sichtbar sind: erst die
-      // 3 Konfidenz-Buttons, nach dem Aufdecken (reveal-row wird versteckt) dann
-      // erst die 4 Bewertungs-Buttons.
-      '<p class="step-label muted" id="reveal-step-label">Wie sicher bist du?</p>' +
-      '<div class="cta-row confidence-row" id="reveal-row">' +
+      // Eine einzige Button-Zeile (max. 4 Buttons gleichzeitig sichtbar) statt zwei
+      // parallelen Zeilen: zuerst die 3 Konfidenz-Buttons, nach dem Aufdecken wird
+      // derselbe Zeilen-Inhalt durch die 4 Bewertungs-Buttons ersetzt.
+      '<p class="step-label muted" id="action-step-label">Wie sicher bist du?</p>' +
+      '<div class="cta-row confidence-row" id="action-row" data-mode="confidence">' +
       '<button class="btn confidence-sicher" data-confidence="sicher"><kbd>1</kbd> Weiß ich sicher</button>' +
       '<button class="btn confidence-unsicher" data-confidence="unsicher"><kbd>2</kbd> Unsicher</button>' +
       '<button class="btn confidence-keine" data-confidence="keine"><kbd>3</kbd> Keine Ahnung</button>' +
       "</div>" +
-      '<p class="step-label muted hidden" id="rating-step-label">Wie lief es wirklich?</p>' +
-      '<div class="rating-row hidden" id="rating-row">' +
-      '<button class="btn rating-again" data-rating="again"><kbd>1</kbd> Nochmal</button>' +
-      '<button class="btn rating-hard" data-rating="hard"><kbd>2</kbd> Schwer</button>' +
-      '<button class="btn rating-good" data-rating="good"><kbd>3</kbd> Gut</button>' +
-      '<button class="btn rating-easy" data-rating="easy"><kbd>4</kbd> Leicht</button>' +
-      "</div>" +
       "</main>";
     wrapAllLookupSources();
+
+    const actionRow = document.getElementById("action-row");
 
     // Konfidenz-Auswahl deckt die Karte sofort auf (kein zusätzlicher Klick) —
     // erfasst aber vorab die Selbsteinschätzung, um sie später mit dem
     // tatsächlichen Ergebnis (Nochmal/Schwer vs. Gut/Leicht) zu vergleichen.
     let cardConfidence = null;
-    document.querySelectorAll(".confidence-row button").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        if (Date.now() - lastCardAdvanceAt < 350) return; // schützt vor Doppelklick/-tap-Überhang der vorigen Karte
-        cardConfidence = btn.getAttribute("data-confidence");
-        document.getElementById("flashcard-back").classList.remove("hidden");
-        document.getElementById("reveal-row").classList.add("hidden");
-        document.getElementById("reveal-step-label").classList.add("hidden");
-        document.getElementById("rating-row").classList.remove("hidden");
-        document.getElementById("rating-step-label").classList.remove("hidden");
-      }, { once: true });
-    });
-    document.querySelectorAll("#rating-row button").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        if (Date.now() - lastCardAdvanceAt < 150) return; // schützt vor einem versehentlichen Doppelklick, der schon auf die nächste Karte trifft
-        const rating = btn.getAttribute("data-rating");
-        window.SRS.reviewCard(progress, card.id, rating);
-        if (cardConfidence) {
-          window.SRS.recordCalibration(cardConfidence, rating === "good" || rating === "easy");
-        }
-        learnStats.reviewed++;
-        learnStats[rating]++;
-        learnQueue.shift();
-        if (rating === "again") learnQueue.splice(Math.min(3, learnQueue.length), 0, card);
-        renderLearnCard();
-      }, { once: true });
-    });
+    bindConfidenceButtons();
+
+    function bindConfidenceButtons() {
+      actionRow.querySelectorAll("[data-confidence]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (Date.now() - lastCardAdvanceAt < 350) return; // schützt vor Doppelklick/-tap-Überhang der vorigen Karte
+          cardConfidence = btn.getAttribute("data-confidence");
+          document.getElementById("flashcard-back").classList.remove("hidden");
+          showRatingButtons();
+        }, { once: true });
+      });
+    }
+
+    function showRatingButtons() {
+      document.getElementById("action-step-label").textContent = "Wie lief es wirklich?";
+      actionRow.className = "cta-row rating-row";
+      actionRow.setAttribute("data-mode", "rating");
+      actionRow.innerHTML =
+        '<button class="btn rating-again" data-rating="again"><kbd>1</kbd> Nochmal</button>' +
+        '<button class="btn rating-hard" data-rating="hard"><kbd>2</kbd> Schwer</button>' +
+        '<button class="btn rating-good" data-rating="good"><kbd>3</kbd> Gut</button>' +
+        '<button class="btn rating-easy" data-rating="easy"><kbd>4</kbd> Leicht</button>';
+      actionRow.querySelectorAll("[data-rating]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (Date.now() - lastCardAdvanceAt < 150) return; // schützt vor einem versehentlichen Doppelklick, der schon auf die nächste Karte trifft
+          const rating = btn.getAttribute("data-rating");
+          window.SRS.reviewCard(progress, card.id, rating);
+          if (cardConfidence) {
+            window.SRS.recordCalibration(cardConfidence, rating === "good" || rating === "easy");
+          }
+          learnStats.reviewed++;
+          learnStats[rating]++;
+          learnQueue.shift();
+          if (rating === "again") learnQueue.splice(Math.min(3, learnQueue.length), 0, card);
+          renderLearnCard();
+        }, { once: true });
+      });
+    }
   }
 
   // ---------- Test ----------
