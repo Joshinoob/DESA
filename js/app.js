@@ -62,6 +62,19 @@
     return div.innerHTML.split('"').join("&quot;").split("'").join("&#39;");
   }
 
+  // Stabile, lesbare ID für Leitlinien-/Literatur-Gruppen-Links statt eines Array-Index —
+  // ein künftig alphabetisch "davor" eingefügter Eintrag verschiebt sonst stillschweigend
+  // jeden Index und damit jeden (z.B. gebookmarkten) Link auf eine andere Gruppe.
+  function slugify(str) {
+    return str
+      .toLowerCase()
+      .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 50)
+      .replace(/-+$/g, ""); // nach dem Kürzen evtl. entstandenen Bindestrich am Ende entfernen
+  }
+
   // Strukturiertes Steckbrief-Layout (Medikamenten-Karten): jedes Feld ein eigener,
   // farblich signalisierter Block statt Fließtext (Chunking + Signaling-Prinzip
   // nach Mayer, reduziert kognitive Last beim Scannen sicherheitskritischer Fakten).
@@ -283,6 +296,10 @@
     const parts = hash.replace(/^#\//, "").split("/");
     const route = parts[0] || "dashboard";
     const arg = parts[1];
+    // Während einer aktiven Lernkarte ist jeder sichtbare Pixel kostbar (siehe kompakte
+    // Navigation oben) — der immer gleiche Datenschutz-Footer wird dort ausgeblendet,
+    // er bleibt auf allen anderen Seiten unverändert sichtbar.
+    document.body.classList.toggle("learn-active", route === "learn-session");
     if (route !== "test-session") clearExamTimer();
     if (route === "learn") renderLearnSetup(arg);
     else if (route === "learn-session") startLearnSession(arg, parts[2]);
@@ -300,12 +317,12 @@
     else if (route === "drug") renderDrugDetail(arg);
     else if (route === "leitlinien") renderGuidelineList();
     else if (route === "leitlinie") renderGuidelineDetail(arg);
-    else if (route === "leitlinien-durchgehen") startGuidelineWalkthrough(parseInt(arg, 10));
-    else if (route === "leitlinien-test") startGuidelineQuiz(parseInt(arg, 10));
+    else if (route === "leitlinien-durchgehen") startGuidelineWalkthrough(arg);
+    else if (route === "leitlinien-test") startGuidelineQuiz(arg);
     else if (route === "literatur") renderLiteratureList();
     else if (route === "literatur-artikel") renderLiteratureDetail(arg);
-    else if (route === "literatur-durchgehen") startLiteratureWalkthrough(parseInt(arg, 10));
-    else if (route === "literatur-test") startLiteratureQuiz(parseInt(arg, 10));
+    else if (route === "literatur-durchgehen") startLiteratureWalkthrough(arg);
+    else if (route === "literatur-test") startLiteratureQuiz(arg);
     else if (route === "soe") renderSOEList();
     else if (route === "soe-case") renderSOEDetail(arg);
     else renderDashboard();
@@ -314,7 +331,7 @@
   }
   window.addEventListener("hashchange", router);
 
-  function nav(activeRoute) {
+  function nav(activeRoute, compact) {
     const items = [
       ["dashboard", "Dashboard"],
       ["fokus", "Wissenslücken"],
@@ -336,6 +353,18 @@
       '<div class="storage-warning">⚠️ Dein Fortschritt kann gerade nicht gespeichert werden' +
       (STORAGE_OK ? " (der lokale Speicher deines Browsers ist voll)" : " (dein Browser blockiert lokalen Speicher, z.B. im privaten/Inkognito-Modus oder durch „Cookies blockieren\" in den Einstellungen)") +
       '. Bitte Speicherplatz freigeben bzw. die Einstellung ändern und die Seite neu laden.</div>';
+    // Kompakte Variante (nur Marke + Beenden-Link statt aller 12 Reiter): spart deutlich
+    // vertikalen Platz auf Bildschirmen während einer aktiven Lernkarte, wo Karteninhalt
+    // und Buttons möglichst ohne Scrollen sichtbar sein sollen.
+    if (compact) {
+      return (
+        warning +
+        '<nav class="topnav topnav-compact">' +
+        '<a class="nav-exit-link" href="#/dashboard">✕ Beenden</a>' +
+        '<div class="brand">DESA-Trainer</div>' +
+        "</nav>"
+      );
+    }
     return (
       warning +
       '<nav class="topnav">' +
@@ -517,7 +546,19 @@
   // Button, nicht den kurzen Moment des Kartenwechsels selbst.
   let lastCardAdvanceAt = 0;
 
+  let learnSessionKey = null;
+
   function startLearnSession(moduleId, subtopicId) {
+    // Siehe startTestSession: Browser-Zurück/Vorwärts auf dieselbe Session darf den
+    // bereits gesammelten Fortschritt (Statistik, durchmischte Warteschlange) nicht
+    // verwerfen. Eine bereits ABGESCHLOSSENE Session (Warteschlange leer) darf dagegen
+    // frei neu aufgebaut werden, z.B. um neu fällig gewordene Karten einzubeziehen.
+    const key = moduleId + "|" + (subtopicId || "");
+    if (learnSessionKey === key && learnQueue.length > 0) {
+      renderLearnCard();
+      return;
+    }
+    learnSessionKey = key;
     learnStats = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
     if (moduleId === "difficult") {
       learnQueue = window.SRS.getDifficultCards(FLASHCARDS, progress);
@@ -572,20 +613,16 @@
     const backContent = isProfile ? renderProfile(card.profile) : escapeHtml(card.back);
     const backClass = "flashcard-back hidden lookup-source" + (isProfile ? " profile-back" : "");
     app.innerHTML =
-      nav("learn") +
+      // Kompakte Navigation (nur Marke + Beenden-Link statt aller 12 Reiter) während
+      // einer aktiven Lernkarte: schafft spürbar mehr sichtbaren Platz für Karte und
+      // Buttons, besonders auf kleinen Bildschirmen, wo sonst gescrollt werden müsste.
+      nav("learn", true) +
       '<main class="container narrow">' +
       '<div class="session-progress">Noch ' + remaining + " Karte(n) · " + escapeHtml(moduleById(card.module).title) + " – " + escapeHtml(subtopicTitle(card.module, card.subtopic)) + "</div>" +
       '<div class="flashcard' + (isProfile ? " flashcard-profile" : "") + '" id="flashcard">' +
       '<div class="flashcard-front lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.front) + "</div>" +
       '<div class="' + backClass + '" id="flashcard-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + backContent + "</div>" +
       "</div>" +
-      // Optionales, nicht gespeichertes Notizfeld VOR dem Aufdecken: der Generierungs-
-      // Effekt (aktives Formulieren einer Antwort verbessert das Behalten gegenüber
-      // reinem Wiedererkennen) — bewusst als einzeiliger, standardmäßig eingeklappter
-      // Link umgesetzt statt eines permanent sichtbaren Pflichtfelds, damit der sonst
-      // sehr kompakte Karteikarten-Ablauf nicht zusätzlich überladen wird.
-      '<button type="button" class="scratch-toggle muted" id="scratch-toggle">✏️ Kurz aufschreiben, bevor du aufdeckst (optional)</button>' +
-      '<textarea class="scratch-input hidden" id="scratch-input" rows="2" placeholder="Nur für dich – wird nirgends gespeichert oder ausgewertet…"></textarea>' +
       // 3 Konfidenzstufen (auf ausdrücklichen Nutzerwunsch wiederhergestellt) —
       // wichtig ist, dass nie alle 7 Buttons gleichzeitig sichtbar sind: erst die
       // 3 Konfidenz-Buttons, nach dem Aufdecken (reveal-row wird versteckt) dann
@@ -603,18 +640,8 @@
       '<button class="btn rating-good" data-rating="good"><kbd>3</kbd> Gut</button>' +
       '<button class="btn rating-easy" data-rating="easy"><kbd>4</kbd> Leicht</button>' +
       "</div>" +
-      '<p class="lookup-hint muted">Tipp: tippe/klicke ein unklares Wort (z.B. „PRIS“) an, um es nachzuschlagen. Am PC gehen auch die Zifferntasten.</p>' +
       "</main>";
     wrapAllLookupSources();
-
-    const scratchToggle = document.getElementById("scratch-toggle");
-    if (scratchToggle) {
-      scratchToggle.addEventListener("click", function () {
-        document.getElementById("scratch-input").classList.remove("hidden");
-        document.getElementById("scratch-input").focus();
-        scratchToggle.classList.add("hidden");
-      }, { once: true });
-    }
 
     // Konfidenz-Auswahl deckt die Karte sofort auf (kein zusätzlicher Klick) —
     // erfasst aber vorab die Selbsteinschätzung, um sie später mit dem
@@ -734,6 +761,17 @@
   }
 
   function startTestSession(arg) {
+    // Browser-Zurück/Vorwärts (oder ein erneuter hashchange auf dieselbe Route, z.B. durch
+    // eine mobile Zurück-Geste) darf eine noch laufende Session nicht zerstören — sonst
+    // gehen in der Prüfungssimulation alle bisherigen Antworten UND der Timer verloren.
+    // Die Deadline bleibt dabei eine echte Uhrzeit (kein pausierbarer Countdown), läuft also
+    // auch während der Abwesenheit real weiter — realistischer als ein angehaltener Timer.
+    if (testState && testState.arg === arg && testState.index < testState.questions.length &&
+      (testState.mode !== "exam" || testState.deadline > Date.now())) {
+      renderTestQuestion();
+      if (testState.mode === "exam") startExamTimer();
+      return;
+    }
     clearExamTimer();
     let moduleId = "mixed";
     let count = "20";
@@ -767,6 +805,7 @@
     }
 
     testState = {
+      arg: arg,
       questions: pool,
       index: 0,
       answers: new Array(pool.length).fill(null),
@@ -1390,11 +1429,24 @@
     return FLASHCARDS.filter(function (c) { return c.id.indexOf("fc-ll-") === 0; });
   }
 
+  // Hängt bei einer (sehr unwahrscheinlichen) Slug-Kollision zweier unterschiedlicher
+  // Gruppennamen eine laufende Nummer an, damit jede Gruppe trotzdem eine eindeutige,
+  // stabile URL behält.
+  function assignUniqueSlugs(names) {
+    const used = {};
+    return names.map(function (name) {
+      let slug = slugify(name);
+      if (used[slug]) { used[slug]++; slug = slug + "-" + used[slug]; } else { used[slug] = 1; }
+      return slug;
+    });
+  }
+
   function guidelineGroups() {
     const groups = {};
     guidelineCards().forEach(function (c) { (groups[c.guideline] = groups[c.guideline] || []).push(c); });
-    return Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "de"); })
-      .map(function (name) { return { name: name, cards: groups[name] }; });
+    const names = Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "de"); });
+    const slugs = assignUniqueSlugs(names);
+    return names.map(function (name, i) { return { name: name, slug: slugs[i], cards: groups[name] }; });
   }
 
   function mcqForGuideline(name) {
@@ -1405,7 +1457,7 @@
     const groups = guidelineGroups();
     const cards = guidelineCards();
     const learned = window.SRS.loadLearnedGuidelines();
-    const groupsHtml = groups.map(function (g, idx) {
+    const groupsHtml = groups.map(function (g) {
       const isLearned = learned.indexOf(g.name) !== -1;
       const quizCount = mcqForGuideline(g.name).length;
       const itemsHtml = g.cards.map(function (c) {
@@ -1415,8 +1467,8 @@
         '<div class="guideline-group' + (isLearned ? " guideline-group--learned" : "") + '">' +
         '<h2>' + (isLearned ? '<span class="learned-check">✓</span> ' : "") + escapeHtml(g.name) + '<span class="muted"> · ' + g.cards.length + (g.cards.length === 1 ? " Karte" : " Karten") + "</span></h2>" +
         '<div class="cta-row">' +
-        '<a class="btn btn-sm btn-primary" href="#/leitlinien-durchgehen/' + idx + '">Durchgehen</a>' +
-        (quizCount > 0 ? '<a class="btn btn-sm btn-secondary" href="#/leitlinien-test/' + idx + '">Testen (' + quizCount + ")</a>" : "") +
+        '<a class="btn btn-sm btn-primary" href="#/leitlinien-durchgehen/' + g.slug + '">Durchgehen</a>' +
+        (quizCount > 0 ? '<a class="btn btn-sm btn-secondary" href="#/leitlinien-test/' + g.slug + '">Testen (' + quizCount + ")</a>" : "") +
         '<button class="btn btn-sm btn-secondary toggle-learned-guideline" data-guideline="' + escapeHtml(g.name) + '">' + (isLearned ? "✓ Gelernt" : "Als gelernt markieren") + "</button>" +
         "</div>" +
         '<div class="drug-grid guideline-grid">' + itemsHtml + "</div>" +
@@ -1471,9 +1523,9 @@
   // ---------- Leitlinie durchgehen (sequenzielle Wiederholung aller Empfehlungen) ----------
   let guidelineWalkState = null;
 
-  function startGuidelineWalkthrough(idx) {
+  function startGuidelineWalkthrough(slug) {
     const groups = guidelineGroups();
-    const group = groups[idx];
+    const group = groups.find(function (g) { return g.slug === slug; });
     if (!group) { renderGuidelineList(); return; }
     guidelineWalkState = { group: group, index: 0 };
     renderGuidelineWalkStep();
@@ -1491,7 +1543,7 @@
         "<p>Alle " + group.cards.length + " Empfehlungen dieser Leitlinie durchgegangen.</p>" +
         '<div class="cta-row">' +
         '<button class="btn ' + (isLearned ? "btn-primary" : "btn-secondary") + '" id="finish-mark-learned">' + (isLearned ? "✓ Gelernt" : "Diese Leitlinie kann ich") + "</button>" +
-        (mcqForGuideline(group.name).length > 0 ? '<a class="btn btn-secondary" href="#/leitlinien-test/' + guidelineGroups().findIndex(function (g) { return g.name === group.name; }) + '">Jetzt testen</a>' : "") +
+        (mcqForGuideline(group.name).length > 0 ? '<a class="btn btn-secondary" href="#/leitlinien-test/' + group.slug + '">Jetzt testen</a>' : "") +
         '<a class="btn btn-secondary" href="#/leitlinien">Zurück zur Übersicht</a>' +
         "</div></main>";
       document.getElementById("finish-mark-learned").addEventListener("click", function () {
@@ -1527,9 +1579,9 @@
   // ---------- Leitlinie testen (Mini-Abfrage nur mit Fragen dieser Leitlinie) ----------
   let guidelineQuizState = null;
 
-  function startGuidelineQuiz(idx) {
+  function startGuidelineQuiz(slug) {
     const groups = guidelineGroups();
-    const group = groups[idx];
+    const group = groups.find(function (g) { return g.slug === slug; });
     const pool = group ? mcqForGuideline(group.name) : [];
     if (!group || pool.length === 0) { renderGuidelineList(); return; }
     guidelineQuizState = { group: group, questions: shuffle(pool), index: 0, correct: 0, answered: null };
@@ -1616,8 +1668,9 @@
   function literatureGroups() {
     const groups = {};
     literatureCards().forEach(function (c) { (groups[c.literatur] = groups[c.literatur] || []).push(c); });
-    return Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "de"); })
-      .map(function (name) { return { name: name, cards: groups[name] }; });
+    const names = Object.keys(groups).sort(function (a, b) { return a.localeCompare(b, "de"); });
+    const slugs = assignUniqueSlugs(names);
+    return names.map(function (name, i) { return { name: name, slug: slugs[i], cards: groups[name] }; });
   }
 
   function mcqForLiterature(name) {
@@ -1638,7 +1691,7 @@
       return;
     }
     const learned = window.SRS.loadLearnedLiterature();
-    const groupsHtml = groups.map(function (g, idx) {
+    const groupsHtml = groups.map(function (g) {
       const isLearned = learned.indexOf(g.name) !== -1;
       const quizCount = mcqForLiterature(g.name).length;
       const itemsHtml = g.cards.map(function (c) {
@@ -1648,8 +1701,8 @@
         '<div class="guideline-group' + (isLearned ? " guideline-group--learned" : "") + '">' +
         '<h2>' + (isLearned ? '<span class="learned-check">✓</span> ' : "") + escapeHtml(g.name) + '<span class="muted"> · ' + g.cards.length + (g.cards.length === 1 ? " Karte" : " Karten") + "</span></h2>" +
         '<div class="cta-row">' +
-        '<a class="btn btn-sm btn-primary" href="#/literatur-durchgehen/' + idx + '">Durchgehen</a>' +
-        (quizCount > 0 ? '<a class="btn btn-sm btn-secondary" href="#/literatur-test/' + idx + '">Testen (' + quizCount + ")</a>" : "") +
+        '<a class="btn btn-sm btn-primary" href="#/literatur-durchgehen/' + g.slug + '">Durchgehen</a>' +
+        (quizCount > 0 ? '<a class="btn btn-sm btn-secondary" href="#/literatur-test/' + g.slug + '">Testen (' + quizCount + ")</a>" : "") +
         '<button class="btn btn-sm btn-secondary toggle-learned-literature" data-literatur="' + escapeHtml(g.name) + '">' + (isLearned ? "✓ Gelernt" : "Als gelernt markieren") + "</button>" +
         "</div>" +
         '<div class="drug-grid guideline-grid">' + itemsHtml + "</div>" +
@@ -1704,9 +1757,9 @@
 
   let literatureWalkState = null;
 
-  function startLiteratureWalkthrough(idx) {
+  function startLiteratureWalkthrough(slug) {
     const groups = literatureGroups();
-    const group = groups[idx];
+    const group = groups.find(function (g) { return g.slug === slug; });
     if (!group) { renderLiteratureList(); return; }
     literatureWalkState = { group: group, index: 0 };
     renderLiteratureWalkStep();
@@ -1724,7 +1777,7 @@
         "<p>Alle " + group.cards.length + " Karten zu diesem Artikel durchgegangen.</p>" +
         '<div class="cta-row">' +
         '<button class="btn ' + (isLearned ? "btn-primary" : "btn-secondary") + '" id="lit-finish-mark-learned">' + (isLearned ? "✓ Gelernt" : "Diesen Artikel kann ich") + "</button>" +
-        (mcqForLiterature(group.name).length > 0 ? '<a class="btn btn-secondary" href="#/literatur-test/' + literatureGroups().findIndex(function (g) { return g.name === group.name; }) + '">Jetzt testen</a>' : "") +
+        (mcqForLiterature(group.name).length > 0 ? '<a class="btn btn-secondary" href="#/literatur-test/' + group.slug + '">Jetzt testen</a>' : "") +
         '<a class="btn btn-secondary" href="#/literatur">Zurück zur Übersicht</a>' +
         "</div></main>";
       document.getElementById("lit-finish-mark-learned").addEventListener("click", function () {
@@ -1759,9 +1812,9 @@
 
   let literatureQuizState = null;
 
-  function startLiteratureQuiz(idx) {
+  function startLiteratureQuiz(slug) {
     const groups = literatureGroups();
-    const group = groups[idx];
+    const group = groups.find(function (g) { return g.slug === slug; });
     const pool = group ? mcqForLiterature(group.name) : [];
     if (!group || pool.length === 0) { renderLiteratureList(); return; }
     literatureQuizState = { group: group, questions: shuffle(pool), index: 0, correct: 0, answered: null };
@@ -1901,7 +1954,7 @@
   const ONBOARDING_KEY = "desa_onboarding_seen_v1";
   const ONBOARDING_SLIDES = [
     { icon: "🎯", title: "Willkommen beim DESA-Trainer", text: "Eine Lern-App für die EDAIC-Prüfung mit Spaced Repetition: fällige Karten kommen automatisch zur richtigen Zeit wieder dran. Aller Fortschritt bleibt nur lokal in deinem Browser gespeichert." },
-    { icon: "🗂️", title: "Lernen", text: "Karteikarten nach dem Leitner-Prinzip. Vor dem Aufdecken schätzt du kurz deine Sicherheit ein (Konfidenz-Rating) – das verbessert nachweislich die Selbsteinschätzung und das Behalten." },
+    { icon: "🗂️", title: "Lernen", text: "Karteikarten nach dem Leitner-Prinzip. Vor dem Aufdecken schätzt du kurz deine Sicherheit ein (Konfidenz-Rating) – das verbessert nachweislich die Selbsteinschätzung und das Behalten. Tipp: Ein unklares Wort auf der Karte antippen/anklicken schlägt es nach und plant es fürs Wiederholen ein." },
     { icon: "📝", title: "Test", text: "Single-Best-Answer-Fragen wie im EDAIC-Stil. Übungsmodus mit sofortigem Feedback oder Prüfungssimulation mit Zeitlimit (90 Sek./Frage) – wie in der echten Prüfung." },
     { icon: "🚨", title: "Algorithmen & Physiologie", text: "Notfall-Abläufe und physiologische Regelkreise als Nachlese-Timeline oder als Trainer: an jedem Punkt den richtigen nächsten Schritt auswählen." },
     { icon: "💊", title: "Tabellen, Medikamente & Leitlinien", text: "Vergleichstabellen zum Kontrastieren verwandter Fakten sowie Nachschlage-Ansichten für Medikamente und Leitlinien – jeweils mit \"Gelernt\"-Abhaken. Leitlinien lassen sich zusätzlich thematisch komplett durchgehen oder mit passenden Testfragen abfragen, ganz ohne SRS-Ablauf." },
