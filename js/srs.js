@@ -18,6 +18,22 @@
   // Herleitung der Lernphasen-Anzeige (Neu/Lernend/Jung/Reif) aus dem aktuellen Intervall.
   const LEGACY_BOX_INTERVALS = [0, 1, 3, 7, 16, 35];
 
+  // Wird true, sobald ein Speicherversuch fehlschlägt (z.B. QuotaExceededError, wenn der
+  // Browser-Speicher nach Monaten/Jahren täglicher Nutzung voll ist). Anders als der einmalige
+  // Storage-Check beim App-Start (js/app.js) deckt das auch ein Volllaufen MITTEN in der
+  // Nutzung ab, nicht nur einen von Anfang an blockierten Speicher.
+  let lastSaveFailed = false;
+  function safeSetItem(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      lastSaveFailed = false;
+      return true;
+    } catch (e) {
+      lastSaveFailed = true;
+      return false;
+    }
+  }
+
   function stageFromInterval(days) {
     if (days >= 35) return 5;
     if (days >= 16) return 4;
@@ -37,9 +53,7 @@
   }
 
   function saveProgress(progress) {
-    try {
-      localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-    } catch (e) { /* localStorage evtl. nicht verfügbar */ }
+    safeSetItem(PROGRESS_KEY, JSON.stringify(progress));
   }
 
   function loadResults() {
@@ -52,9 +66,11 @@
   }
 
   function saveResults(results) {
-    try {
-      localStorage.setItem(RESULTS_KEY, JSON.stringify(results));
-    } catch (e) { /* ignore */ }
+    // Deckelt den Testverlauf wie die Aktivitäts-Historie (siehe ACTIVITY_KEY), damit er
+    // bei täglicher Nutzung über Jahre nicht unbegrenzt wächst — die UI zeigt ohnehin nie
+    // mehr als die letzten 30 Einträge an.
+    const capped = results.length > 1000 ? results.slice(-1000) : results;
+    safeSetItem(RESULTS_KEY, JSON.stringify(capped));
   }
 
   function todayISO() {
@@ -73,9 +89,9 @@
     // Migration: Datensätze aus der Zeit vor dem Ease-Factor-Algorithmus kennen nur
     // "box", kein "interval"/"ease" — Startintervall aus der bisherigen Box ableiten,
     // damit kein bereits erarbeiteter Fortschritt verloren geht.
-    const interval = typeof raw.interval === "number" ? raw.interval :
+    const interval = Number.isFinite(raw.interval) && raw.interval >= 0 ? raw.interval :
       LEGACY_BOX_INTERVALS[Math.min(typeof raw.box === "number" ? raw.box : 0, LEGACY_BOX_INTERVALS.length - 1)];
-    const ease = typeof raw.ease === "number" ? raw.ease : EASE_DEFAULT;
+    const ease = Number.isFinite(raw.ease) && raw.ease >= EASE_MIN ? raw.ease : EASE_DEFAULT;
     return Object.assign({}, raw, { interval: interval, ease: ease, box: stageFromInterval(interval) });
   }
 
@@ -111,6 +127,11 @@
       interval = interval > 0 ? Math.round(interval * ease * 1.3) : 4;
     }
     interval = Math.min(interval, INTERVAL_CAP_DAYS);
+    // Sicherheitsnetz: Falls durch korrupte/manuell editierte localStorage-Daten doch ein
+    // nicht-endlicher Wert entsteht, auf sichere Defaults zurückfallen statt eine Invalid-Date-
+    // Exception zu werfen (addDays().toISOString() crasht sonst bei NaN-Intervallen).
+    if (!Number.isFinite(interval) || interval < 0) interval = 1;
+    if (!Number.isFinite(ease) || ease < EASE_MIN) ease = EASE_DEFAULT;
 
     const newState = {
       interval: interval,
@@ -177,9 +198,7 @@
   }
 
   function saveGaps(gaps) {
-    try {
-      localStorage.setItem(GAPS_KEY, JSON.stringify(gaps));
-    } catch (e) { /* ignore */ }
+    safeSetItem(GAPS_KEY, JSON.stringify(gaps));
   }
 
   function addGap(term, sourceFront) {
@@ -220,9 +239,7 @@
     const idx = list.indexOf(itemId);
     if (idx === -1) list.push(itemId);
     else list.splice(idx, 1);
-    try {
-      localStorage.setItem(key, JSON.stringify(list));
-    } catch (e) { /* ignore */ }
+    safeSetItem(key, JSON.stringify(list));
     return list;
   }
 
@@ -255,9 +272,7 @@
     if (!cal[confidence]) cal[confidence] = { correct: 0, total: 0 };
     cal[confidence].total += 1;
     if (wasCorrect) cal[confidence].correct += 1;
-    try {
-      localStorage.setItem(CALIBRATION_KEY, JSON.stringify(cal));
-    } catch (e) { /* ignore */ }
+    safeSetItem(CALIBRATION_KEY, JSON.stringify(cal));
     return cal;
   }
 
@@ -342,7 +357,7 @@
       const key = dateKey(new Date());
       if (days.indexOf(key) === -1) {
         days.push(key);
-        localStorage.setItem(ACTIVITY_KEY, JSON.stringify(days.slice(-400)));
+        safeSetItem(ACTIVITY_KEY, JSON.stringify(days.slice(-400)));
       }
     } catch (e) { /* localStorage evtl. nicht verfügbar */ }
   }
@@ -372,6 +387,7 @@
   window.SRS = {
     EASE_DEFAULT: EASE_DEFAULT,
     EASE_MIN: EASE_MIN,
+    hasStorageError: function () { return lastSaveFailed; },
     loadProgress: loadProgress,
     saveProgress: saveProgress,
     loadResults: loadResults,

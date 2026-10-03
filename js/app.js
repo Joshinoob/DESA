@@ -1,5 +1,18 @@
 (function () {
   const app = document.getElementById("app");
+  // Schutz vor einer komplett weißen Seite, falls eine der Daten-/Logik-Dateien nicht
+  // geladen wurde (z.B. Netzwerkfehler, Adblocker, CDN-/Hosting-Hiccup) – ohne diesen
+  // Check würde der Zugriff auf window.SRS/.FLASHCARDS weiter unten eine ungefangene
+  // TypeError werfen und die App bricht ab, bevor überhaupt etwas gerendert wurde.
+  if (!window.SRS || !window.CURRICULUM || !window.FLASHCARDS || !window.MCQ) {
+    if (app) {
+      app.innerHTML =
+        '<main class="container narrow"><h1>Laden fehlgeschlagen</h1>' +
+        '<p class="muted">Ein Teil der App konnte nicht geladen werden (z.B. wegen einer unterbrochenen Internetverbindung beim ersten Laden). Bitte lade die Seite neu.</p>' +
+        '<button class="btn btn-primary" onclick="location.reload()">Seite neu laden</button></main>';
+    }
+    return;
+  }
   const CURRICULUM = window.CURRICULUM;
   const FLASHCARDS = window.FLASHCARDS;
   const MCQ = window.MCQ;
@@ -27,7 +40,11 @@
   const STORAGE_OK = storageWorks();
 
   function moduleById(id) {
-    return CURRICULUM.find(function (m) { return m.id === id; });
+    // Fallback-Objekt statt undefined: verhindert einen Absturz (z.B. beim Lesen von
+    // .title in renderLearnCard/renderTestQuestion/renderFocusPage), falls eine Karte/
+    // Frage künftig ein Modul referenziert, das nicht mehr existiert (z.B. nach Umbenennen
+    // einer Modul-ID im Rahmen eines Content-Updates).
+    return CURRICULUM.find(function (m) { return m.id === id; }) || { id: id, title: id, subtopics: [] };
   }
   function subtopicTitle(moduleId, subtopicId) {
     const m = moduleById(moduleId);
@@ -188,7 +205,7 @@
     const rect = span.getBoundingClientRect();
     const btn = document.createElement("button");
     btn.className = "lookup-confirm";
-    btn.innerHTML = '🔖 „' + word + '" nachschlagen<br><span class="lookup-confirm-sub">und bald zum Wiederholen vorschlagen</span>';
+    btn.innerHTML = '🔖 „' + escapeHtml(word) + '" nachschlagen<br><span class="lookup-confirm-sub">und bald zum Wiederholen vorschlagen</span>';
     btn.style.visibility = "hidden";
     document.body.appendChild(btn);
     const w = btn.offsetWidth || 220;
@@ -248,6 +265,20 @@
 
   // ---------- Routing ----------
   function router() {
+    try {
+      routeTo();
+    } catch (e) {
+      // Verhindert eine komplett weiße Seite bei einem unerwarteten Fehler (z.B. defekte
+      // Content-Daten, nicht geladenes Skript) – zeigt stattdessen einen Hinweis mit
+      // Rücksprungmöglichkeit zum Dashboard, statt dass die App stillschweigend einfriert.
+      console.error("Fehler beim Rendern der Seite:", e);
+      app.innerHTML =
+        '<main class="container narrow"><h1>Etwas ist schiefgelaufen</h1>' +
+        '<p class="muted">Diese Seite konnte nicht geladen werden. Dein Lernfortschritt ist davon nicht betroffen.</p>' +
+        '<a class="btn btn-primary" href="#/dashboard">Zurück zum Dashboard</a></main>';
+    }
+  }
+  function routeTo() {
     const hash = location.hash || "#/dashboard";
     const parts = hash.replace(/^#\//, "").split("/");
     const route = parts[0] || "dashboard";
@@ -298,8 +329,13 @@
       ["soe", "Mündlich"],
       ["progress", "Fortschritt"]
     ];
-    const warning = STORAGE_OK ? "" :
-      '<div class="storage-warning">⚠️ Dein Browser blockiert lokalen Speicher – dein Fortschritt wird NICHT gespeichert! Meist wegen privatem/Inkognito-Modus oder „Cookies blockieren" in den Browser-Einstellungen. Bitte deaktivieren und Seite neu laden.</div>';
+    // STORAGE_OK deckt nur einen von Anfang an blockierten Speicher ab (z.B. Inkognito-Modus);
+    // hasStorageError() erkennt zusätzlich ein Volllaufen des Speichers MITTEN in der Nutzung
+    // (z.B. nach Jahren täglicher Nutzung) – beide Fälle zeigen denselben Hinweis.
+    const warning = (STORAGE_OK && !window.SRS.hasStorageError()) ? "" :
+      '<div class="storage-warning">⚠️ Dein Fortschritt kann gerade nicht gespeichert werden' +
+      (STORAGE_OK ? " (der lokale Speicher deines Browsers ist voll)" : " (dein Browser blockiert lokalen Speicher, z.B. im privaten/Inkognito-Modus oder durch „Cookies blockieren\" in den Einstellungen)") +
+      '. Bitte Speicherplatz freigeben bzw. die Einstellung ändern und die Seite neu laden.</div>';
     return (
       warning +
       '<nav class="topnav">' +
@@ -475,6 +511,11 @@
 
   let learnQueue = [];
   let learnStats = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
+  // Schützt vor einem Doppelklick/-tap, der schnell genug ist, um nach dem Kartenwechsel
+  // (renderLearnCard() läuft synchron im selben Klick-Handler) noch auf den entsprechenden
+  // Button der NÄCHSTEN Karte zu treffen — {once:true} schützt nur den jeweils EINEN
+  // Button, nicht den kurzen Moment des Kartenwechsels selbst.
+  let lastCardAdvanceAt = 0;
 
   function startLearnSession(moduleId, subtopicId) {
     learnStats = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
@@ -514,6 +555,7 @@
   }
 
   function renderLearnCard() {
+    lastCardAdvanceAt = Date.now();
     if (learnQueue.length === 0) {
       app.innerHTML =
         nav("learn") +
@@ -580,6 +622,7 @@
     let cardConfidence = null;
     document.querySelectorAll(".confidence-row button").forEach(function (btn) {
       btn.addEventListener("click", function () {
+        if (Date.now() - lastCardAdvanceAt < 350) return; // schützt vor Doppelklick/-tap-Überhang der vorigen Karte
         cardConfidence = btn.getAttribute("data-confidence");
         document.getElementById("flashcard-back").classList.remove("hidden");
         document.getElementById("reveal-row").classList.add("hidden");
@@ -590,6 +633,7 @@
     });
     document.querySelectorAll("#rating-row button").forEach(function (btn) {
       btn.addEventListener("click", function () {
+        if (Date.now() - lastCardAdvanceAt < 150) return; // schützt vor einem versehentlichen Doppelklick, der schon auf die nächste Karte trifft
         const rating = btn.getAttribute("data-rating");
         window.SRS.reviewCard(progress, card.id, rating);
         if (cardConfidence) {
@@ -935,7 +979,60 @@
       (results.length === 0
         ? "<p>Noch keine Tests absolviert.</p>"
         : '<div class="table-scroll"><table class="module-table"><thead><tr><th>Datum</th><th>Modul</th><th>Ergebnis</th></tr></thead><tbody>' + resultRows + "</tbody></table></div>") +
+      "<h2>Daten sichern</h2>" +
+      '<p class="muted">Dein gesamter Lernfortschritt liegt ausschließlich lokal in diesem Browser – bei gelöschten Browserdaten oder einem Gerätewechsel geht er sonst verloren. Hier kannst du ihn als Datei sichern und später (auf diesem oder einem anderen Gerät) wieder einspielen.</p>' +
+      '<div class="cta-row">' +
+      '<button class="btn btn-secondary" id="export-data-btn">Fortschritt exportieren</button>' +
+      '<button class="btn btn-secondary" id="import-data-btn">Fortschritt importieren…</button>' +
+      '<input type="file" id="import-data-input" accept="application/json" class="hidden">' +
+      "</div>" +
+      '<p class="muted" id="import-export-status"></p>' +
       "</main>";
+
+    document.getElementById("export-data-btn").addEventListener("click", function () {
+      const data = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.indexOf("desa_") === 0) data[key] = localStorage.getItem(key);
+      }
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "desa-fortschritt-" + todayDateStamp() + ".json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById("import-data-btn").addEventListener("click", function () {
+      document.getElementById("import-data-input").click();
+    });
+    document.getElementById("import-data-input").addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById("import-export-status");
+      const reader = new FileReader();
+      reader.onload = function () {
+        try {
+          const data = JSON.parse(reader.result);
+          const keys = Object.keys(data).filter(function (k) { return k.indexOf("desa_") === 0; });
+          if (keys.length === 0) throw new Error("Keine gültigen Daten in der Datei gefunden.");
+          keys.forEach(function (k) { localStorage.setItem(k, data[k]); });
+          statusEl.textContent = keys.length + " Einträge importiert. Seite wird neu geladen…";
+          setTimeout(function () { location.reload(); }, 800);
+        } catch (err) {
+          statusEl.textContent = "Import fehlgeschlagen: Die Datei ist kein gültiges Export-Backup dieser App.";
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  function todayDateStamp() {
+    const d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   }
 
   // ---------- Algorithmen ----------
