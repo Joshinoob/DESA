@@ -667,7 +667,7 @@
         btn.addEventListener("click", function () {
           if (Date.now() - lastCardAdvanceAt < 150) return; // schützt vor einem versehentlichen Doppelklick, der schon auf die nächste Karte trifft
           const rating = btn.getAttribute("data-rating");
-          window.SRS.reviewCard(progress, card.id, rating);
+          window.SRS.reviewCard(progress, card.id, rating, cardConfidence);
           if (cardConfidence) {
             window.SRS.recordCalibration(cardConfidence, rating === "good" || rating === "easy");
           }
