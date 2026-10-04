@@ -114,26 +114,40 @@
   }
 
   // rating: "again" | "hard" | "good" | "easy"
+  // confidence (optional): die VOR dem Aufdecken abgegebene Selbsteinschätzung
+  // ("sicher"/"unsicher"/"keine"), siehe recordCalibration(). Fließt NUR in die eine
+  // Richtung ein, die für die Prüfungsvorbereitung riskant ist: "sicher" eingeschätzt,
+  // aber dann doch Nochmal/Schwer bewertet, ist eine unbemerkte Wissenslücke, die man
+  // sich sonst nicht gezielt vorgenommen hätte. Der Hypercorrection-Effekt (solche
+  // Karten werden nach EINER Korrektur oft ungewöhnlich gut behalten) ist ein
+  // Mittelwert über viele Personen, kein Garant im Einzelfall — deshalb hier bewusst
+  // die vorsichtigere Variante: zusätzlicher Ease-Abzug und engerer Takt, statt sich
+  // allein auf den Effekt zu verlassen. Das ist eine bewusste Sicherheits-Entscheidung
+  // dieser App, keine eigenständig belegte Erweiterung des SM-2-Algorithmus selbst.
+  //
   // SM-2-artige Anpassung: "again" senkt den Ease-Faktor deutlich und setzt das Intervall
   // zurück (Karte erscheint sofort erneut); "hard" senkt Ease leicht bei nur langsamem
   // Intervallwachstum; "good" folgt der klassischen SM-2-Formel Intervall = Intervall × Ease;
   // "easy" erhöht zusätzlich den Ease-Faktor und multipliziert mit einem Easy-Bonus (1,3) —
   // dieselben Grundprinzipien wie bei Anki, das diese Parameter über Jahre an sehr großen
   // Nutzerzahlen empirisch validiert hat.
-  function reviewCard(progress, cardId, rating) {
+  function reviewCard(progress, cardId, rating, confidence) {
     const state = getCardState(progress, cardId);
     let ease = state.ease;
     let interval = state.interval;
     let lapses = state.lapses || 0;
     let reps = (state.reps || 0) + 1;
+    const overconfident = confidence === "sicher" && (rating === "again" || rating === "hard");
 
     if (rating === "again") {
-      ease = Math.max(EASE_MIN, ease - 0.2);
+      ease = Math.max(EASE_MIN, ease - (overconfident ? 0.3 : 0.2));
       interval = 0; // sofort wieder fällig (erscheint erneut in dieser Session)
       lapses += 1;
     } else if (rating === "hard") {
-      ease = Math.max(EASE_MIN, ease - 0.15);
-      interval = interval > 0 ? Math.max(1, Math.round(interval * 1.2)) : 1;
+      ease = Math.max(EASE_MIN, ease - (overconfident ? 0.25 : 0.15));
+      // Bei Überschätzung wächst das Intervall gar nicht statt nur langsam (×1,2) —
+      // die Karte soll nicht weiter hinausgeschoben werden, bis die Lücke wirklich sitzt.
+      interval = interval > 0 ? Math.max(1, Math.round(interval * (overconfident ? 1.0 : 1.2))) : 1;
     } else if (rating === "good") {
       interval = interval > 0 ? Math.round(interval * ease) : 1;
     } else if (rating === "easy") {
