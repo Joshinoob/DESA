@@ -309,6 +309,9 @@
     else if (route === "fokus") renderFocusPage();
     else if (route === "algorithms") renderAlgorithmList();
     else if (route === "physiologie") renderPhysiologyList();
+    else if (route === "spezial") renderSpezialOverview();
+    else if (route === "spezial-organ") renderSpezialOrgan(arg);
+    else if (route === "spezial-kapitel") renderSpezialChapter(arg, parts[2]);
     else if (route === "algorithm") renderAlgorithmReference(arg);
     else if (route === "algorithm-quiz") startAlgorithmQuiz(arg);
     else if (route === "tables") renderTableList();
@@ -339,6 +342,7 @@
       ["test", "Test"],
       ["algorithms", "Algorithmen"],
       ["physiologie", "Physiologie"],
+      ["spezial", "Spezialwissen"],
       ["tables", "Tabellen"],
       ["drugs", "Medikamente"],
       ["leitlinien", "Leitlinien"],
@@ -573,9 +577,21 @@
       renderLearnCard();
       return;
     }
-    let due = window.SRS.getDueCards(FLASHCARDS, progress, moduleId);
-    let fresh = window.SRS.getNewCards(FLASHCARDS, progress, moduleId);
-    if (subtopicId && subtopicId !== "all") {
+    let due, fresh;
+    if (moduleId === "spezial") {
+      // Spezialwissen: Selbsttest-Karten eines Organs (subtopicId = "herz") oder
+      // eines einzelnen Kapitels (subtopicId = "herz:ekk").
+      const sel = String(subtopicId || "").split(":");
+      const pool = FLASHCARDS.filter(function (c) {
+        return c.spezialwissen === sel[0] && (!sel[1] || c.kapitel === sel[1]);
+      });
+      due = window.SRS.getDueCards(pool, progress);
+      fresh = window.SRS.getNewCards(pool, progress);
+    } else {
+      due = window.SRS.getDueCards(FLASHCARDS, progress, moduleId);
+      fresh = window.SRS.getNewCards(FLASHCARDS, progress, moduleId);
+    }
+    if (moduleId !== "spezial" && subtopicId && subtopicId !== "all") {
       due = due.filter(function (c) { return c.subtopic === subtopicId; });
       fresh = fresh.filter(function (c) { return c.subtopic === subtopicId; });
     }
@@ -589,7 +605,7 @@
         nav("learn") +
         '<main class="container narrow"><h1>Keine Karten fällig</h1>' +
         '<p>Für diese Auswahl sind aktuell keine Karten fällig und keine neuen Karten verfügbar. Komm später wieder oder wähle eine andere Auswahl.</p>' +
-        '<a class="btn btn-secondary" href="#/learn">Zurück</a></main>';
+        '<a class="btn btn-secondary" href="' + (moduleId === "spezial" ? "#/spezial-organ/" + escapeHtml(String(subtopicId || "").split(":")[0]) : "#/learn") + '">Zurück</a></main>';
       return;
     }
     renderLearnCard();
@@ -1657,6 +1673,172 @@
       state.index++;
       state.answered = null;
       renderGuidelineQuizStep();
+    });
+  }
+
+  // ---------- Spezialwissen (vertiefte Organkapitel Herz, Lunge, Niere) ----------
+  // Lesemodus mit evidenzbasierten Lernelementen: Leitfrage vor dem Lesen (Advance
+  // Organizer), kurze Abschnitte nach Ebenen (Chunking), Schema (Dual Coding),
+  // Merke-Box, Warum-Fragen zum Selbsterklären (aufklappbar, erst nach eigener
+  // Erklärung), Selbsttest mit Aufdecken (Retrieval Practice). Die Selbsttest-Fragen
+  // werden in data/spezial.js zusätzlich als Karteikarten in die Spaced-Repetition
+  // übernommen ("Karten lernen").
+  const SPEZIAL = window.SPEZIAL || [];
+
+  function spezialInline(text) {
+    return escapeHtml(text).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  }
+
+  function spezialBlock(block) {
+    if (typeof block === "string") return "<p>" + spezialInline(block) + "</p>";
+    if (block.h) return '<h3 class="sw-subhead">' + spezialInline(block.h) + "</h3>";
+    if (block.ul) return '<ul class="sw-list">' + block.ul.map(function (li) { return "<li>" + spezialInline(li) + "</li>"; }).join("") + "</ul>";
+    if (block.table) {
+      const t = block.table;
+      return '<div class="sw-table-wrap"><table class="sw-table"><thead><tr>' +
+        t.head.map(function (h) { return "<th>" + spezialInline(h) + "</th>"; }).join("") +
+        "</tr></thead><tbody>" +
+        t.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + spezialInline(c) + "</td>"; }).join("") + "</tr>"; }).join("") +
+        "</tbody></table></div>";
+    }
+    return "";
+  }
+
+  function spezialCards(organId, chapterId) {
+    return FLASHCARDS.filter(function (c) {
+      return c.spezialwissen === organId && (!chapterId || c.kapitel === chapterId);
+    });
+  }
+
+  function spezialCardStats(cards) {
+    let seen = 0, due = 0;
+    cards.forEach(function (c) {
+      const st = progress[c.id];
+      if (!st) return;
+      seen++;
+      if (window.SRS.getDueCards([c], progress).length) due++;
+    });
+    return { total: cards.length, seen: seen, due: due };
+  }
+
+  function renderSpezialOverview() {
+    const method = window.SPEZIAL_METHOD || { steps: [], sources: [] };
+    const read = window.SRS.loadLearnedSpezial();
+    const organsHtml = SPEZIAL.map(function (o) {
+      const readCount = o.chapters.filter(function (ch) { return read.indexOf(o.id + "/" + ch.id) !== -1; }).length;
+      const stats = spezialCardStats(spezialCards(o.id));
+      return (
+        '<div class="algo-card sw-organ-card">' +
+        '<div class="algo-card-title">' + escapeHtml(o.title) + "</div>" +
+        '<div class="algo-card-meta muted">' + escapeHtml(o.subtitle) + "</div>" +
+        '<p class="muted sw-organ-stats">' + readCount + " / " + o.chapters.length + " Kapitel gelesen · " + stats.seen + " / " + stats.total + " Karten gelernt" + (stats.due ? " · " + stats.due + " fällig" : "") + "</p>" +
+        '<div class="cta-row">' +
+        '<a class="btn btn-sm btn-primary" href="#/spezial-organ/' + o.id + '">Lesen</a>' +
+        '<a class="btn btn-sm btn-secondary" href="#/learn-session/spezial/' + o.id + '">Karten lernen (' + stats.total + ")</a>" +
+        "</div></div>"
+      );
+    }).join("");
+    app.innerHTML =
+      nav("spezial") +
+      '<main class="container narrow">' +
+      "<h1>Spezialwissen</h1>" +
+      '<p class="muted">' + spezialInline(method.intro || "") + "</p>" +
+      organsHtml +
+      '<details class="sw-method"><summary><strong>So lernst du hier am wirksamsten</strong></summary>' +
+      '<ol class="sw-list">' + method.steps.map(function (st) { return "<li>" + spezialInline(st) + "</li>"; }).join("") + "</ol>" +
+      '<p class="muted sw-small">Grundlage:</p><ul class="sw-sources">' + method.sources.map(function (src) { return "<li>" + escapeHtml(src) + "</li>"; }).join("") + "</ul>" +
+      "</details>" +
+      "</main>";
+  }
+
+  function renderSpezialOrgan(organId) {
+    const o = SPEZIAL.find(function (x) { return x.id === organId; });
+    if (!o) { renderSpezialOverview(); return; }
+    const read = window.SRS.loadLearnedSpezial();
+    const stats = spezialCardStats(spezialCards(o.id));
+    app.innerHTML =
+      nav("spezial") +
+      '<main class="container narrow">' +
+      '<a class="back-link" href="#/spezial">← Spezialwissen</a>' +
+      "<h1>" + escapeHtml(o.title) + "</h1>" +
+      '<p class="muted">' + escapeHtml(o.subtitle) + "</p>" +
+      '<div class="cta-row">' +
+      '<a class="btn btn-primary" href="#/spezial-kapitel/' + o.id + "/" + o.chapters[0].id + '">Von vorn lesen</a>' +
+      '<a class="btn btn-secondary" href="#/learn-session/spezial/' + o.id + '">Alle Karten lernen (' + stats.total + ")</a>" +
+      "</div>" +
+      '<ol class="sw-toc">' +
+      o.chapters.map(function (ch) {
+        const isRead = read.indexOf(o.id + "/" + ch.id) !== -1;
+        return '<li><a class="drug-item guideline-item sw-toc-item" href="#/spezial-kapitel/' + o.id + "/" + ch.id + '">' +
+          '<span class="sw-level sw-level-' + escapeHtml(ch.level.toLowerCase()) + '">' + escapeHtml(ch.level) + "</span> " +
+          escapeHtml(ch.title) + (isRead ? ' <span class="sw-read">✓</span>' : "") + "</a></li>";
+      }).join("") +
+      "</ol>" +
+      '<details class="sw-method"><summary><strong>Quellen (' + o.sources.length + ")</strong></summary>" +
+      '<ul class="sw-sources">' + o.sources.map(function (src) { return "<li>" + escapeHtml(src) + "</li>"; }).join("") + "</ul>" +
+      "</details>" +
+      "</main>";
+  }
+
+  function renderSpezialChapter(organId, chapterId) {
+    const o = SPEZIAL.find(function (x) { return x.id === organId; });
+    if (!o) { renderSpezialOverview(); return; }
+    const idx = o.chapters.findIndex(function (c) { return c.id === chapterId; });
+    if (idx === -1) { renderSpezialOrgan(organId); return; }
+    const ch = o.chapters[idx];
+    const key = o.id + "/" + ch.id;
+    const isRead = window.SRS.loadLearnedSpezial().indexOf(key) !== -1;
+    const prev = o.chapters[idx - 1];
+    const next = o.chapters[idx + 1];
+    const chapterCards = spezialCards(o.id, ch.id);
+
+    const warumHtml = (ch.warum || []).map(function (w) {
+      return '<details class="sw-warum"><summary>' + spezialInline(w.q) + '<span class="sw-hint"> – erst selbst erklären, dann aufklappen</span></summary><p>' + spezialInline(w.a) + "</p></details>";
+    }).join("");
+
+    const testHtml = (ch.selbsttest || []).map(function (t, i) {
+      const q = t.q.replace(/^Spezialwissen [^:]+:\s*/, "");
+      return '<div class="sw-test-item"><p class="sw-test-q"><strong>' + (i + 1) + ".</strong> " + spezialInline(q) + "</p>" +
+        '<button class="btn btn-sm btn-secondary sw-reveal" data-idx="' + i + '">Antwort zeigen</button>' +
+        '<p class="sw-test-a hidden" id="sw-a-' + i + '">' + spezialInline(t.a) + "</p></div>";
+    }).join("");
+
+    app.innerHTML =
+      nav("spezial") +
+      '<main class="container narrow sw-chapter">' +
+      '<a class="back-link" href="#/spezial-organ/' + o.id + '">← ' + escapeHtml(o.title) + ": alle Kapitel</a>" +
+      '<div class="session-progress">' + escapeHtml(o.title) + " · Kapitel " + (idx + 1) + " / " + o.chapters.length +
+      ' · <span class="sw-level sw-level-' + escapeHtml(ch.level.toLowerCase()) + '">' + escapeHtml(ch.level) + "</span></div>" +
+      "<h1>" + escapeHtml(ch.title) + "</h1>" +
+      '<div class="sw-box sw-leitfrage"><div class="sw-box-title">Leitfrage – kurz selbst beantworten, dann lesen</div><p>' + spezialInline(ch.leitfrage) + "</p></div>" +
+      '<div class="sw-body">' + ch.body.map(spezialBlock).join("") + "</div>" +
+      (ch.figure ? '<figure class="sw-fig">' + ch.figure.svg + "<figcaption>" + escapeHtml(ch.figure.caption) + "</figcaption></figure>" : "") +
+      '<div class="sw-box sw-merke"><div class="sw-box-title">Merke</div><ul class="sw-list">' + ch.merke.map(function (m) { return "<li>" + spezialInline(m) + "</li>"; }).join("") + "</ul></div>" +
+      (warumHtml ? '<h2 class="sw-h2">Warum? – Selbsterklären</h2>' + warumHtml : "") +
+      ((ch.klinik || []).length ? '<div class="sw-box sw-klinik"><div class="sw-box-title">Klinik &amp; Anästhesie</div><ul class="sw-list">' + ch.klinik.map(function (k) { return "<li>" + spezialInline(k) + "</li>"; }).join("") + "</ul></div>" : "") +
+      (testHtml ? '<h2 class="sw-h2">Selbsttest – erst im Kopf antworten</h2>' + testHtml : "") +
+      '<div class="cta-row sw-actions">' +
+      '<button class="btn ' + (isRead ? "btn-primary" : "btn-secondary") + '" id="sw-mark-read">' + (isRead ? "✓ Gelesen" : "Als gelesen markieren") + "</button>" +
+      (chapterCards.length ? '<a class="btn btn-secondary" href="#/learn-session/spezial/' + o.id + ":" + ch.id + '">Kapitelkarten ins Langzeitgedächtnis (' + chapterCards.length + ")</a>" : "") +
+      "</div>" +
+      '<div class="cta-row sw-nav">' +
+      (prev ? '<a class="btn btn-sm btn-secondary" href="#/spezial-kapitel/' + o.id + "/" + prev.id + '">← ' + escapeHtml(prev.title) + "</a>" : "") +
+      (next ? '<a class="btn btn-sm btn-primary" href="#/spezial-kapitel/' + o.id + "/" + next.id + '">' + escapeHtml(next.title) + " →</a>" : '<a class="btn btn-sm btn-primary" href="#/spezial-organ/' + o.id + '">Zur Kapitelübersicht</a>') +
+      "</div>" +
+      "</main>";
+
+    document.querySelectorAll(".sw-reveal").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        document.getElementById("sw-a-" + btn.getAttribute("data-idx")).classList.remove("hidden");
+        btn.classList.add("hidden");
+      });
+    });
+    document.getElementById("sw-mark-read").addEventListener("click", function () {
+      window.SRS.toggleLearnedSpezial(key);
+      const nowRead = window.SRS.loadLearnedSpezial().indexOf(key) !== -1;
+      const btn = document.getElementById("sw-mark-read");
+      btn.textContent = nowRead ? "✓ Gelesen" : "Als gelesen markieren";
+      btn.className = "btn " + (nowRead ? "btn-primary" : "btn-secondary");
     });
   }
 
