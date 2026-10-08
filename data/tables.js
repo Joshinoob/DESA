@@ -60,7 +60,7 @@ window.TABLES = [
       ["Niedermolekulares Heparin", "Protamin", "Nur partiell (~60%) wirksam"],
       ["Vitamin-K-Antagonisten", "Vitamin K + PPSB", "Vitamin K wirkt erst nach Stunden – PPSB für Soforteffekt"],
       ["Dabigatran", "Idarucizumab", "Spezifisch, sofortige vollständige Reversierung"],
-      ["Faktor-Xa-Inhibitoren (Apixaban/Rivaroxaban)", "PPSB (25–50 IE/kg); Andexanet alfa nur eingeschränkt verfügbar", "Andexanet alfa wegen Thromboserisiko (ANNEXA-I) Ende 2025 in USA vom Markt genommen; Rebound-Anstieg der Anti-Xa-Aktivität nach Andexanet möglich"],
+      ["Faktor-Xa-Inhibitoren (Apixaban/Rivaroxaban)", "PPSB (25–50 IE/kg); Andexanet alfa in den USA vom Markt, EU-Status prüfen", "Andexanet alfa wegen Thromboserisiko (ANNEXA-I) Ende 2025 in USA vom Markt genommen; Rebound-Anstieg der Anti-Xa-Aktivität nach Andexanet möglich"],
       ["Paracetamol", "N-Acetylcystein", "Am wirksamsten <8h nach Einnahme"],
       ["Betablocker", "Glukagon", "Wirkt β-Rezeptor-unabhängig"],
       ["Kalziumkanalblocker/Hyperkaliämie", "Kalzium (Chlorid/Gluconat)", "Membranstabilisierung, senkt Kalium nicht"],
