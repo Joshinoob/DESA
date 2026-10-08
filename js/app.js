@@ -56,6 +56,29 @@
   // NICHT aber " und ' — diese Funktion wird aber im ganzen Code auch innerhalb doppelt
   // gequoteter HTML-Attribute (data-*, aria-label) verwendet, wo ein wörtliches "
   // das Attribut vorzeitig beenden würde. Daher zusätzlich manuell ersetzen.
+  // Abkürzungsverzeichnis (data/glossar.js): listet alle im Text vorkommenden
+  // bekannten Abkürzungen mit Langform – Abkürzungen werden so immer einmal erklärt,
+  // auch wenn eine Karte für sich allein gelernt wird.
+  const GLOSSAR = window.GLOSSAR || {};
+  const GLOSSAR_KEYS = Object.keys(GLOSSAR).sort(function (a, b) { return b.length - a.length; });
+  const GLOSSAR_RE = GLOSSAR_KEYS.length ? new RegExp("(^|[^A-Za-zÄÖÜäöüß0-9₀-₉])(" + GLOSSAR_KEYS.map(function (k) { return k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")(?=$|[^A-Za-zÄÖÜäöüß0-9₀-₉²³⁺⁻])", "g") : null;
+  function glossaryEntries(text) {
+    if (!GLOSSAR_RE || !text) return [];
+    const found = [];
+    String(text).replace(GLOSSAR_RE, function (m, pre, abbr) {
+      const long = GLOSSAR[abbr];
+      if (found.every(function (f) { return f[0] !== abbr && f[1] !== long; })) found.push([abbr, long]);
+      return m;
+    });
+    return found;
+  }
+  function glossaryHtml(text, cls) {
+    const e = glossaryEntries(text);
+    if (!e.length) return "";
+    return '<div class="glossary-line ' + (cls || "") + '"><span class="glossary-title">Abkürzungen:</span> ' +
+      e.map(function (x) { return "<span><strong>" + escapeHtml(x[0]) + "</strong> = " + escapeHtml(x[1]) + "</span>"; }).join(" · ") + "</div>";
+  }
+
   function escapeHtml(str) {
     const div = document.createElement("div");
     div.textContent = str;
@@ -626,7 +649,8 @@
     const card = learnQueue[0];
     const remaining = learnQueue.length;
     const isProfile = !!card.profile;
-    const backContent = isProfile ? renderProfile(card.profile) : escapeHtml(card.back);
+    const backContent = (isProfile ? renderProfile(card.profile) : escapeHtml(card.back)) +
+      glossaryHtml(card.front + " " + (isProfile ? Object.keys(card.profile).map(function (k) { return card.profile[k]; }).join(" ") : card.back));
     const backClass = "flashcard-back hidden lookup-source" + (isProfile ? " profile-back" : "");
     app.innerHTML =
       // Kompakte Navigation (nur Marke + Beenden-Link statt aller 12 Reiter) während
@@ -866,7 +890,7 @@
       '<div class="' + (selected === q.correct ? "correct-answer" : "wrong-answer") + '">' +
       (selected === q.correct ? "Richtig! " : "Leider falsch. Richtig wäre: " + String.fromCharCode(65 + q.correct) + ") " + escapeHtml(q.options[q.correct])) +
       "</div>" +
-      '<p class="explanation">' + escapeHtml(q.explanation) + "</p>";
+      '<p class="explanation">' + escapeHtml(q.explanation) + "</p>" + glossaryHtml(q.question + " " + q.options.join(" ") + " " + q.explanation);
 
     const timerHtml = testState.mode === "exam" ? '<span class="exam-timer" id="exam-timer">⏱ --:--</span>' : "";
     app.innerHTML =
@@ -941,7 +965,7 @@
         '<p class="question-text">' + escapeHtml(w.q.question) + "</p>" +
         '<p class="wrong-answer">Deine Antwort: ' + givenText + "</p>" +
         '<p class="correct-answer">Richtig: ' + correctText + "</p>" +
-        '<p class="explanation">' + escapeHtml(w.q.explanation) + "</p>" +
+        '<p class="explanation">' + escapeHtml(w.q.explanation) + "</p>" + glossaryHtml(w.q.question + " " + w.q.options.join(" ") + " " + w.q.explanation) +
         "</div>"
       );
     }).join("");
@@ -1650,7 +1674,7 @@
       '<div class="' + (state.answered === q.correct ? "correct-answer" : "wrong-answer") + '">' +
       (state.answered === q.correct ? "Richtig! " : "Leider falsch. Richtig wäre: " + String.fromCharCode(65 + q.correct) + ") " + escapeHtml(q.options[q.correct])) +
       "</div>" +
-      '<p class="explanation">' + escapeHtml(q.explanation) + "</p>";
+      '<p class="explanation">' + escapeHtml(q.explanation) + "</p>" + glossaryHtml(q.question + " " + q.options.join(" ") + " " + q.explanation);
     app.innerHTML =
       nav("leitlinien") +
       '<main class="container narrow">' +
@@ -1685,13 +1709,29 @@
   // übernommen ("Karten lernen").
   const SPEZIAL = window.SPEZIAL || [];
 
+  // **fett** = Fachbegriff/Kernaussage; ==markiert== = wichtiger Zusammenhang bzw.
+  // logische Folge (Signaling-Prinzip nach Mayer: hebt die kausale Struktur hervor).
   function spezialInline(text) {
-    return escapeHtml(text).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return escapeHtml(text)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/==(.+?)==/g, '<mark class="sw-key">$1</mark>');
   }
 
   function spezialBlock(block) {
     if (typeof block === "string") return "<p>" + spezialInline(block) + "</p>";
     if (block.h) return '<h3 class="sw-subhead">' + spezialInline(block.h) + "</h3>";
+    if (block.kette) {
+      // Ursache-Folge-Kette: jeder Schritt folgt logisch aus dem vorherigen.
+      return '<div class="sw-kette">' + (block.titel ? '<div class="sw-kette-title">' + spezialInline(block.titel) + "</div>" : "") +
+        block.kette.map(function (k, i) {
+          return (i ? '<div class="sw-kette-arrow" aria-hidden="true">↓</div>' : "") + '<div class="sw-kette-step">' + spezialInline(k) + "</div>";
+        }).join("") + "</div>";
+    }
+    if (block.formel) {
+      return '<div class="sw-formel"><div class="sw-formel-eq">' + spezialInline(block.formel) + "</div>" +
+        (block.erkl ? '<div class="sw-formel-erkl">' + spezialInline(block.erkl) + "</div>" : "") + "</div>";
+    }
+    if (block.falle) return '<div class="sw-box sw-falle"><div class="sw-box-title">Häufiger Denkfehler</div><p>' + spezialInline(block.falle) + "</p></div>";
     if (block.ul) return '<ul class="sw-list">' + block.ul.map(function (li) { return "<li>" + spezialInline(li) + "</li>"; }).join("") + "</ul>";
     if (block.table) {
       const t = block.table;
@@ -1811,12 +1851,14 @@
       ' · <span class="sw-level sw-level-' + escapeHtml(ch.level.toLowerCase()) + '">' + escapeHtml(ch.level) + "</span></div>" +
       "<h1>" + escapeHtml(ch.title) + "</h1>" +
       '<div class="sw-box sw-leitfrage"><div class="sw-box-title">Leitfrage – kurz selbst beantworten, dann lesen</div><p>' + spezialInline(ch.leitfrage) + "</p></div>" +
+      (ch.einfach ? '<div class="sw-box sw-einfach"><div class="sw-box-title">In einfachen Worten</div><p>' + spezialInline(ch.einfach) + "</p></div>" : "") +
       '<div class="sw-body">' + ch.body.map(spezialBlock).join("") + "</div>" +
       (ch.figure ? '<figure class="sw-fig">' + ch.figure.svg + "<figcaption>" + escapeHtml(ch.figure.caption) + "</figcaption></figure>" : "") +
       '<div class="sw-box sw-merke"><div class="sw-box-title">Merke</div><ul class="sw-list">' + ch.merke.map(function (m) { return "<li>" + spezialInline(m) + "</li>"; }).join("") + "</ul></div>" +
       (warumHtml ? '<h2 class="sw-h2">Warum? – Selbsterklären</h2>' + warumHtml : "") +
       ((ch.klinik || []).length ? '<div class="sw-box sw-klinik"><div class="sw-box-title">Klinik &amp; Anästhesie</div><ul class="sw-list">' + ch.klinik.map(function (k) { return "<li>" + spezialInline(k) + "</li>"; }).join("") + "</ul></div>" : "") +
       (testHtml ? '<h2 class="sw-h2">Selbsttest – erst im Kopf antworten</h2>' + testHtml : "") +
+      glossaryHtml(JSON.stringify([ch.leitfrage, ch.einfach || "", ch.body, ch.merke, ch.warum || [], ch.klinik || [], ch.selbsttest || []]), "sw-glossary") +
       '<div class="cta-row sw-actions">' +
       '<button class="btn ' + (isRead ? "btn-primary" : "btn-secondary") + '" id="sw-mark-read">' + (isRead ? "✓ Gelesen" : "Als gelesen markieren") + "</button>" +
       (chapterCards.length ? '<a class="btn btn-secondary" href="#/learn-session/spezial/' + o.id + ":" + ch.id + '">Kapitelkarten ins Langzeitgedächtnis (' + chapterCards.length + ")</a>" : "") +
@@ -2049,7 +2091,7 @@
       '<div class="' + (state.answered === q.correct ? "correct-answer" : "wrong-answer") + '">' +
       (state.answered === q.correct ? "Richtig! " : "Leider falsch. Richtig wäre: " + String.fromCharCode(65 + q.correct) + ") " + escapeHtml(q.options[q.correct])) +
       "</div>" +
-      '<p class="explanation">' + escapeHtml(q.explanation) + "</p>";
+      '<p class="explanation">' + escapeHtml(q.explanation) + "</p>" + glossaryHtml(q.question + " " + q.options.join(" ") + " " + q.explanation);
     app.innerHTML =
       nav("literatur") +
       '<main class="container narrow">' +
