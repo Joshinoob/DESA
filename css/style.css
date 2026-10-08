@@ -775,3 +775,17 @@ select, input[type="text"] {
 .sw-fig .s3 { stroke: var(--yellow); }
 .sw-fig .s4 { stroke: var(--orange); }
 .sw-fig .s5 { stroke: var(--red); }
+.sw-key { background: rgba(217, 164, 65, 0.22); color: var(--text); padding: 0 3px; border-radius: 3px; }
+.sw-einfach { border-left-color: var(--yellow); }
+.sw-falle { border-left-color: var(--red); }
+.sw-kette { margin: 14px 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-2); }
+.sw-kette-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+.sw-kette-step { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; overflow-wrap: break-word; }
+.sw-kette-arrow { text-align: center; color: var(--yellow); font-weight: 700; font-size: 1.15rem; line-height: 1.4; }
+.sw-formel { margin: 12px 0; padding: 10px 12px; border-radius: var(--radius); background: var(--surface-2); border: 1px dashed var(--border); }
+.sw-formel-eq { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92rem; overflow-wrap: anywhere; }
+.sw-formel-erkl { font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; }
+.glossary-line { margin-top: 12px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; text-align: left; }
+.glossary-line strong { color: var(--text); }
+.glossary-title { font-weight: 600; margin-right: 4px; }
+.sw-glossary { margin-top: 22px; }
