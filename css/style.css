@@ -705,3 +705,73 @@ select, input[type="text"] {
   .ref-table td::before { flex-shrink: 1; }
   .ref-table td { overflow-wrap: break-word; word-break: break-word; }
 }
+
+/* Spezialwissen: vertiefte Organkapitel (Lesemodus) */
+.sw-organ-card { margin-bottom: 14px; }
+.sw-organ-stats { font-size: 0.85rem; margin: 0 0 10px; }
+.sw-chapter h1 { margin-top: 6px; }
+.sw-body p, .sw-list li { overflow-wrap: break-word; }
+.sw-body p { margin: 0 0 12px; }
+.sw-subhead { font-size: 1.02rem; margin: 22px 0 8px; color: var(--accent); }
+.sw-h2 { font-size: 1.1rem; margin: 26px 0 10px; }
+.sw-list { padding-left: 20px; margin: 0 0 12px; }
+.sw-list li { margin-bottom: 6px; }
+.sw-box { border: 1px solid var(--border); border-left-width: 4px; border-radius: var(--radius); padding: 12px 14px; margin: 16px 0; background: var(--surface); }
+.sw-box p { margin: 0; }
+.sw-box .sw-list { margin-bottom: 0; }
+.sw-box-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+.sw-leitfrage { border-left-color: var(--accent); }
+.sw-merke { border-left-color: var(--green); }
+.sw-klinik { border-left-color: var(--orange); }
+.sw-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 4px 0 14px; }
+.sw-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.sw-table th, .sw-table td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--border); overflow-wrap: break-word; }
+.sw-table th { color: var(--text-muted); font-weight: 600; }
+.sw-warum { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; margin: 0 0 10px; background: var(--surface); }
+.sw-warum summary { cursor: pointer; font-weight: 600; }
+.sw-warum p { margin: 10px 0 0; }
+.sw-hint { font-weight: 400; color: var(--text-muted); font-size: 0.82rem; }
+.sw-test-item { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; margin: 0 0 10px; }
+.sw-test-q { margin: 0 0 8px; }
+.sw-test-a { margin: 8px 0 0; padding-top: 8px; border-top: 1px dashed var(--border); }
+.sw-actions, .sw-nav { margin-top: 18px; flex-wrap: wrap; }
+.sw-nav .btn { white-space: normal; text-align: left; }
+.sw-level { display: inline-block; font-size: 0.7rem; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-muted); vertical-align: middle; }
+.sw-level-zelle { border-color: var(--accent); color: var(--accent); }
+.sw-level-gewebe { border-color: var(--green); color: var(--green); }
+.sw-level-organ { border-color: var(--yellow); color: var(--yellow); }
+.sw-level-system { border-color: var(--orange); color: var(--orange); }
+.sw-level-klinik { border-color: var(--red); color: var(--red); }
+.sw-toc { list-style: none; padding: 0; margin: 16px 0; }
+.sw-toc li { margin-bottom: 8px; }
+.sw-read { color: var(--green); font-weight: 700; }
+.sw-method { margin-top: 18px; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; background: var(--surface); }
+.sw-method summary { cursor: pointer; }
+.sw-sources { padding-left: 18px; font-size: 0.8rem; color: var(--text-muted); }
+.sw-sources li { margin-bottom: 4px; overflow-wrap: break-word; }
+.sw-small { font-size: 0.8rem; margin: 8px 0 4px; }
+.sw-fig { margin: 18px 0; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-2); }
+.sw-fig svg { width: 100%; height: auto; display: block; }
+.sw-fig figcaption { font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; }
+.sw-fig .ax { stroke: var(--text-muted); stroke-width: 1.2; fill: none; }
+.sw-fig .grid { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+.sw-fig .c1 { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+.sw-fig .c2 { stroke: var(--green); stroke-width: 2.5; fill: none; }
+.sw-fig .dash { stroke: var(--orange); stroke-width: 1.5; stroke-dasharray: 6 4; fill: none; }
+.sw-fig .dot { stroke: var(--yellow); stroke-width: 1.5; stroke-dasharray: 2 3; fill: none; }
+.sw-fig .pt { fill: var(--text); }
+.sw-fig .ar { stroke: var(--text-muted); stroke-width: 1.5; fill: none; }
+.sw-fig .t-h { fill: var(--text); font-size: 12px; font-weight: 600; }
+.sw-fig .t-s { fill: var(--text-muted); font-size: 10px; }
+.sw-fig .t-n { fill: var(--text-muted); font-size: 9px; font-style: italic; }
+.sw-fig .t-l { fill: var(--text); font-size: 11px; font-weight: 600; }
+.sw-fig .b1 { fill: var(--accent); }
+.sw-fig .b2 { fill: var(--green); }
+.sw-fig .b3 { fill: var(--orange); }
+.sw-fig .s0, .sw-fig .s1, .sw-fig .s2, .sw-fig .s3, .sw-fig .s4, .sw-fig .s5 { fill: var(--surface); stroke-width: 1.5; }
+.sw-fig .s0 { stroke: var(--text-muted); }
+.sw-fig .s1 { stroke: var(--accent); }
+.sw-fig .s2 { stroke: var(--green); }
+.sw-fig .s3 { stroke: var(--yellow); }
+.sw-fig .s4 { stroke: var(--orange); }
+.sw-fig .s5 { stroke: var(--red); }

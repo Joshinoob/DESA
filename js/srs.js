@@ -252,6 +252,7 @@
   const LEARNED_DRUGS_KEY = "desa_learned_drugs_v1";
   const LEARNED_GUIDELINES_KEY = "desa_learned_guidelines_v1";
   const LEARNED_LITERATURE_KEY = "desa_learned_literatur_v1";
+  const LEARNED_SPEZIAL_KEY = "desa_learned_spezial_v1";
 
   function loadLearnedSet(key) {
     try {
@@ -277,6 +278,8 @@
   function toggleLearnedGuideline(name) { return toggleLearnedItem(LEARNED_GUIDELINES_KEY, name); }
   function loadLearnedLiterature() { return loadLearnedSet(LEARNED_LITERATURE_KEY); }
   function toggleLearnedLiterature(name) { return toggleLearnedItem(LEARNED_LITERATURE_KEY, name); }
+  function loadLearnedSpezial() { return loadLearnedSet(LEARNED_SPEZIAL_KEY); }
+  function toggleLearnedSpezial(key) { return toggleLearnedItem(LEARNED_SPEZIAL_KEY, key); }
 
   // Konfidenz-Kalibrierung (Judgment of Learning): erfasst, ob die eigene
   // Sicherheitseinschätzung VOR dem Umdrehen der Karte mit dem tatsächlichen
@@ -443,6 +446,8 @@
     loadLearnedGuidelines: loadLearnedGuidelines,
     toggleLearnedGuideline: toggleLearnedGuideline,
     loadLearnedLiterature: loadLearnedLiterature,
-    toggleLearnedLiterature: toggleLearnedLiterature
+    toggleLearnedLiterature: toggleLearnedLiterature,
+    loadLearnedSpezial: loadLearnedSpezial,
+    toggleLearnedSpezial: toggleLearnedSpezial
   };
 })();
