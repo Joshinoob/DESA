@@ -85,6 +85,109 @@
     return div.innerHTML.split('"').join("&quot;").split("'").join("&#39;");
   }
 
+  // Karten-/Erklärungstext mit denselben Markierungen wie im Spezialwissen:
+  // **fett** und ==Kausalkette/Kernaussage== (gelb markiert). Erst escapen, dann ersetzen.
+  function richText(str) {
+    return escapeHtml(str || "")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/==(.+?)==/g, '<mark class="sw-key">$1</mark>');
+  }
+
+  // ---------- Prüfstand: Aktualität der Leitlinie ----------
+  // Leitlinien, deren letzte Fassung mehr als 2 Jahre zurückliegt, werden markiert –
+  // als Hinweis, vor der Prüfung nach einer neueren Fassung zu sehen (Daten:
+  // data/leitlinien_stand.js). Bezugsjahr ist das aktuelle Kalenderjahr des Geräts.
+  const LEITLINIEN_STAND = window.LEITLINIEN_STAND || {};
+  function standInfo(name) {
+    if (!name) return null;
+    const st = LEITLINIEN_STAND[name];
+    if (!st) return null;
+    const year = new Date().getFullYear();
+    const alt = typeof st.stand === "number" ? year - st.stand : null;
+    return { stand: st.stand, hinweis: st.hinweis || "", veraltet: alt !== null && alt > 2, alter: alt };
+  }
+  function standBadge(name) {
+    const st = standInfo(name);
+    if (!st) return "";
+    if (st.stand === null) {
+      return '<div class="stand-badge stand-unklar">Stand: nicht sicher datiert' + (st.hinweis ? " – " + escapeHtml(st.hinweis) : "") + "</div>";
+    }
+    return '<div class="stand-badge ' + (st.veraltet ? "stand-alt" : "stand-ok") + '">' +
+      (st.veraltet ? "⚠ " : "✓ ") + "Leitlinienstand " + st.stand +
+      (st.veraltet ? " – älter als 2 Jahre: vor der Prüfung auf neuere Fassung prüfen" : " – aktuell") +
+      (st.hinweis ? " · " + escapeHtml(st.hinweis) : "") + "</div>";
+  }
+
+  // ---------- Fehler melden (nur lokal) ----------
+  // Es gibt bewusst keinen Server: Meldungen werden im Browser gespeichert und können
+  // auf der Seite "Meldungen" als Text kopiert bzw. als Datei exportiert werden.
+  const REPORT_KEY = "desa_fehlermeldungen_v1";
+  function loadReports() {
+    try { return JSON.parse(localStorage.getItem(REPORT_KEY) || "[]"); } catch (e) { return []; }
+  }
+  function saveReports(list) {
+    try { localStorage.setItem(REPORT_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  }
+  function reportButton(id, kontext) {
+    return '<button class="btn btn-sm btn-secondary report-btn" data-report-id="' + escapeHtml(id) + '" data-report-kontext="' + escapeHtml((kontext || "").slice(0, 160)) + '">⚑ Fehler melden</button>';
+  }
+  function showReportModal(id, kontext) {
+    const backdrop = document.createElement("div");
+    backdrop.className = "lookup-modal-backdrop";
+    backdrop.innerHTML =
+      '<div class="lookup-modal">' +
+      '<button class="lookup-modal-close" aria-label="Schließen">×</button>' +
+      '<div class="lookup-modal-front">Fehler melden</div>' +
+      '<p class="muted">' + escapeHtml(id) + (kontext ? " – " + escapeHtml(kontext) : "") + "</p>" +
+      '<label for="report-text">Was ist falsch oder unklar? (gern mit Quelle)</label>' +
+      '<textarea id="report-text" rows="5" class="report-textarea"></textarea>' +
+      '<div class="cta-row"><button class="btn btn-primary" id="report-save">Speichern</button></div>' +
+      '<p class="muted lookup-modal-hint">Die Meldung bleibt auf diesem Gerät. Unter „Fortschritt → Meldungen“ kannst du alle Meldungen kopieren oder exportieren.</p>' +
+      "</div>";
+    document.body.appendChild(backdrop);
+    function close() { backdrop.remove(); }
+    backdrop.addEventListener("click", function (e) { if (e.target === backdrop) close(); });
+    backdrop.querySelector(".lookup-modal-close").addEventListener("click", close);
+    const ta = backdrop.querySelector("#report-text");
+    ta.focus();
+    backdrop.querySelector("#report-save").addEventListener("click", function () {
+      const text = ta.value.trim();
+      if (!text) { ta.focus(); return; }
+      const list = loadReports();
+      list.push({ id: id, kontext: kontext || "", text: text, datum: new Date().toISOString() });
+      const ok = saveReports(list);
+      close();
+      showToast(ok ? "Meldung gespeichert (" + list.length + " insgesamt) – siehe Fortschritt → Meldungen." : "Speichern nicht möglich (Browserspeicher blockiert).");
+    });
+  }
+  document.addEventListener("click", function (e) {
+    const b = e.target.closest && e.target.closest("[data-report-id]");
+    if (!b) return;
+    e.preventDefault();
+    e.stopPropagation();
+    showReportModal(b.getAttribute("data-report-id"), b.getAttribute("data-report-kontext"));
+  });
+
+  // ---------- Fehlertraining: zuletzt falsch beantwortete Testfragen ----------
+  const WRONG_KEY = "desa_falsche_fragen_v1";
+  function loadWrong() {
+    try { return JSON.parse(localStorage.getItem(WRONG_KEY) || "[]"); } catch (e) { return []; }
+  }
+  function saveWrong(list) {
+    try { localStorage.setItem(WRONG_KEY, JSON.stringify(list)); } catch (e) { /* Speicher blockiert – Fehlertraining dann nur ohne Merkliste */ }
+  }
+  function wrongQuestions() {
+    const ids = loadWrong();
+    return MCQ.filter(function (q) { return ids.indexOf(q.id) !== -1; });
+  }
+
+  function testModuleName(id) {
+    const names = { mixed: "Gemischt", blueprint: "Prüfungssimulation (alle Module gewichtet)", fehler: "Fehlertraining", due: "Fällige Testfragen" };
+    if (names[id]) return names[id];
+    const m = CURRICULUM.find(function (x) { return x.id === id; });
+    return m ? m.title : id;
+  }
+
   // Stabile, lesbare ID für Leitlinien-/Literatur-Gruppen-Links statt eines Array-Index —
   // ein künftig alphabetisch "davor" eingefügter Eintrag verschiebt sonst stillschweigend
   // jeden Index und damit jeden (z.B. gebookmarkten) Link auf eine andere Gruppe.
@@ -151,7 +254,7 @@
 
   function showCardModal(card) {
     const isProfile = !!card.profile;
-    const content = isProfile ? renderProfile(card.profile) : '<div class="modal-plain-back">' + escapeHtml(card.back) + "</div>";
+    const content = isProfile ? renderProfile(card.profile) : '<div class="modal-plain-back">' + richText(card.back) + "</div>";
     const backdrop = document.createElement("div");
     backdrop.className = "lookup-modal-backdrop";
     backdrop.innerHTML =
@@ -351,6 +454,10 @@
     else if (route === "literatur-test") startLiteratureQuiz(arg);
     else if (route === "soe") renderSOEList();
     else if (route === "soe-case") renderSOEDetail(arg);
+    else if (route === "rechnen") renderRechnen(arg);
+    else if (route === "kurven") renderKurvenStart();
+    else if (route === "kurven-quiz") startKurvenQuiz(arg);
+    else if (route === "meldungen") renderMeldungen();
     else renderDashboard();
     wrapAllLookupSources();
     window.scrollTo(0, 0);
@@ -371,6 +478,8 @@
       ["leitlinien", "Leitlinien"],
       ["literatur", "Literatur"],
       ["soe", "Mündlich"],
+      ["rechnen", "Rechnen"],
+      ["kurven", "Kurven"],
       ["progress", "Fortschritt"]
     ];
     // STORAGE_OK deckt nur einen von Anfang an blockierten Speicher ab (z.B. Inkognito-Modus);
@@ -446,6 +555,8 @@
       '<a class="back-link" href="#/dashboard">← Zum Dashboard</a>' +
       "<h1>Schwierige Karten &amp; Wissenslücken</h1>" +
       "<h2>Schwierige Karten (" + focus.difficultCards.length + ")</h2>" + difficultHtml +
+      "<h2>Falsch beantwortete Testfragen (" + wrongQuestions().length + ")</h2>" +
+      (wrongQuestions().length ? '<p class="muted">Werden nach richtiger Antwort automatisch aus der Liste entfernt.</p><div class="cta-row"><a class="btn btn-sm btn-secondary" href="#/test-session/fehler-all">Fehlertraining starten</a></div>' : '<p class="muted">Keine offenen Fehler aus Tests.</p>') +
       "<h2>Wissenslücken (" + focus.gaps.length + ")</h2>" + gapsHtml +
       "</main>";
 
@@ -511,7 +622,8 @@
       "</div>" +
       '<div class="cta-row">' +
       '<a class="btn btn-primary" href="#/learn-session/all">Jetzt lernen (' + sessionSize + ")</a>" +
-      '<a class="btn btn-secondary" href="#/test-session/mixed">Prüfungssimulation starten</a>' +
+      '<a class="btn btn-secondary" id="start-sim" href="#/test-session/blueprint-60">Prüfungssimulation starten (60 Fragen, 90 min)</a>' +
+      (loadWrong().length ? '<a class="btn btn-secondary" href="#/test-session/fehler-all">Fehlertraining (' + wrongQuestions().length + ")</a>" : "") +
       "</div>" +
       '<details class="module-details" open>' +
       '<summary><h2>Module im Detail (' + CURRICULUM.length + ')</h2></summary>' +
@@ -521,6 +633,8 @@
       "</details>" +
       '<p class="muted"><a href="#" id="show-onboarding-link">Kurzanleitung erneut anzeigen</a></p>' +
       "</main>";
+    const sim = document.getElementById("start-sim");
+    if (sim) sim.addEventListener("click", function () { pendingTestMode = "exam"; });
 
   }
 
@@ -649,7 +763,7 @@
     const card = learnQueue[0];
     const remaining = learnQueue.length;
     const isProfile = !!card.profile;
-    const backContent = (isProfile ? renderProfile(card.profile) : escapeHtml(card.back)) +
+    const backContent = (isProfile ? renderProfile(card.profile) : richText(card.back)) + standBadge(card.guideline) +
       glossaryHtml(card.front + " " + (isProfile ? Object.keys(card.profile).map(function (k) { return card.profile[k]; }).join(" ") : card.back));
     const backClass = "flashcard-back hidden lookup-source" + (isProfile ? " profile-back" : "");
     app.innerHTML =
@@ -663,6 +777,7 @@
       '<div class="flashcard-front lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.front) + "</div>" +
       '<div class="' + backClass + '" id="flashcard-back" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + backContent + "</div>" +
       "</div>" +
+      '<div class="report-row">' + reportButton(card.id, card.front) + "</div>" +
       // Eine einzige Button-Zeile (max. 4 Buttons gleichzeitig sichtbar) statt zwei
       // parallelen Zeilen: zuerst die 3 Konfidenz-Buttons, nach dem Aufdecken wird
       // derselbe Zeilen-Inhalt durch die 4 Bewertungs-Buttons ersetzt.
@@ -746,7 +861,10 @@
       '<label for="test-module">Modul</label>' +
       '<select id="test-module">' +
       (dueMcqCount > 0 ? '<option value="due">Fällige Testfragen (' + dueMcqCount + ")</option>" : "") +
-      '<option value="mixed">Gemischt (empfohlen)</option>' + options + "</select>" +
+      '<option value="blueprint">Alle Module gewichtet (wie Prüfung: je ca. Hälfte Teil 1 und Teil 2)</option>' +
+      '<option value="mixed">Gemischt (zufällig aus allen Fragen)</option>' +
+      (wrongQuestions().length ? '<option value="fehler">Fehlertraining: zuletzt falsch beantwortete Fragen (' + wrongQuestions().length + ")</option>" : "") +
+      options + "</select>" +
       '<label for="test-count">Anzahl Fragen</label>' +
       '<select id="test-count">' +
       '<option value="10">10</option>' +
@@ -806,6 +924,26 @@
     examTimerInterval = setInterval(tickExamTimer, 1000);
   }
 
+  // Gewichtete Auswahl wie in der Prüfung: ca. je die Hälfte aus Teil 1 (Grundlagen)
+  // und Teil 2 (Klinik); innerhalb eines Teils proportional zur Fragenzahl je Modul,
+  // jedes Modul mit mindestens einer Frage (sofern vorhanden).
+  function blueprintPool(n) {
+    const parts = [1, 2];
+    const result = [];
+    parts.forEach(function (part, pi) {
+      const mods = CURRICULUM.filter(function (m) { return m.part === part; });
+      const target = pi === 0 ? Math.floor(n / 2) : n - Math.floor(n / 2);
+      const byMod = mods.map(function (m) { return shuffle(MCQ.filter(function (q) { return q.module === m.id; })); }).filter(function (a) { return a.length; });
+      const total = byMod.reduce(function (s, a) { return s + a.length; }, 0);
+      const quota = byMod.map(function (a) { return Math.max(1, Math.round(target * a.length / total)); });
+      let sum = quota.reduce(function (s, x) { return s + x; }, 0);
+      while (sum > target) { const i = quota.indexOf(Math.max.apply(null, quota)); quota[i]--; sum--; }
+      while (sum < target) { const i = quota.indexOf(Math.min.apply(null, quota)); quota[i]++; sum++; }
+      byMod.forEach(function (a, i) { Array.prototype.push.apply(result, a.slice(0, quota[i])); });
+    });
+    return shuffle(result);
+  }
+
   function startTestSession(arg) {
     // Browser-Zurück/Vorwärts (oder ein erneuter hashchange auf dieselbe Route, z.B. durch
     // eine mobile Zurück-Geste) darf eine noch laufende Session nicht zerstören — sonst
@@ -839,6 +977,10 @@
     let pool;
     if (moduleId === "due") {
       pool = window.SRS.getDueCards(MCQ, progress, "all");
+    } else if (moduleId === "fehler") {
+      pool = wrongQuestions();
+    } else if (moduleId === "blueprint") {
+      pool = blueprintPool(count === "all" ? MCQ.length : parseInt(count, 10));
     } else {
       pool = moduleId === "mixed" ? MCQ.slice() : MCQ.filter(function (q) { return q.module === moduleId; });
     }
@@ -890,7 +1032,8 @@
       '<div class="' + (selected === q.correct ? "correct-answer" : "wrong-answer") + '">' +
       (selected === q.correct ? "Richtig! " : "Leider falsch. Richtig wäre: " + String.fromCharCode(65 + q.correct) + ") " + escapeHtml(q.options[q.correct])) +
       "</div>" +
-      '<p class="explanation">' + escapeHtml(q.explanation) + "</p>" + glossaryHtml(q.question + " " + q.options.join(" ") + " " + q.explanation);
+      '<p class="explanation">' + richText(q.explanation) + "</p>" + standBadge(q.guideline) + glossaryHtml(q.question + " " + q.options.join(" ") + " " + q.explanation) +
+      '<div class="report-row">' + reportButton(q.id, q.question) + "</div>";
 
     const timerHtml = testState.mode === "exam" ? '<span class="exam-timer" id="exam-timer">⏱ --:--</span>' : "";
     app.innerHTML =
@@ -947,6 +1090,32 @@
     const total = testState.questions.length;
     const pct = Math.round((correct / total) * 100);
 
+    // Fehlertraining: falsch beantwortete Fragen merken, richtig beantwortete entfernen.
+    const wrongIds = loadWrong();
+    testState.questions.forEach(function (q, i) {
+      const pos = wrongIds.indexOf(q.id);
+      if (testState.answers[i] === q.correct) { if (pos !== -1) wrongIds.splice(pos, 1); }
+      else if (pos === -1) wrongIds.push(q.id);
+    });
+    saveWrong(wrongIds);
+
+    // Auswertung je Modul (nur sinnvoll, wenn mehrere Module beteiligt sind).
+    const perMod = {};
+    testState.questions.forEach(function (q, i) {
+      const e = perMod[q.module] || (perMod[q.module] = { total: 0, correct: 0 });
+      e.total++;
+      if (testState.answers[i] === q.correct) e.correct++;
+    });
+    const modIds = Object.keys(perMod);
+    const perModHtml = modIds.length < 2 ? "" :
+      "<h2>Ergebnis je Modul</h2>" +
+      '<div class="table-scroll"><table class="module-table"><thead><tr><th>Modul</th><th>Richtig</th><th>Anteil</th></tr></thead><tbody>' +
+      modIds.sort(function (a, b) { return perMod[a].correct / perMod[a].total - perMod[b].correct / perMod[b].total; }).map(function (id) {
+        const e = perMod[id], p = Math.round(e.correct / e.total * 100);
+        return '<tr><td data-label="Modul">' + escapeHtml(testModuleName(id)) + '</td><td data-label="Richtig">' + e.correct + " / " + e.total + '</td><td data-label="Anteil"><div class="bar"><div class="bar-fill" style="width:' + p + '%"></div></div><span class="bar-label">' + p + "%</span></td></tr>";
+      }).join("") + "</tbody></table></div>" +
+      '<p class="muted">Sortiert vom schwächsten zum stärksten Modul. Schwache Module gezielt über „Lernen“ wiederholen.</p>';
+
     const results = window.SRS.loadResults();
     results.push({
       date: new Date().toISOString(),
@@ -965,8 +1134,9 @@
         '<p class="question-text">' + escapeHtml(w.q.question) + "</p>" +
         '<p class="wrong-answer">Deine Antwort: ' + givenText + "</p>" +
         '<p class="correct-answer">Richtig: ' + correctText + "</p>" +
-        '<p class="explanation">' + escapeHtml(w.q.explanation) + "</p>" + glossaryHtml(w.q.question + " " + w.q.options.join(" ") + " " + w.q.explanation) +
-        "</div>"
+        '<p class="explanation">' + richText(w.q.explanation) + "</p>" + standBadge(w.q.guideline) + glossaryHtml(w.q.question + " " + w.q.options.join(" ") + " " + w.q.explanation) +
+        "</div>" +
+        '<div class="report-row">' + reportButton(w.q.id, w.q.question) + "</div>"
       );
     }).join("");
 
@@ -976,10 +1146,194 @@
       "<h1>Testergebnis</h1>" +
       '<div class="score-circle">' + pct + "%</div>" +
       '<p>' + correct + " von " + total + " Fragen richtig beantwortet.</p>" +
-      '<div class="cta-row"><a class="btn btn-primary" href="#/test">Neuer Test</a> <a class="btn btn-secondary" href="#/progress">Fortschritt ansehen</a></div>' +
+      '<div class="cta-row"><a class="btn btn-primary" href="#/test">Neuer Test</a> <a class="btn btn-secondary" href="#/progress">Fortschritt ansehen</a>' +
+      (wrongIds.length ? ' <a class="btn btn-secondary" href="#/test-session/fehler-all">Fehlertraining (' + wrongIds.length + ")</a>" : "") + "</div>" +
+      perModHtml +
       (wrong.length > 0 ? "<h2>Falsch beantwortete Fragen</h2>" + wrongHtml : "<p>Alle Fragen richtig! 🎉</p>") +
       "</main>";
     wrapAllLookupSources();
+  }
+
+  // ---------- Berechnungstrainer ----------
+  // Zufällig generierte Rechenaufgaben (data/rechnen.js) mit Eingabe, Toleranzprüfung
+  // und Rechenweg – übt den sicheren Umgang mit Dosierungen und Formeln (Abrufübung).
+  let rechnenState = null;
+  function renderRechnen(typ) {
+    const gens = window.RECHNEN || [];
+    if (!gens.length) { app.innerHTML = nav("rechnen") + '<main class="container narrow"><h1>Rechnen</h1><p class="muted">Keine Aufgaben geladen.</p></main>'; return; }
+    const pool = typ && typ !== "alle" ? gens.filter(function (g) { return g.id === typ; }) : gens;
+    const g = pool.length ? pool[Math.floor(Math.random() * pool.length)] : gens[0];
+    const aufgabe = g.gen();
+    if (!rechnenState || rechnenState.typ !== (typ || "alle")) rechnenState = { typ: typ || "alle", richtig: 0, gesamt: 0 };
+    const optionen = '<option value="alle"' + (!typ || typ === "alle" ? " selected" : "") + ">Alle Aufgabentypen gemischt</option>" +
+      gens.map(function (x) { return '<option value="' + x.id + '"' + (x.id === typ ? " selected" : "") + ">" + escapeHtml(x.titel) + "</option>"; }).join("");
+    app.innerHTML =
+      nav("rechnen") +
+      '<main class="container narrow">' +
+      "<h1>Berechnungstrainer</h1>" +
+      '<p class="muted">Zufällige Werte bei jeder Aufgabe. Rechne im Kopf oder auf Papier, gib das Ergebnis ein und vergleiche mit dem Rechenweg. Übungswerte – in der Klinik gelten Fachinformation und lokale Standards.</p>' +
+      '<label for="rechnen-typ">Aufgabentyp</label><select id="rechnen-typ">' + optionen + "</select>" +
+      '<div class="question-box">' +
+      '<div class="session-progress">' + escapeHtml(g.titel) + (rechnenState.gesamt ? " · bisher " + rechnenState.richtig + " / " + rechnenState.gesamt + " richtig" : "") + "</div>" +
+      '<p class="question-text">' + escapeHtml(aufgabe.frage) + "</p>" +
+      '<div class="rechnen-eingabe"><input type="text" inputmode="decimal" id="rechnen-input" autocomplete="off" placeholder="Ergebnis"><span class="rechnen-einheit">' + escapeHtml(aufgabe.einheit) + "</span></div>" +
+      '<div class="cta-row"><button class="btn btn-primary" id="rechnen-pruefen">Prüfen</button><button class="btn btn-secondary" id="rechnen-hinweis">Tipp</button></div>' +
+      '<div id="rechnen-feedback"></div>' +
+      "</div>" +
+      "</main>";
+    const input = document.getElementById("rechnen-input");
+    input.focus();
+    document.getElementById("rechnen-typ").addEventListener("change", function (e) { location.hash = "#/rechnen/" + e.target.value; });
+    document.getElementById("rechnen-hinweis").addEventListener("click", function () {
+      document.getElementById("rechnen-feedback").innerHTML = '<p class="muted">💡 ' + escapeHtml(aufgabe.hinweis) + "</p>";
+    });
+    let geprueft = false;
+    function pruefen() {
+      if (geprueft) { renderRechnen(typ); return; }
+      const wert = parseFloat(String(input.value).replace(/\s/g, "").replace(",", "."));
+      if (isNaN(wert)) { input.focus(); return; }
+      geprueft = true;
+      const ok = Math.abs(wert - aufgabe.antwort) <= Math.max(Math.abs(aufgabe.antwort) * aufgabe.toleranz, 0.05);
+      rechnenState.gesamt++;
+      if (ok) rechnenState.richtig++;
+      const loesungWert = (+aufgabe.antwort.toFixed(aufgabe.antwort < 10 ? 2 : (aufgabe.antwort < 100 ? 1 : 0))).toLocaleString("de-DE");
+      document.getElementById("rechnen-feedback").innerHTML =
+        '<div class="' + (ok ? "correct-answer" : "wrong-answer") + '">' + (ok ? "Richtig! " : "Nicht ganz. ") + "Lösung: " + loesungWert + " " + escapeHtml(aufgabe.einheit) + "</div>" +
+        '<p class="explanation">' + escapeHtml(aufgabe.loesung) + "</p>" +
+        '<p class="muted">💡 ' + escapeHtml(aufgabe.hinweis) + "</p>";
+      document.getElementById("rechnen-pruefen").textContent = "Nächste Aufgabe";
+    }
+    document.getElementById("rechnen-pruefen").addEventListener("click", pruefen);
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); pruefen(); } });
+  }
+
+  // ---------- Kurven-Quiz (Kapnographie, arterielle Kurve, EKG, Beatmung) ----------
+  let kurvenState = null;
+  function kurvenKategorien() {
+    const k = [];
+    (window.KURVEN || []).forEach(function (x) { if (k.indexOf(x.kategorie) === -1) k.push(x.kategorie); });
+    return k;
+  }
+  function renderKurvenStart() {
+    const items = window.KURVEN || [];
+    const kats = kurvenKategorien();
+    app.innerHTML =
+      nav("kurven") +
+      '<main class="container narrow">' +
+      "<h1>Kurven erkennen</h1>" +
+      '<p class="muted">Schematische Kurven zum Üben der Mustererkennung – wie in der mündlichen Prüfung, in der oft ein Monitorbild gezeigt wird. ' + items.length + " Aufgaben.</p>" +
+      '<div class="cta-row"><a class="btn btn-primary" href="#/kurven-quiz/alle">Alle Kurven üben</a></div>' +
+      '<div class="drug-grid">' +
+      kats.map(function (k) {
+        const n = items.filter(function (x) { return x.kategorie === k; }).length;
+        return '<a class="drug-item" href="#/kurven-quiz/' + slugify(k) + '">' + escapeHtml(k) + ' <span class="muted">(' + n + ")</span></a>";
+      }).join("") +
+      "</div></main>";
+  }
+  function startKurvenQuiz(slug) {
+    const items = window.KURVEN || [];
+    const pool = !slug || slug === "alle" ? items : items.filter(function (x) { return slugify(x.kategorie) === slug; });
+    if (!pool.length) { renderKurvenStart(); return; }
+    kurvenState = {
+      fragen: shuffle(pool).map(function (q) {
+        const order = shuffle(q.options.map(function (_, i) { return i; }));
+        return { q: q, order: order };
+      }),
+      index: 0, richtig: 0, slug: slug || "alle"
+    };
+    renderKurvenFrage();
+  }
+  function renderKurvenFrage() {
+    const st = kurvenState;
+    if (st.index >= st.fragen.length) {
+      const pct = Math.round(st.richtig / st.fragen.length * 100);
+      app.innerHTML = nav("kurven") + '<main class="container narrow"><h1>Kurven-Quiz beendet</h1>' +
+        '<div class="score-circle">' + pct + "%</div><p>" + st.richtig + " von " + st.fragen.length + " richtig erkannt.</p>" +
+        '<div class="cta-row"><a class="btn btn-primary" href="#/kurven-quiz/' + st.slug + '">Nochmal</a><a class="btn btn-secondary" href="#/kurven">Übersicht</a></div></main>';
+      return;
+    }
+    const item = st.fragen[st.index], q = item.q;
+    let svg = "";
+    try { svg = q.svg(); } catch (e) { svg = '<p class="muted">Kurve konnte nicht gezeichnet werden.</p>'; }
+    app.innerHTML =
+      nav("kurven") +
+      '<main class="container narrow">' +
+      '<div class="session-progress">' + escapeHtml(q.kategorie) + " · Aufgabe " + (st.index + 1) + " / " + st.fragen.length + "</div>" +
+      '<figure class="sw-fig kurve-fig">' + svg + "</figure>" +
+      '<div class="question-box"><p class="question-text">' + escapeHtml(q.frage) + "</p>" +
+      '<div class="options">' + item.order.map(function (oi, pos) {
+        return '<button class="option-row kurve-option" data-oi="' + oi + '">' + String.fromCharCode(65 + pos) + ") " + escapeHtml(q.options[oi]) + "</button>";
+      }).join("") + "</div>" +
+      '<div id="kurve-feedback"></div></div>' +
+      "</main>";
+    document.querySelectorAll(".kurve-option").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (item.beantwortet) return;
+        item.beantwortet = true;
+        const oi = parseInt(btn.getAttribute("data-oi"), 10);
+        const ok = oi === q.correct;
+        if (ok) st.richtig++;
+        document.querySelectorAll(".kurve-option").forEach(function (b) {
+          const bi = parseInt(b.getAttribute("data-oi"), 10);
+          b.classList.add(bi === q.correct ? "option-correct" : (bi === oi ? "option-wrong-selected" : "option-wrong-disabled"));
+        });
+        document.getElementById("kurve-feedback").innerHTML =
+          '<div class="' + (ok ? "correct-answer" : "wrong-answer") + '">' + (ok ? "Richtig!" : "Leider falsch. Richtig: " + escapeHtml(q.options[q.correct])) + "</div>" +
+          '<p class="explanation">' + escapeHtml(q.erklaerung) + "</p>" + glossaryHtml(q.frage + " " + q.erklaerung) +
+          '<div class="cta-row"><button class="btn btn-primary" id="kurve-weiter">' + (st.index === st.fragen.length - 1 ? "Auswertung" : "Weiter") + "</button>" + reportButton(q.id, q.frage) + "</div>";
+        document.getElementById("kurve-weiter").addEventListener("click", function () { st.index++; renderKurvenFrage(); });
+      });
+    });
+  }
+
+  // ---------- Meldungen (lokal gespeicherte Fehlermeldungen) ----------
+  function renderMeldungen() {
+    const list = loadReports();
+    const text = list.map(function (r, i) {
+      return (i + 1) + ". [" + r.id + "] " + new Date(r.datum).toLocaleString("de-DE") + "\n   Bezug: " + r.kontext + "\n   Meldung: " + r.text;
+    }).join("\n\n");
+    app.innerHTML =
+      nav("progress") +
+      '<main class="container narrow">' +
+      '<a class="back-link" href="#/progress">← Fortschritt</a>' +
+      "<h1>Fehlermeldungen (" + list.length + ")</h1>" +
+      '<p class="muted">Meldungen bleiben nur auf diesem Gerät. Kopiere den Text oder exportiere eine Datei und schicke sie an die Person, die die Inhalte pflegt (z.B. als GitHub-Issue).</p>' +
+      (list.length ?
+        '<ul class="gap-list">' + list.map(function (r, i) {
+          return '<li class="gap-item"><span><strong>' + escapeHtml(r.id) + "</strong> – " + escapeHtml(r.text) + '<span class="gap-source"> — ' + escapeHtml(r.kontext) + "</span></span>" +
+            '<button class="btn btn-sm btn-secondary" data-del-report="' + i + '">Löschen</button></li>';
+        }).join("") + "</ul>" +
+        '<div class="cta-row"><button class="btn btn-primary" id="report-copy">Als Text kopieren</button><button class="btn btn-secondary" id="report-export">Als Datei exportieren</button></div>' +
+        '<textarea class="report-textarea" id="report-all" rows="8" readonly>' + escapeHtml(text) + "</textarea>"
+        : '<p class="muted">Noch keine Meldungen. Unter jeder Karte, Testfrage und Kurve gibt es den Knopf „⚑ Fehler melden“.</p>') +
+      "</main>";
+    document.querySelectorAll("[data-del-report]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        const l = loadReports();
+        l.splice(parseInt(b.getAttribute("data-del-report"), 10), 1);
+        saveReports(l);
+        renderMeldungen();
+      });
+    });
+    const copy = document.getElementById("report-copy");
+    if (copy) copy.addEventListener("click", function () {
+      const ta = document.getElementById("report-all");
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(function () { showToast("Kopiert."); }, function () { if (!ok) showToast("Bitte Text markieren und manuell kopieren."); });
+      else showToast(ok ? "Kopiert." : "Bitte Text markieren und manuell kopieren.");
+    });
+    const exp = document.getElementById("report-export");
+    if (exp) exp.addEventListener("click", function () {
+      const blob = new Blob([JSON.stringify(loadReports(), null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "desa-fehlermeldungen-" + new Date().toISOString().slice(0, 10) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    });
   }
 
   // ---------- Progress ----------
@@ -987,7 +1341,7 @@
     const results = window.SRS.loadResults().slice().reverse();
     const resultRows = results.slice(0, 30).map(function (r) {
       const pct = Math.round((r.correct / r.total) * 100);
-      const modName = r.module === "mixed" ? "Gemischt (Prüfungssimulation)" : (moduleById(r.module) ? moduleById(r.module).title : r.module);
+      const modName = testModuleName(r.module);
       const date = new Date(r.date).toLocaleString("de-DE");
       return '<tr><td data-label="Datum">' + date + '</td><td data-label="Modul">' + escapeHtml(modName) + '</td><td data-label="Ergebnis">' + r.correct + "/" + r.total + " (" + pct + "%)</td></tr>";
     }).join("");
@@ -1064,6 +1418,8 @@
       (results.length === 0
         ? "<p>Noch keine Tests absolviert.</p>"
         : '<div class="table-scroll"><table class="module-table"><thead><tr><th>Datum</th><th>Modul</th><th>Ergebnis</th></tr></thead><tbody>' + resultRows + "</tbody></table></div>") +
+      "<h2>Fehlermeldungen</h2>" +
+      '<p class="muted">' + loadReports().length + ' lokal gespeicherte Meldung(en) zu Karten, Fragen oder Kurven. <a href="#/meldungen">Meldungen ansehen und exportieren</a></p>' +
       "<h2>Daten sichern</h2>" +
       '<p class="muted">Dein gesamter Lernfortschritt liegt ausschließlich lokal in diesem Browser – bei gelöschten Browserdaten oder einem Gerätewechsel geht er sonst verloren. Hier kannst du ihn als Datei sichern und später (auf diesem oder einem anderen Gerät) wieder einspielen.</p>' +
       '<div class="cta-row">' +
@@ -1512,6 +1868,7 @@
       return (
         '<div class="guideline-group' + (isLearned ? " guideline-group--learned" : "") + '">' +
         '<h2>' + (isLearned ? '<span class="learned-check">✓</span> ' : "") + escapeHtml(g.name) + '<span class="muted"> · ' + g.cards.length + (g.cards.length === 1 ? " Karte" : " Karten") + "</span></h2>" +
+        standBadge(g.name) +
         '<div class="cta-row">' +
         '<a class="btn btn-sm btn-primary" href="#/leitlinien-durchgehen/' + g.slug + '">Durchgehen</a>' +
         (quizCount > 0 ? '<a class="btn btn-sm btn-secondary" href="#/leitlinien-test/' + g.slug + '">Testen (' + quizCount + ")</a>" : "") +
@@ -1560,8 +1917,10 @@
       '<div class="session-progress">' + escapeHtml(card.guideline) + "</div>" +
       "<h1>" + escapeHtml(card.front) + "</h1>" +
       '<div class="flashcard" style="text-align:left">' +
-      '<div class="flashcard-back lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + escapeHtml(card.back) + "</div>" +
+      '<div class="flashcard-back lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + richText(card.back) + "</div>" +
       "</div>" +
+      standBadge(card.guideline) +
+      '<div class="report-row">' + reportButton(card.id, card.front) + "</div>" +
       "</main>";
     wrapAllLookupSources();
   }
