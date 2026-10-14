@@ -1700,7 +1700,7 @@
     });
   }
 
-  // ---------- Spezialwissen (vertiefte Organkapitel Herz, Lunge, Niere) ----------
+  // ---------- Spezialwissen (vertiefte Organkapitel, z.B. Herz, Lunge, Niere, Gehirn, Leber, Blut) ----------
   // Lesemodus mit evidenzbasierten Lernelementen: Leitfrage vor dem Lesen (Advance
   // Organizer), kurze Abschnitte nach Ebenen (Chunking), Schema (Dual Coding),
   // Merke-Box, Warum-Fragen zum Selbsterklären (aufklappbar, erst nach eigener
