@@ -161,6 +161,78 @@ window.ALGORITHMS = [
     ]
   },
   {
+    id: "pls",
+    title: "Kinderreanimation (Paediatric Life Support)",
+    category: "Reanimation",
+    source: "ERC-Leitlinien 2025 Paediatric Life Support (Dosierungen; Adrenalin-Intervall ERC ca. 4 min, andere Leitlinien 3–5 min)",
+    steps: [
+      "Keine Reaktion, keine normale Atmung → Hilfe rufen, Atemwege öffnen",
+      "5 initiale Beatmungen (Beutel-Maske mit Sauerstoff), dabei Lebenszeichen prüfen",
+      "Keine Lebenszeichen (oder HF <60/min mit Minderperfusion) → Thoraxkompressionen 15:2, 100–120/min, Tiefe 1/3 des Thorax",
+      "Monitor/Defibrillator anschließen, Rhythmus beurteilen",
+      "Nicht schockbar (Asystolie/PEA/Bradykardie): sofort i.v./i.o.-Zugang, Adrenalin 10 µg/kg (max. 1 mg) so früh wie möglich",
+      "Schockbar (VF/pVT): Schock 4 J/kg, sofort 2 min CPR",
+      "Nach dem 3. Schock: Adrenalin 10 µg/kg und Amiodaron 5 mg/kg (max. 300 mg)",
+      "Adrenalin alle ca. 4 Minuten wiederholen; nach dem 5. Schock erneut Amiodaron 5 mg/kg (max. 150 mg); bei refraktärem VF Energie bis 8 J/kg erwägen",
+      "Atemweg sichern (Tubus/supraglottisch nur durch Geübte), Kapnographie; mit Tubus durchgehende Kompressionen",
+      "Reversible Ursachen behandeln (4H/4T; bei Kindern v.a. Hypoxie, Hypovolämie, Elektrolyte, Hypoglykämie)",
+      "ROSC → SpO2 94–98 %, Normokapnie, Blutdruck >5. Perzentile, Normoglykämie, Fieber vermeiden"
+    ],
+    flowLabels: [
+      "Hilfe rufen, Atemwege öffnen", "5 initiale Beatmungen", "CPR 15:2",
+      "Monitor/Defi → Rhythmus", "Nicht schockbar → Adrenalin 10 µg/kg sofort", "Schockbar → 4 J/kg, CPR 2 Min",
+      "Nach 3. Schock: Adrenalin + Amiodaron 5 mg/kg", "Adrenalin ca. alle 4 Min; nach 5. Schock Amiodaron",
+      "Atemweg sichern, Kapnographie", "4H/4T behandeln", "ROSC → Postreanimation"
+    ]
+  },
+  {
+    id: "nls",
+    title: "Neugeborenen-Erstversorgung und -Reanimation (Newborn Life Support)",
+    category: "Reanimation",
+    source: "ERC-Leitlinien 2025 Newborn Resuscitation (Adrenalin-Dosis als Spanne, ERC 2021: 20 µg/kg)",
+    steps: [
+      "Vor der Geburt: Team, Wärme (Raum 23–25 °C), Material und Beatmungsgerät prüfen",
+      "Abnabeln (bei vitalen Kindern frühestens nach 60 s), abtrocknen/warm einwickeln, Frühgeborene <32 SSW in Plastikfolie",
+      "Beurteilen: Tonus, Atmung, Herzfrequenz",
+      "Nicht ausreichende Atmung: Atemwege öffnen (Neutralposition), 5 Blähbeatmungen à 2–3 s (≥32 SSW 30 cmH2O, <32 SSW 25 cmH2O), Raumluft bei Reifen",
+      "Herzfrequenz neu beurteilen: steigt sie? Wenn nicht: Thoraxhebung prüfen, Maske/Atemweg optimieren (2 Helfer, ggf. supraglottischer Atemweg/Intubation)",
+      "Bei Thoraxhebung: Beatmung ca. 30/min fortsetzen, SpO2 präduktal (rechte Hand) messen, O2 nach Zielwerten titrieren",
+      "HF <60/min nach 30 s effektiver Beatmung → Thoraxkompressionen 3:1, O2 auf 100 %",
+      "Alle 30 s Herzfrequenz kontrollieren; Zugang (Nabelvenenkatheter oder i.o.)",
+      "HF weiterhin <60/min → Adrenalin i.v./i.o. 10–30 µg/kg (intratracheal 100 µg/kg nur ohne Zugang), Wiederholung ca. alle 3–5 min",
+      "Volumen bei Blutverlust 10 ml/kg; Glukose 2,5 ml/kg G10 % bei Hypoglykämie; an Pneumothorax/Fehlbildung denken",
+      "Nach Stabilisierung: Temperatur 36,5–37,5 °C, Verlegung; bei HIE ≥36 SSW therapeutische Hypothermie innerhalb 6 h erwägen"
+    ],
+    flowLabels: [
+      "Vorbereitung: Team, Wärme, Material", "Abnabeln, abtrocknen, Wärme", "Tonus, Atmung, HF",
+      "5 Blähbeatmungen", "HF steigt? Sonst Atemweg optimieren", "Beatmung 30/min, SpO2 präduktal",
+      "HF <60 → Kompressionen 3:1, O2 100 %", "HF alle 30 s, Zugang", "Adrenalin 10–30 µg/kg i.v./i.o.",
+      "Volumen, Glukose, Ursachen", "Stabilisierung, ggf. Hypothermie"
+    ]
+  },
+  {
+    id: "mstart",
+    title: "Vorsichtung beim Massenanfall von Verletzten (mSTaRT)",
+    category: "Notfallmedizin",
+    source: "mSTaRT (Berufsfeuerwehr München/LMU 2004); Sichtungskategorien nach Konsensuskonferenz 2002",
+    steps: [
+      "Eigenschutz, Lage erkunden, Rückmeldung, Nachforderung (MANV-Stufe)",
+      "Gehfähig? Ja → Kategorie grün (SK III), zur Sammelstelle schicken",
+      "Bedrohliche äußere Blutung? Ja → Blutung stoppen (Druck/Tourniquet) → rot (SK I)",
+      "Atmung vorhanden? Nein → Atemweg freimachen; danach keine Atmung → tot (schwarz)",
+      "Atemfrequenz >30/min → rot (SK I)",
+      "Radialispuls nicht tastbar bzw. Rekapillarisierung >2 s → rot (SK I)",
+      "Befolgt einfache Aufforderungen nicht → rot (SK I)",
+      "Keines der Kriterien → gelb (SK II)",
+      "Kennzeichnen (Anhängekarte), Sichtung regelmäßig wiederholen; ärztliche Sichtung durch Notarzt/LNA am Behandlungsplatz"
+    ],
+    flowLabels: [
+      "Eigenschutz, Lage, Nachforderung", "Gehfähig → grün", "Starke Blutung → stoppen, rot",
+      "Keine Atmung trotz Atemweg → tot", "AF >30 → rot", "Kein Radialispuls → rot",
+      "Keine Befolgung → rot", "Sonst → gelb", "Kennzeichnen, nachsichten"
+    ]
+  },
+  {
     id: "phys-raas",
     title: "Renin-Angiotensin-Aldosteron-System (RAAS)",
     category: "Physiologie-Mechanismen",

@@ -1,4 +1,5 @@
-// Spezialwissen: vertiefte Organkapitel (Herz, Lunge, Niere) – von der Zelle bis zum
+// Spezialwissen: vertiefte Organkapitel (Herz, Lunge, Niere, Gehirn, Leber, Blut & Gerinnung,
+// Nerv & Muskel, Säure-Basen, Hormone & Stressreaktion) – von der Zelle bis zum
 // Organsystem, mit klinischem Anästhesiebezug. Inhalte eigens verfasst auf Basis von
 // Standardlehrbüchern und Übersichtsarbeiten (Quellen je Organ unter "sources").
 //
@@ -19,7 +20,7 @@
 (function () {
   window.SPEZIAL = window.SPEZIAL || [];
   window.SPEZIAL_METHOD = {
-    intro: "Spezialwissen erklärt Herz, Lunge und Niere zusammenhängend auf Facharzt- und EDAIC-Niveau – von der Zelle über Gewebe und Organ bis zur Regulation im Gesamtorganismus und zur Bedeutung in Narkose und Intensivmedizin.",
+    intro: "Spezialwissen erklärt Herz, Lunge, Niere, Gehirn, Leber, Blut & Gerinnung, Nerv & Muskel, Säure-Basen sowie Hormone & Stressreaktion zusammenhängend auf Facharzt- und EDAIC-Niveau – von der Zelle über Gewebe und Organ bis zur Regulation im Gesamtorganismus und zur Bedeutung in Narkose und Intensivmedizin.",
     steps: [
       "**Leitfrage zuerst:** Versuche sie kurz selbst zu beantworten, bevor du liest. Das aktiviert Vorwissen, und Neues wird besser verankert.",
       "**Lesen in Ebenen:** Jedes Kapitel hat eine Ebene (Zelle → Gewebe → Organ → System → Klinik). Achte darauf, wie die Mechanismen einer Ebene die nächste erklären.",
