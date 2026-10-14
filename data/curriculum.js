@@ -21,7 +21,9 @@ window.CURRICULUM = [
       { id: "niere-saeure-basen", title: "Niere & Säure-Basen" },
       { id: "leber-stoffwechsel", title: "Leber & Stoffwechsel" },
       { id: "zns", title: "ZNS & Hirndruck" },
-      { id: "temperatur-endokrin", title: "Temperatur & Endokrinium" }
+      { id: "temperatur-endokrin", title: "Temperatur & Endokrinium" },
+      { id: "blut-gerinnung", title: "Blut & Gerinnung" },
+      { id: "nerv-muskel", title: "Nerv & Muskel" }
     ]
   },
   {
@@ -48,7 +50,9 @@ window.CURRICULUM = [
       { id: "gasgesetze", title: "Gasgesetze & Verdampfer" },
       { id: "monitoring", title: "Monitoring" },
       { id: "elektrische-sicherheit", title: "Elektrische Sicherheit" },
-      { id: "statistik-ebm", title: "Statistik & EbM" }
+      { id: "statistik-ebm", title: "Statistik & EbM" },
+      { id: "beatmung-narkosegeraet", title: "Beatmungsformen & Narkosegerät" },
+      { id: "ultraschall-echo", title: "Ultraschall, POCUS & Echo" }
     ]
   },
   {
@@ -58,7 +62,10 @@ window.CURRICULUM = [
     subtopics: [
       { id: "praeoperativ", title: "Prämedikation & präop. Evaluation" },
       { id: "atemwegsmanagement", title: "Atemwegsmanagement" },
-      { id: "narkosefuehrung", title: "Narkoseführung & Aufwachraum" }
+      { id: "narkosefuehrung", title: "Narkoseführung & Aufwachraum" },
+      { id: "begleiterkrankungen", title: "Begleiterkrankungen" },
+      { id: "geriatrie", title: "Alte Patienten (Geriatrie)" },
+      { id: "sedierung-ausserhalb-op", title: "Sedierung & Anästhesie außerhalb des OP" }
     ]
   },
   {
@@ -92,7 +99,9 @@ window.CURRICULUM = [
       { id: "als-bls", title: "ALS/BLS" },
       { id: "trauma", title: "Traumamanagement" },
       { id: "anaphylaxie-transfusion", title: "Anaphylaxie & Massentransfusion" },
-      { id: "toxikologie-verbrennungen", title: "Toxikologie & Verbrennungen" }
+      { id: "toxikologie-verbrennungen", title: "Toxikologie & Verbrennungen" },
+      { id: "kinder-neugeborenen-reanimation", title: "Kinder- & Neugeborenenreanimation" },
+      { id: "praeklinik-manv", title: "Präklinik, Notarzt & MANV" }
     ]
   },
   {
@@ -106,7 +115,8 @@ window.CURRICULUM = [
       { id: "neuroanaesthesie", title: "Neuroanästhesie" },
       { id: "hno-augen-ambulant", title: "HNO/Augen & ambulante Anästhesie" },
       { id: "orthopaedie-gefaesschirurgie", title: "Orthopädie & Gefäßchirurgie" },
-      { id: "transplantationsanaesthesie", title: "Transplantationsanästhesie" }
+      { id: "transplantationsanaesthesie", title: "Transplantationsanästhesie" },
+      { id: "schwangerschaft-adipositas", title: "Nicht-geburtshilfliche OP in der Schwangerschaft & Adipositas" }
     ]
   },
   {
@@ -116,7 +126,8 @@ window.CURRICULUM = [
     subtopics: [
       { id: "patientensicherheit", title: "Patientensicherheit" },
       { id: "gerinnung-transfusion", title: "Gerinnungsmanagement & Transfusion" },
-      { id: "ethik-recht", title: "Ethik & Recht" }
+      { id: "ethik-recht", title: "Ethik & Recht" },
+      { id: "haemostase-stoerungen", title: "Angeborene & erworbene Gerinnungsstörungen" }
     ]
   },
   {
@@ -131,7 +142,8 @@ window.CURRICULUM = [
       { id: "hirntod-transplantationsrecht", title: "Transplantationsgesetz & Hirntod-Feststellung" },
       { id: "medizinprodukte-arbeitsschutz", title: "Medizinprodukte- & Arbeitsschutzrecht" },
       { id: "rettungsdienstrecht", title: "Rettungsdienst- & Notarztrecht" },
-      { id: "weiterbildung-qm", title: "Weiterbildungsordnung & Qualitätsmanagement" }
+      { id: "weiterbildung-qm", title: "Weiterbildungsordnung & Qualitätsmanagement" },
+      { id: "patientenrechte-haftung", title: "Patientenrechte, Haftung & Betreuungsrecht" }
     ]
   }
 ];
