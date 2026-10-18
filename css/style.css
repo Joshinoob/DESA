@@ -804,3 +804,12 @@ select, input[type="text"] {
 .rechnen-einheit { color: var(--text-muted); white-space: nowrap; }
 .kurve-fig { margin: 12px 0; }
 button.option-row.kurve-option { width: 100%; text-align: left; background: transparent; color: var(--text); font: inherit; margin-bottom: 6px; }
+
+/* v28: Wirkkette in Medikamenten-Steckbriefen */
+.db-row--chain .db-label { color: var(--yellow); }
+.db-kette { margin: 4px 0 0; padding: 8px; }
+.db-liste { margin: 4px 0 0; }
+.db-liste li { font-size: 0.92em; }
+.db-value { overflow-wrap: anywhere; min-width: 0; }
+.db-row { min-width: 0; }
+main h1, main h2 { overflow-wrap: break-word; }
