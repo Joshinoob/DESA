@@ -207,6 +207,8 @@
   const PROFILE_FIELDS = [
     { key: "klasse", label: "Substanzklasse" },
     { key: "mechanismus", label: "Wirkmechanismus", cls: "mechanism" },
+    { key: "wirkkette", label: "Wirkkette: vom Rezeptor zur Wirkung", cls: "chain", type: "kette" },
+    { key: "wirkfolgen", label: "Was sich daraus erklärt", cls: "chain", type: "liste" },
     { key: "indikation", label: "Indikation" },
     { key: "dosierung", label: "Dosierung Erwachsene" },
     { key: "pharmakokinetik", label: "Pharmakokinetik" },
@@ -223,7 +225,18 @@
       const val = profile[f.key];
       if (!val) return "";
       const cls = "db-row" + (f.cls ? " db-row--" + f.cls : "");
-      return '<div class="' + cls + '"><div class="db-label">' + escapeHtml(f.label) + '</div><div class="db-value">' + escapeHtml(val) + "</div></div>";
+      let inner;
+      if (f.type === "kette" && Array.isArray(val)) {
+        // Wirkkette als senkrechte Ursache-Folge-Kette (gleiche Darstellung wie im Spezialwissen)
+        inner = '<div class="sw-kette db-kette">' + val.map(function (k, i) {
+          return (i ? '<div class="sw-kette-arrow" aria-hidden="true">↓</div>' : "") + '<div class="sw-kette-step">' + richText(k) + "</div>";
+        }).join("") + "</div>";
+      } else if (f.type === "liste" && Array.isArray(val)) {
+        inner = '<ul class="sw-list db-liste">' + val.map(function (k) { return "<li>" + richText(k) + "</li>"; }).join("") + "</ul>";
+      } else {
+        inner = escapeHtml(Array.isArray(val) ? val.join(" ") : val);
+      }
+      return '<div class="' + cls + '"><div class="db-label">' + escapeHtml(f.label) + '</div><div class="db-value">' + inner + "</div></div>";
     }).join("");
   }
 
