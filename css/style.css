@@ -830,3 +830,8 @@ button.option-row.kurve-option { width: 100%; text-align: left; background: tran
 .db-value { overflow-wrap: anywhere; min-width: 0; }
 .db-row { min-width: 0; }
 main h1, main h2 { overflow-wrap: break-word; }
+
+/* v31: Kurzabfrage Medikamente */
+.drug-quiz-cta { margin-top: 16px; }
+.drug-quiz-q { margin-bottom: 14px; }
+.drug-quiz-q .option-row span { overflow-wrap: anywhere; }
