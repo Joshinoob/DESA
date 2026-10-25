@@ -1969,7 +1969,6 @@
       '<main class="container narrow">' +
       '<a class="back-link" href="#/drug/' + st.id + '">← Zurück zum Steckbrief</a>' +
       "<h1>Kurzabfrage: " + escapeHtml(name) + "</h1>" +
-      '<p class="muted">' + st.fragen.length + " Fragen zu den wichtigsten Punkten. Wenn alle richtig sind, zählt das Medikament als gelernt. Der Name des jeweiligen Wirkstoffs ist in den Antworten als [Wirkstoff] ausgeblendet.</p>" +
       fragenHtml +
       ergebnisHtml +
       '<div class="cta-row">' +
