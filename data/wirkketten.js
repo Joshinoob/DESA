@@ -160,7 +160,7 @@
       "Glutamat kann den Kanal nicht mehr nutzen → Na⁺- und Ca²⁺-Einstrom ↓",
       "Thalamokortikale und limbische Netzwerke werden funktionell entkoppelt → 'dissoziative' Anästhesie (Augen offen, Nystagmus, keine Reaktion)",
       "Im Hinterhorn: NMDA-vermittelte Verstärkung ('Wind-up', zentrale Sensibilisierung) wird blockiert → ==starke Analgesie, anti-hyperalgetisch==",
-      "Zusätzliche Wirkorte: Opioid-, HCN1-, monoaminerge Systeme (Hemmung der Noradrenalin-Wiederaufnahme)"
+      "Zusätzliche Wirkorte: Opioidrezeptoren, HCN1-Kanäle, monoaminerge Systeme (Hemmung der Noradrenalin-Wiederaufnahme) und spannungsabhängige Na⁺-Kanäle (schwach lokalanästhetisch)"
     ],
     folgen: [
       "Blutdruck und Herzfrequenz ↑: zentrale Sympathikusaktivierung + Hemmung der Katecholamin-Wiederaufnahme → indirekt sympathomimetisch.",
@@ -255,7 +255,7 @@
     "Niedriger pKa (ca. 6,5) → bei pH 7,4 überwiegend ungeladen → ==sehr schneller Wirkbeginn== (ca. 1 min) trotz geringerer Fettlöslichkeit.",
     "Abbau über CYP3A4 → stark verlängert durch CYP3A4-Hemmer."
   ]);
-  W.morphin = opioid("Agonist am µ-Opioidrezeptor (Referenzsubstanz, Potenz 1)", [
+  W.morphin = opioid("Agonist am µ-Opioidrezeptor (Referenzsubstanz, Potenz 1), zusätzlich geringe κ- und δ-Aktivität", [
     "Hydrophil → verzögerter Übertritt ins Gehirn, Wirkmaximum erst nach ca. 15–20 min (Gefahr der Überdosierung beim schnellen Nachtitrieren).",
     "Histaminfreisetzung aus Mastzellen → Vasodilatation, Hypotonie, Juckreiz, ggf. Bronchospasmus.",
     "Aktiver Metabolit Morphin-6-Glucuronid (renal) → Kumulation und Atemdepression bei Niereninsuffizienz."
@@ -264,11 +264,12 @@
     "Weniger Histaminfreisetzung und Übelkeit als Morphin; Standard in der postoperativen Titration in Deutschland.",
     "Keine relevanten aktiven Metaboliten."
   ]);
-  W.oxycodon = opioid("Agonist am µ-Opioidrezeptor (Potenz ca. 1,5–2 von Morphin oral)", [
+  W.oxycodon = opioid("Agonist am µ-Opioidrezeptor, in geringerem Maß am κ-Rezeptor (Potenz ca. 1,5–2 von Morphin oral)", [
     "Hohe orale Bioverfügbarkeit (ca. 60–87 %) → gut für Retardpräparate; Abbau über CYP3A4 (Hemmer erhöhen Spiegel) und CYP2D6.",
     "Kombination mit Naloxon (oral) mindert die Obstipation: Naloxon wirkt im Darm, wird aber beim ersten Leberdurchgang fast vollständig abgebaut."
   ]);
   W.hydromorphon = opioid("Agonist am µ-Opioidrezeptor (ca. 5–7-fach potenter als Morphin i.v.)", [
+    "Abbau fast ausschließlich durch Glucuronidierung ohne relevante CYP450-Beteiligung → geringes Interaktionspotenzial.",
     "Keine relevanten aktiven Glucuronide mit µ-Wirkung → bei Niereninsuffizienz günstiger als Morphin (Hydromorphon-3-Glucuronid kann aber neuroexzitatorisch kumulieren)."
   ]);
   W.pethidin = opioid("Agonist am µ-Opioidrezeptor (Potenz ca. 0,1 von Morphin), zusätzlich κ-Agonismus", [
@@ -303,14 +304,14 @@
       "Kaum serotonerg, aber mit MAO-Hemmern kontraindiziert (Noradrenalin-Kumulation → Blutdruckkrisen)."
     ]
   };
-  W.methadon = opioid("µ-Opioidrezeptor-Agonist (L-Enantiomer) plus NMDA-Rezeptor-Antagonist (beide Enantiomere)", [
+  W.methadon = opioid("µ-Opioidrezeptor-Agonist (v.a. Levomethadon = R-Enantiomer), zusätzlich NMDA-Rezeptor-Antagonist und Hemmer der Monoamin-Wiederaufnahme (Serotonin, Noradrenalin)", [
     "NMDA-Antagonismus wirkt Toleranz und Hyperalgesie entgegen → nützlich bei neuropathischem Schmerz und Opioidrotation.",
     "Sehr lange, individuell stark schwankende Halbwertszeit (ca. 15–60 h, teils mehr) → Kumulation erst nach Tagen, Atemdepression verzögert.",
     "Blockiert den kardialen hERG-K⁺-Kanal → QT-Verlängerung, Torsade de pointes."
   ]);
   W.buprenorphin = {
     kette: [
-      "==Partieller Agonist am µ-Rezeptor mit sehr hoher Affinität und langsamer Dissoziation==; Antagonist am κ-Rezeptor",
+      "==Partieller Agonist am µ-Rezeptor mit sehr hoher Affinität und langsamer Dissoziation==; Antagonist am κ-Rezeptor, partieller Agonist am Nozizeptin-Rezeptor (ORL1)",
       "Aktiviert Gi-Signalweg nur teilweise (geringere maximale Wirkung) → cAMP ↓, Ca²⁺-Kanäle zu, K⁺-Kanäle auf",
       "Analgesie ähnlich wie bei vollen Agonisten im klinischen Dosisbereich",
       "Verdrängt andere Opioide vom Rezeptor und wird selbst schwer verdrängt"
@@ -394,6 +395,7 @@
     "Ausscheidung überwiegend biliär → verlängert bei Leber- und (geringer) Niereninsuffizienz."
   ]);
   W.vecuronium = ndmr([
+    "Keine autonomen/kardiovaskulären Nebenwirkungen und keine Histaminfreisetzung → kreislaufneutral.",
     "Steroidstruktur, durch Sugammadex reversierbar (etwas geringere Affinität als Rocuronium).",
     "Aktiver Metabolit 3-Desacetylvecuronium → Kumulation bei Niereninsuffizienz und Langzeitgabe."
   ]);
@@ -533,7 +535,7 @@
   W.tetracain = lokalanaesthetikum([
     "Ester-Typ: hohe Fettlöslichkeit und Potenz, pKa ca. 8,5 → langsamer Wirkbeginn, lange Wirkdauer"
   ], [
-    "Abbau durch Plasmacholinesterase zu para-Aminobenzoesäure (PABA) → Allergien häufiger als bei Amiden.",
+    "Abbau durch Plasmacholinesterase zu para-Aminobenzoesäure (PABA), langsamer als bei anderen Estern → längere Wirkung, höhere Toxizität; Allergien häufiger als bei Amiden.",
     "Heute v.a. topisch (Augen-/Schleimhautanästhesie); hohe systemische Toxizität."
   ]);
 
@@ -746,7 +748,7 @@
     kette: [
       "Blockiert vor allem repolarisierende K⁺-Kanäle (IKr, IKs) → ==Aktionspotenzial und Refraktärzeit verlängert== (Klasse III)",
       "Kreisende Erregungen (Reentry) treffen auf noch refraktäres Gewebe und erlöschen",
-      "Zusätzlich Na⁺-Kanal-Blockade (Klasse I, frequenzabhängig), nicht-kompetitive β-Blockade (Klasse II) und Ca²⁺-Kanal-Blockade (Klasse IV)",
+      "Zusätzlich Na⁺-Kanal-Blockade (Klasse I, frequenzabhängig), nicht-kompetitive α- und β-Blockade (Klasse II) und Ca²⁺-Kanal-Blockade (Klasse IV)",
       "Sinusknoten langsamer, AV-Überleitung verzögert → Frequenzkontrolle bei Vorhofflimmern"
     ],
     folgen: [
@@ -780,12 +782,20 @@
   ], [
     "Dauertherapie perioperativ fortführen (Absetzen → Rebound-Tachykardie und Ischämie); Neubeginn hochdosiert kurz vor OP erhöhte in POISE Schlaganfall und Sterblichkeit."
   ]);
-  W.labetalol = betablocker([
-    "Zusätzlich Blockade von α1-Rezeptoren (Verhältnis α:β i.v. ca. 1:7) → Gefäßwiderstand ↓ ohne Reflextachykardie"
-  ], [
-    "Einsatz bei hypertensiver Krise und Präeklampsie (plazentagängig, aber etabliert).",
-    "Orthostatische Hypotonie; Leberwerte."
-  ]);
+  W.labetalol = {
+    kette: [
+      "Kompetitiver Antagonist an β1- UND β2-Adrenozeptoren (nicht selektiv) sowie selektiv an α1-Adrenozeptoren (Verhältnis β:α i.v. ca. 7:1)",
+      "α1-Blockade: Gq → IP₃/Ca²⁺-Signal der Gefäßmuskulatur bleibt aus → ==Vasodilatation, Gefäßwiderstand ↓==",
+      "β1-Blockade: cAMP ↓ im Sinusknoten und Myokard → Herzfrequenz und Kontraktilität ↓",
+      "Die β-Blockade verhindert die Reflextachykardie, die eine reine Vasodilatation auslösen würde → Blutdruck ↓ bei eher niedriger Frequenz"
+    ],
+    folgen: [
+      "Einsatz bei hypertensiver Krise, Aortendissektion und Präeklampsie (plazentagängig, aber etabliert).",
+      "β2-Blockade: Bronchospasmus bei Asthma/COPD möglich (nicht kardioselektiv).",
+      "Bradykardie, AV-Block, orthostatische Hypotonie; Leberwerte.",
+      "Maskiert Hypoglykämie-Warnzeichen; Antidot bei Überdosis wie bei Betablockern (Glukagon, Insulin hochdosiert, Katecholamine)."
+    ]
+  };
   W.verapamil = {
     kette: [
       "Blockiert L-Typ-Ca²⁺-Kanäle von der Innenseite, bevorzugt bei häufiger Öffnung (frequenzabhängig)",
@@ -984,6 +994,7 @@
       "Zentral: Antagonist an D2-Rezeptoren in der Chemorezeptor-Triggerzone → antiemetisch",
       "Peripher: D2-Blockade im Magen-Darm-Trakt (Dopamin hemmt dort die Motilität)",
       "5-HT4-Agonismus an enterischen Neuronen → ==mehr Acetylcholin-Freisetzung== → Magenentleerung ↑, Tonus des unteren Ösophagussphinkters ↑",
+      "In hoher Dosis zusätzlich 5-HT3-Antagonismus (verstärkt die Antiemese)",
       "Prokinetisch und antiemetisch"
     ],
     folgen: [
@@ -1168,7 +1179,7 @@
   };
   W["andexanet-alfa"] = {
     kette: [
-      "Rekombinantes, ==katalytisch inaktives Faktor-Xa-Molekül== ohne Membranbindungsdomäne ('Köder')",
+      "Rekombinantes, ==katalytisch inaktives Faktor-Xa-Molekül== (Serin im aktiven Zentrum durch Alanin ersetzt, ohne Membranbindungsdomäne) als 'Köder'",
       "Fängt Faktor-Xa-Hemmer (Apixaban, Rivaroxaban) im Plasma ab",
       "Körpereigener Faktor Xa wird frei → Thrombinbildung wieder möglich"
     ],
@@ -1212,7 +1223,7 @@
     return {
       kette: [
         "Gelangt über die Alveolen ins Blut und ins Gehirn/Rückenmark; Wirkung hängt vom Partialdruck im Gewebe ab",
-        "Mehrere Zielproteine: Verstärkung von GABA-A- und Glycin-Rezeptoren, Öffnung von Zwei-Poren-K⁺-Kanälen (TREK-1, TASK), Hemmung von NMDA-Rezeptoren und präsynaptischer Transmitterfreisetzung",
+        "Mehrere Zielproteine: Verstärkung von GABA-A- und Glycin-Rezeptoren, Öffnung von Zwei-Poren-K⁺-Kanälen (TREK-1, TASK), Hemmung von NMDA- und neuronalen nikotinischen ACh-Rezeptoren sowie der präsynaptischen Transmitterfreisetzung",
         "Neurone werden hyperpolarisiert, erregende Übertragung sinkt",
         "Rückenmark: ==Unbeweglichkeit auf Schmerzreize (MAC) wird vor allem spinal vermittelt==",
         "Gehirn: Bewusstlosigkeit und Amnesie (bereits unter 1 MAC)"
@@ -1249,6 +1260,7 @@
       "Hemmt NMDA-Rezeptoren (nicht-kompetitiv) → weniger glutamaterge Erregung",
       "Setzt im periaquäduktalen Grau endogene Opioide frei → ==Aktivierung absteigender noradrenerger Hemmbahnen== → spinale α2-vermittelte Analgesie",
       "Gute Analgesie; als alleiniges Anästhetikum zu schwach (MAC ca. 104 %)",
+      "Zusätzlich Modulation von GABA-A- und nikotinischen ACh-Rezeptoren → schwache hypnotische Wirkung",
       "Addiert sich zu Volatila (MAC-sparend)"
     ],
     folgen: [
@@ -1287,7 +1299,7 @@
   };
   W.theophyllin = {
     kette: [
-      "Unselektive Hemmung von Phosphodiesterasen → cAMP ↑ in Bronchialmuskel und Entzündungszellen",
+      "Unselektive Hemmung von Phosphodiesterasen (v.a. PDE3/4) → cAMP (und cGMP) ↑ in Bronchialmuskel und Entzündungszellen",
       "Antagonismus an Adenosin-A1/A2-Rezeptoren (Adenosin verengt Bronchien bei Asthmatikern)",
       "Aktivierung der Histondeacetylase 2 (antientzündlich, steroidsparend)",
       "Bronchodilatation, Atemantrieb ↑, Zwerchfellkontraktilität ↑"

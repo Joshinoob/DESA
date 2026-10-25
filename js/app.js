@@ -207,7 +207,7 @@
   const PROFILE_FIELDS = [
     { key: "klasse", label: "Substanzklasse" },
     { key: "mechanismus", label: "Wirkmechanismus", cls: "mechanism" },
-    { key: "wirkkette", label: "Wirkkette: vom Rezeptor zur Wirkung", cls: "chain", type: "kette" },
+    { key: "wirkkette", label: "Wirkmechanismus: vom Rezeptor zur Wirkung", cls: "chain", type: "kette" },
     { key: "wirkfolgen", label: "Was sich daraus erklärt", cls: "chain", type: "liste" },
     { key: "indikation", label: "Indikation" },
     { key: "dosierung", label: "Dosierung Erwachsene" },
@@ -224,6 +224,9 @@
     return PROFILE_FIELDS.map(function (f) {
       const val = profile[f.key];
       if (!val) return "";
+      // Der Kurz-Wirkmechanismus ist in der ausführlichen Wirkkette vollständig enthalten →
+      // nicht doppelt anzeigen (bleibt in den Daten für die Suche erhalten).
+      if (f.key === "mechanismus" && Array.isArray(profile.wirkkette) && profile.wirkkette.length) return "";
       const cls = "db-row" + (f.cls ? " db-row--" + f.cls : "");
       let inner;
       if (f.type === "kette" && Array.isArray(val)) {
