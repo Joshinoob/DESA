@@ -460,6 +460,7 @@
     else if (route === "table") renderTable(arg);
     else if (route === "drugs") renderDrugList();
     else if (route === "drug") renderDrugDetail(arg);
+    else if (route === "drug-quiz") startDrugQuiz(arg);
     else if (route === "leitlinien") renderGuidelineList();
     else if (route === "leitlinie") renderGuidelineDetail(arg);
     else if (route === "leitlinien-durchgehen") startGuidelineWalkthrough(arg);
@@ -1800,7 +1801,7 @@
       nav("drugs") +
       '<main class="container">' +
       "<h1>Medikamente nachschlagen</h1>" +
-      '<p class="muted">' + cards.length + ' Wirkstoffprofile zum schnellen Nachschlagen — ohne Lernkarten-Ablauf. <strong>' + learned.length + ' von ' + cards.length + '</strong> als gelernt markiert.</p>' +
+      '<p class="muted">' + cards.length + ' Wirkstoffprofile zum schnellen Nachschlagen — ohne Lernkarten-Ablauf. <strong>' + learned.length + ' von ' + cards.length + '</strong> als gelernt markiert (gelernt = Kurzabfrage am Ende des Steckbriefs fehlerfrei bestanden).</p>' +
       '<input type="text" id="drug-search" placeholder="Wirkstoff suchen…" autocomplete="off">' +
       '<div class="drug-grid" id="drug-grid">' + itemsHtml + "</div>" +
       "</main>";
@@ -1812,6 +1813,198 @@
     });
   }
 
+  // ---------- Kurzabfrage vor "Gelernt" (Medikamente) ----------
+  // Ein Medikament zählt erst als gelernt, wenn eine Kurzabfrage zu den wichtigsten Punkten
+  // (Wirkmechanismus, Indikation, Dosierung, Nebenwirkungen, Antidot bzw. Kontraindikationen)
+  // fehlerfrei beantwortet wurde. Falsche Antwortoptionen stammen aus Steckbriefen ANDERER
+  // Wirkstoffgruppen (siehe DRUG_GROUPS) – so kann keine Ablenkoption versehentlich ebenfalls
+  // zutreffen (z.B. Rocuronium vs. Vecuronium). Wirkstoffnamen werden in allen Optionen
+  // ausgeblendet, damit der Name die Antwort nicht verrät.
+  const DRUG_GROUPS = {
+    gaba_hypnotika: ["propofol", "thiopental", "etomidat"],
+    nmda: ["ketamin", "esketamin"],
+    benzodiazepine: ["remimazolam", "midazolam", "diazepam", "lorazepam", "flumazenil"],
+    alpha2: ["dexmedetomidin", "clonidin"],
+    opioide: ["fentanyl", "sufentanil", "remifentanil", "alfentanil", "morphin", "piritramid", "oxycodon", "hydromorphon", "pethidin", "tramadol", "tapentadol", "methadon", "buprenorphin", "naloxon"],
+    nichtopioide: ["paracetamol", "metamizol", "ibuprofen", "diclofenac", "ketorolac", "parecoxib", "n-acetylcystein"],
+    relaxanzien: ["succinylcholin", "rocuronium", "vecuronium", "atracurium", "cisatracurium", "mivacurium", "pancuronium", "sugammadex", "neostigmin", "pyridostigmin", "physostigmin"],
+    anticholinergika: ["glycopyrrolat", "atropin", "scopolamin", "ipratropiumbromid", "dimenhydrinat"],
+    lokalanaesthetika: ["lidocain", "bupivacain", "levobupivacain", "ropivacain", "prilocain", "mepivacain", "tetracain"],
+    katecholamine: ["noradrenalin", "adrenalin", "phenylephrin", "ephedrin", "metaraminol", "dopamin", "dobutamin", "salbutamol"],
+    vasopressin: ["vasopressin", "terlipressin", "desmopressin"],
+    inodilatatoren: ["milrinon", "levosimendan", "theophyllin"],
+    antiarrhythmika: ["amiodaron", "adenosin", "digoxin"],
+    betablocker: ["esmolol", "metoprolol", "labetalol", "glukagon"],
+    vasodilatatoren: ["nitroglycerin", "natriumnitroprussid", "urapidil", "hydralazin", "methylenblau", "hydroxocobalamin"],
+    calciumkanal: ["verapamil", "nicardipin", "clevidipin", "nimodipin", "magnesiumsulfat", "calciumchlorid"],
+    volumen_diuretika: ["furosemid", "mannitol", "hypertone-kochsalzloesung", "albumin"],
+    antiemetika: ["ondansetron", "droperidol", "metoclopramid"],
+    kortikoide: ["dexamethason", "hydrocortison", "methylprednisolon"],
+    antikoagulanzien: ["heparin", "enoxaparin", "fondaparinux", "argatroban", "protamin", "idarucizumab", "andexanet-alfa"],
+    haemostase: ["tranexamsaeure", "fibrinogenkonzentrat", "vitamin-k", "ppsb"],
+    inhalation: ["sevofluran", "desfluran", "isofluran", "lachgas", "dantrolen"],
+    antikonvulsiva: ["levetiracetam", "phenytoin", "valproat"],
+    magen: ["pantoprazol"],
+    antibiotika: ["cefazolin", "cefuroxim", "metronidazol", "vancomycin", "piperacillin-tazobactam", "meropenem"],
+    elektrolyte_stoffwechsel: ["natriumbicarbonat", "kaliumchlorid", "glukose-40", "insulin-normalinsulin"]
+  };
+  const DRUG_GROUP_OF = {};
+  Object.keys(DRUG_GROUPS).forEach(function (g) { DRUG_GROUPS[g].forEach(function (k) { DRUG_GROUP_OF["fc-drug-" + k] = g; }); });
+
+  function drugNames(card) {
+    const raw = card.front.replace(/^Steckbrief:\s*/, "");
+    const names = [];
+    raw.split(/[\/(),]/).forEach(function (part) {
+      const t = part.trim();
+      if (t.length >= 4) names.push(t);
+    });
+    return names;
+  }
+  function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+  // Blendet die Namen der übergebenen Steckbriefe aus (nur diese – Antidot-Namen wie
+  // Naloxon oder Sugammadex sollen in den Antworten sichtbar bleiben).
+  function maskNames(text, cards) {
+    let out = text;
+    const names = [];
+    cards.forEach(function (c) { drugNames(c).forEach(function (n) { names.push(n); }); });
+    names.sort(function (a, b) { return b.length - a.length; }).forEach(function (n) {
+      out = out.replace(new RegExp("(^|[^A-Za-zÄÖÜäöüß])" + escapeRegExp(n) + "(?=$|[^A-Za-zÄÖÜäöüß])", "gi"), "$1[Wirkstoff]");
+      // Wortzusammensetzungen wie "Insulinrezeptor" → "[Wirkstoff]-rezeptor"
+      if (n.length >= 5) out = out.replace(new RegExp("(^|[^A-Za-zÄÖÜäöüß])" + escapeRegExp(n) + "(?=[a-zäöüß])", "gi"), "$1[Wirkstoff]-");
+    });
+    return out;
+  }
+  function kuerzen(text, max) {
+    const t = String(text).trim();
+    if (t.length <= max) return t;
+    const cut = t.slice(0, max);
+    return cut.slice(0, Math.max(cut.lastIndexOf(" "), max - 20)).replace(/[,;:(–-]\s*$/, "") + " …";
+  }
+  function wortMenge(text) {
+    const s = {};
+    (String(text).toLowerCase().match(/[a-zäöüßα-ωµ0-9]{4,}/g) || []).forEach(function (w) { s[w] = 1; });
+    return s;
+  }
+  function aehnlich(a, b) {
+    const A = wortMenge(a), B = wortMenge(b);
+    const ka = Object.keys(A), kb = Object.keys(B);
+    if (!ka.length || !kb.length) return a.trim().toLowerCase() === b.trim().toLowerCase();
+    const inter = ka.filter(function (w) { return B[w]; }).length;
+    // ähnlich, wenn sich die Wortmengen stark überschneiden oder eine fast ganz in der anderen steckt
+    return inter / (ka.length + kb.length - inter) >= 0.45 || inter / Math.min(ka.length, kb.length) >= 0.8;
+  }
+  function antidotSpezifisch(text) {
+    return !!text && !/^\s*(\(?ist selbst|keine|kein |entfällt)/i.test(text);
+  }
+
+  const DRUG_QUIZ_FIELDS = [
+    { key: "mechanismus", frage: "Welcher Wirkmechanismus gehört zu {name}?" },
+    { key: "indikation", frage: "Wofür wird {name} eingesetzt?" },
+    { key: "dosierung", frage: "Welche Dosierung (Erwachsene) gehört zu {name}?" },
+    { key: "nebenwirkungen", frage: "Welches Nebenwirkungsprofil gehört zu {name}?" },
+    { key: "antidot", frage: "Was ist das Antidot bzw. die Reversierung bei {name}?", nurWenn: antidotSpezifisch, ersatz: "kontraindikationen" },
+    { key: "kontraindikationen", frage: "Welche Kontraindikationen bzw. Vorsichtspunkte gehören zu {name}?" }
+  ];
+
+  function buildDrugQuiz(card) {
+    const name = card.front.replace(/^Steckbrief:\s*/, "");
+    const gruppe = DRUG_GROUP_OF[card.id];
+    const andere = drugCards().filter(function (c) { return c.id !== card.id && (!gruppe || DRUG_GROUP_OF[c.id] !== gruppe); });
+    const felder = [];
+    DRUG_QUIZ_FIELDS.slice(0, 5).forEach(function (f) {
+      let feld = f;
+      if (f.nurWenn && !f.nurWenn(card.profile[f.key])) feld = DRUG_QUIZ_FIELDS.find(function (x) { return x.key === f.ersatz; });
+      if (felder.indexOf(feld) === -1 && card.profile[feld.key]) felder.push(feld);
+    });
+    return felder.map(function (f) {
+      const richtig = kuerzen(maskNames(card.profile[f.key], [card]), 210);
+      const kandidaten = shuffle(andere).filter(function (c) {
+        const t = c.profile[f.key];
+        return t && (!f.nurWenn || f.nurWenn(t));
+      });
+      const ablenker = [];
+      kandidaten.forEach(function (c) {
+        if (ablenker.length >= 3) return;
+        const k = kuerzen(maskNames(c.profile[f.key], [c, card]), 210);
+        if (aehnlich(k, richtig)) return;
+        if (ablenker.some(function (a) { return aehnlich(a, k); })) return;
+        ablenker.push(k);
+      });
+      const optionen = shuffle([richtig].concat(ablenker));
+      return { frage: f.frage.replace("{name}", name), optionen: optionen, richtig: optionen.indexOf(richtig), feld: f.key, antwort: null };
+    });
+  }
+
+  let drugQuizState = null;
+  function startDrugQuiz(id) {
+    const card = drugCards().find(function (c) { return c.id === id; });
+    if (!card) { renderDrugList(); return; }
+    drugQuizState = { id: id, card: card, fragen: buildDrugQuiz(card), ausgewertet: false };
+    renderDrugQuiz();
+  }
+  function renderDrugQuiz() {
+    const st = drugQuizState;
+    const name = st.card.front.replace(/^Steckbrief:\s*/, "");
+    const alleRichtig = st.ausgewertet && st.fragen.every(function (q) { return q.antwort === q.richtig; });
+    const fragenHtml = st.fragen.map(function (q, qi) {
+      return '<div class="question-box drug-quiz-q">' +
+        '<p class="question-text">' + (qi + 1) + ". " + escapeHtml(q.frage) + "</p>" +
+        '<div class="options">' + q.optionen.map(function (o, oi) {
+          let cls = "option-row";
+          if (st.ausgewertet) {
+            if (oi === q.richtig) cls += " option-correct";
+            else if (oi === q.antwort) cls += " option-wrong-selected";
+            else cls += " option-wrong-disabled";
+          }
+          return '<label class="' + cls + '"><input type="radio" name="dq-' + qi + '" value="' + oi + '"' + (q.antwort === oi ? " checked" : "") + (st.ausgewertet ? " disabled" : "") + "><span>" + String.fromCharCode(65 + oi) + ") " + escapeHtml(o) + "</span></label>";
+        }).join("") + "</div></div>";
+    }).join("");
+    const anzahlRichtig = st.fragen.filter(function (q) { return q.antwort === q.richtig; }).length;
+    const ergebnisHtml = !st.ausgewertet ? "" :
+      (alleRichtig ?
+        '<div class="correct-answer">Alle ' + st.fragen.length + ' Fragen richtig – ' + escapeHtml(name) + " ist jetzt als gelernt markiert. ✓</div>" :
+        '<div class="wrong-answer">' + anzahlRichtig + " von " + st.fragen.length + " richtig. Das Medikament zählt erst als gelernt, wenn alle Fragen stimmen. Die Steckbrief-Karte wird dir bald zum Wiederholen vorgeschlagen.</div>");
+    app.innerHTML =
+      nav("drugs") +
+      '<main class="container narrow">' +
+      '<a class="back-link" href="#/drug/' + st.id + '">← Zurück zum Steckbrief</a>' +
+      "<h1>Kurzabfrage: " + escapeHtml(name) + "</h1>" +
+      '<p class="muted">' + st.fragen.length + " Fragen zu den wichtigsten Punkten. Wenn alle richtig sind, zählt das Medikament als gelernt. Der Name des jeweiligen Wirkstoffs ist in den Antworten als [Wirkstoff] ausgeblendet.</p>" +
+      fragenHtml +
+      ergebnisHtml +
+      '<div class="cta-row">' +
+      (!st.ausgewertet ? '<button class="btn btn-primary" id="dq-auswerten">Auswerten</button>' :
+        (alleRichtig ? '<a class="btn btn-primary" href="#/drugs">Zur Medikamentenliste</a><a class="btn btn-secondary" href="#/drug/' + st.id + '">Zum Steckbrief</a>' :
+          '<a class="btn btn-primary" href="#/drug/' + st.id + '">Steckbrief nochmal ansehen</a><button class="btn btn-secondary" id="dq-nochmal">Neue Abfrage</button>')) +
+      "</div>" +
+      '<p class="muted" id="dq-hinweis"></p>' +
+      "</main>";
+    if (!st.ausgewertet) {
+      document.querySelectorAll('.drug-quiz-q input[type="radio"]').forEach(function (inp) {
+        inp.addEventListener("change", function () {
+          const qi = parseInt(inp.name.slice(3), 10);
+          st.fragen[qi].antwort = parseInt(inp.value, 10);
+        });
+      });
+      document.getElementById("dq-auswerten").addEventListener("click", function () {
+        const offen = st.fragen.filter(function (q) { return q.antwort === null; }).length;
+        if (offen) { document.getElementById("dq-hinweis").textContent = "Bitte noch " + offen + (offen === 1 ? " Frage" : " Fragen") + " beantworten."; return; }
+        st.ausgewertet = true;
+        const ok = st.fragen.every(function (q) { return q.antwort === q.richtig; });
+        if (ok) {
+          if (window.SRS.loadLearnedDrugs().indexOf(st.id) === -1) window.SRS.toggleLearnedDrug(st.id);
+        } else {
+          window.SRS.scheduleSoon(progress, st.id);
+        }
+        window.SRS.recordActivityToday();
+        renderDrugQuiz();
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    } else if (document.getElementById("dq-nochmal")) {
+      document.getElementById("dq-nochmal").addEventListener("click", function () { startDrugQuiz(st.id); window.scrollTo(0, 0); });
+    }
+  }
+
   function renderDrugDetail(id) {
     const card = drugCards().find(function (c) { return c.id === id; });
     if (!card) { renderDrugList(); return; }
@@ -1821,13 +2014,22 @@
       '<main class="container narrow">' +
       '<a class="back-link" href="#/drugs">← Alle Medikamente</a>' +
       "<h1>" + escapeHtml(card.front.replace(/^Steckbrief:\s*/, "")) + "</h1>" +
-      '<div class="cta-row"><button class="btn ' + (isLearned ? "btn-primary" : "btn-secondary") + '" id="toggle-learned-drug">' + (isLearned ? "✓ Gelernt (entfernen)" : "Als gelernt markieren") + "</button></div>" +
+      '<div class="cta-row">' + (isLearned ?
+        '<span class="learned-check">✓</span> <span class="muted">Gelernt (Kurzabfrage bestanden)</span> <button class="btn btn-sm btn-secondary" id="toggle-learned-drug">Markierung entfernen</button>' :
+        '<a class="btn btn-secondary" href="#/drug-quiz/' + escapeHtml(id) + '">Als gelernt markieren – Kurzabfrage</a>') + "</div>" +
       '<div class="flashcard flashcard-profile" style="text-align:left">' +
       '<div class="flashcard-back profile-back lookup-source" data-card-id="' + escapeHtml(card.id) + '" data-card-front="' + escapeHtml(card.front) + '">' + renderProfile(card.profile) + "</div>" +
       "</div>" +
+      // Unten nach dem Lesen: Kurzabfrage als Voraussetzung für "gelernt"
+      '<div class="question-box drug-quiz-cta">' +
+      (isLearned ?
+        '<p><strong>✓ Als gelernt markiert.</strong> Du kannst dich jederzeit erneut abfragen.</p><div class="cta-row"><a class="btn btn-secondary" href="#/drug-quiz/' + escapeHtml(id) + '">Nochmal abfragen</a></div>' :
+        '<p><strong>Gelernt?</strong> Beantworte 5 kurze Fragen zu Wirkmechanismus, Indikation, Dosierung, Nebenwirkungen und Antidot bzw. Kontraindikationen. Sind alle richtig, zählt das Medikament als gelernt.</p><div class="cta-row"><a class="btn btn-primary" href="#/drug-quiz/' + escapeHtml(id) + '">Kurzabfrage starten</a></div>') +
+      "</div>" +
       "</main>";
     wrapAllLookupSources();
-    document.getElementById("toggle-learned-drug").addEventListener("click", function () {
+    const undo = document.getElementById("toggle-learned-drug");
+    if (undo) undo.addEventListener("click", function () {
       window.SRS.toggleLearnedDrug(id);
       renderDrugDetail(id);
     });
