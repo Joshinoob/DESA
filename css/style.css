@@ -1,3 +1,20 @@
+/* Griechische Buchstaben (α, β, γ, δ, κ, µ …) in einer Serifenschrift darstellen: in der
+   serifenlosen Systemschrift sehen α und a, β und ß sowie µ und u fast gleich aus
+   (z.B. "Aα-Fasern" wie "Aa-Fasern"). unicode-range beschränkt die Schrift auf diese Zeichen;
+   ist keine der lokalen Schriften vorhanden, greift die normale Systemschrift. */
+@font-face {
+  font-family: "DesaGriechisch";
+  src: local("Georgia"), local("Times New Roman"), local("TimesNewRomanPSMT"), local("Noto Serif"), local("NotoSerif-Regular"), local("Cambria"), local("DejaVu Serif"), local("Liberation Serif"), local("FreeSerif");
+  unicode-range: U+0370-03FF, U+00B5;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "DesaGriechisch";
+  src: local("Georgia Bold"), local("Georgia-Bold"), local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT"), local("Noto Serif Bold"), local("NotoSerif-Bold"), local("Cambria Bold"), local("DejaVu Serif Bold"), local("DejaVuSerif-Bold"), local("Liberation Serif Bold"), local("FreeSerif Bold");
+  unicode-range: U+0370-03FF, U+00B5;
+  font-weight: 700;
+}
+
 :root {
   --bg: #0f1720;
   --surface: #17212c;
@@ -18,7 +35,7 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "DesaGriechisch", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
@@ -783,7 +800,7 @@ select, input[type="text"] {
 .sw-kette-step { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; overflow-wrap: break-word; }
 .sw-kette-arrow { text-align: center; color: var(--yellow); font-weight: 700; font-size: 1.15rem; line-height: 1.4; }
 .sw-formel { margin: 12px 0; padding: 10px 12px; border-radius: var(--radius); background: var(--surface-2); border: 1px dashed var(--border); }
-.sw-formel-eq { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92rem; overflow-wrap: anywhere; }
+.sw-formel-eq { font-family: "DesaGriechisch", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92rem; overflow-wrap: anywhere; }
 .sw-formel-erkl { font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; }
 .glossary-line { margin-top: 12px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; text-align: left; }
 .glossary-line strong { color: var(--text); }

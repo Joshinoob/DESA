@@ -632,7 +632,7 @@
       "Fällt das CO₂ unter die **Apnoeschwelle**, setzt die Spontanatmung aus. In Narkose liegt sie nur wenige mmHg unter dem CO₂-Wert bei Spontanatmung. ==Nach Hyperventilation atmet der Patient deshalb erst wieder, wenn das CO₂ über diese Schwelle gestiegen ist.==",
       { h: "Medikamente" },
       { table: { head: ["Substanz", "Wirkung auf die Atemsteuerung"], rows: [
-        ["Opioide (μ-Rezeptoren im Prä-Bötzinger-Komplex und in der Brücke)", "Atemfrequenz ↓ (oft stärker als das Atemzugvolumen), unregelmäßige Atmung bis Apnoe; CO₂-Antwort nach rechts verschoben und flacher; Antwort auf Sauerstoffmangel ↓"],
+        ["Opioide (µ-Rezeptoren im Prä-Bötzinger-Komplex und in der Brücke)", "Atemfrequenz ↓ (oft stärker als das Atemzugvolumen), unregelmäßige Atmung bis Apnoe; CO₂-Antwort nach rechts verschoben und flacher; Antwort auf Sauerstoffmangel ↓"],
         ["Propofol, Benzodiazepine, Barbiturate", "Flachere CO₂-Antwort, Tonus der oberen Atemwege ↓ (Verlegung); starke Wirkungsverstärkung mit Opioiden"],
         ["Volatile Anästhetika", "Atemzugvolumen ↓, Frequenz ↑, CO₂-Antwort ↓; die Antwort auf Sauerstoffmangel wird schon bei ca. 0,1 MAC gedämpft (Dahan & Teppema 2003)"],
         ["Ketamin", "Atemantrieb und Schutzreflexe relativ erhalten (in hoher Dosis trotzdem Apnoe möglich)"],
@@ -667,7 +667,7 @@
       { q: "Spezialwissen Lunge: Wo wird der Einatemrhythmus erzeugt?", a: "Im Prä-Bötzinger-Komplex der Medulla oblongata; ein weiteres Zentrum steuert die aktive Ausatmung, Brückenzentren den Phasenwechsel." },
       { q: "Spezialwissen Lunge: Worauf reagieren die zentralen Chemorezeptoren und warum spiegelt das den arteriellen CO₂-Wert?", a: "Auf Säure (H⁺) im Hirngewebe/Liquor (v.a. Nucleus retrotrapezoideus). CO₂ passiert die Blut-Hirn-Schranke frei, Bicarbonat und H⁺ kaum – ein CO₂-Anstieg säuert das Hirngewebe rasch an." },
       { q: "Spezialwissen Lunge: Wie funktionieren die peripheren Chemorezeptoren und ab welchem Sauerstoffpartialdruck wird die Atemantwort steil?", a: "Zellen des Glomus caroticum erkennen Sauerstoffmangel über mitochondriale Signale und sauerstoffempfindliche Kaliumkanäle und setzen Botenstoffe frei (Nerv: N. glossopharyngeus); steiler Anstieg unter ca. 60 mmHg." },
-      { q: "Spezialwissen Lunge: Wie verändern Opioide die Atmung?", a: "Über μ-Rezeptoren im Prä-Bötzinger-Komplex und in der Brücke: Frequenz ↓ (oft stärker als das Atemzugvolumen), unregelmäßige Atmung bis Apnoe, CO₂-Antwort nach rechts verschoben und flacher, Antwort auf Sauerstoffmangel ↓." },
+      { q: "Spezialwissen Lunge: Wie verändern Opioide die Atmung?", a: "Über µ-Rezeptoren im Prä-Bötzinger-Komplex und in der Brücke: Frequenz ↓ (oft stärker als das Atemzugvolumen), unregelmäßige Atmung bis Apnoe, CO₂-Antwort nach rechts verschoben und flacher, Antwort auf Sauerstoffmangel ↓." },
       { q: "Spezialwissen Lunge: Ab welcher Konzentration dämpfen volatile Anästhetika die Atemantwort auf Sauerstoffmangel?", a: "Schon bei ca. 0,1 MAC (Dahan & Teppema 2003)." },
       { q: "Spezialwissen Lunge: Was ist die Apnoeschwelle?", a: "Der CO₂-Wert, unterhalb dessen die Spontanatmung aussetzt; in Narkose nur wenige mmHg unter dem Wert bei Spontanatmung." },
       { q: "Spezialwissen Lunge: Warum und auf welche Sättigung wird Sauerstoff bei COPD-Patienten mit CO₂-Retention eingestellt?", a: "Viel Sauerstoff hebt die hypoxische Vasokonstriktion auf (Missverhältnis, Totraum ↑) und setzt über den Haldane-Effekt CO₂ frei → CO₂ steigt; Ziel-Sättigung 88–92 %." }
