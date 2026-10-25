@@ -3136,7 +3136,7 @@ window.MCQ = [
     question: "Welche Aussage zu Tramadol trifft zu?",
     options: ["Es ist ein reiner κ-Agonist", "Seine opioide Wirkung beruht wesentlich auf dem über CYP2D6 gebildeten O-Desmethyltramadol; zusätzlich hemmt es die Serotonin- und Noradrenalin-Wiederaufnahme", "Es hat kein Interaktionspotenzial mit SSRI", "Es erhöht die Krampfschwelle", "Es wird durch Plasmaesterasen abgebaut"],
     correct: 1,
-    explanation: "Tramadol wirkt dual (μ via M1-Metabolit, SNRI). Risiken sind Krampfanfälle und Serotoninsyndrom; die Wirkung hängt vom CYP2D6-Status ab." },
+    explanation: "Tramadol wirkt dual (µ via M1-Metabolit, SNRI). Risiken sind Krampfanfälle und Serotoninsyndrom; die Wirkung hängt vom CYP2D6-Status ab." },
   { id: "mcq-pharm-063", module: "pharmakologie", subtopic: "lokalanaesthetika",
     question: "Bei welchem Blockadeverfahren sind nach gleicher LA-Dosis die höchsten systemischen Plasmaspiegel zu erwarten?",
     options: ["Subkutane Infiltration", "Femoralisblockade", "Interkostalblockade", "Plexus-brachialis-Blockade", "Epiduralanästhesie"],
