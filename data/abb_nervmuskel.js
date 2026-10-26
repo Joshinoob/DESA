@@ -104,4 +104,29 @@
     ],
     relaxometrie: [{ svg: FIG_TOF, nach: "Reizmuster", caption: "Typische TOF-Antworten (schematisch): ==Fade spricht für einen nicht-depolarisierenden Block (bzw. einen Phase-II-Block nach Succinylcholin)==; beim depolarisierenden Phase-I-Block sind alle vier Antworten gleich stark vermindert." }]
   });
+
+  // ---------- Bildgeschichten (Piktogramme) ----------
+  const B = F.bild;
+  window.__addSpezialFiguren("nervmuskel", {
+    membran: [{ nach: "Ruhemembranpotenzial", caption: "Bildgeschichte: Hyperkaliämie – ==erst leichter erregbar, dann unerregbar==.", svg: B("Hyperkaliämie an der Membran", [
+      { i: "#K⁺:5:up", t: ["Kalium außen steigt"] },
+      { i: "zelle:4", t: ["Ruhepotenzial weniger", "negativ – näher an", "der Schwelle"] },
+      { i: "blitz:4:up", t: ["Zunächst leichter", "erregbar"] },
+      { i: "kanal:5:x", t: ["Anhaltend: Na⁺-Kanäle", "inaktiviert → unerregbar", "(Lähmung, Asystolie)"], k: 5 }
+    ]) }],
+    lokalanaesthetika: [{ nach: "Lokalanästhetika-Intoxikation (LAST)", caption: "Bildgeschichte: Ablauf einer Lokalanästhetika-Intoxikation – ==ZNS-Zeichen zuerst, das Herz folgt==; Lipidemulsion bereithalten.", svg: B("Lokalanästhetika-Intoxikation", [
+      { i: "spritze:5 > gefaess:5", t: ["Hoher Plasmaspiegel", "(intravasal, starke", "Resorption)"] },
+      { i: "gehirn:4", t: ["ZNS zuerst: periorale Taub-", "heit, Metallgeschmack →", "Krampfanfall → Koma"] },
+      { i: "herz:5:x", t: ["Herz: QRS breit,", "Bradykardie, Arrhythmien"] },
+      { i: "fett:2 + infusion:2", t: ["Therapie u.a.", "Lipidemulsion 20 %"], k: 2 }
+    ]) }],
+    kontraktion: [{ nach: "Maligne Hyperthermie", caption: "Bildgeschichte: Maligne Hyperthermie – ==das früheste Zeichen ist meist ein CO₂-Anstieg trotz mehr Beatmung==; Therapie: Trigger stoppen, Dantrolen.", svg: B("Maligne Hyperthermie", [
+      { i: "dna:4 + spritze:5", t: ["Veranlagung (meist RYR1)", "+ Trigger: Volatila,", "Succinylcholin"] },
+      { i: "#Ca²⁺:5:up", t: ["RyR1 bleibt offen →", "unkontrollierter", "Ca²⁺-Ausstrom"] },
+      { i: "muskel:5:up + #ATP:4:down", t: ["Dauerkontraktion: ATP- und", "O₂-Verbrauch, CO₂ ↑↑"] },
+      { i: "monitor:5:up", t: ["Früh: endtidales CO₂ ↑", "trotz mehr Ventilation,", "Tachykardie, Rigor"] },
+      { i: "thermometer:5:up", t: ["Später: Fieber, Azidose,", "Hyperkaliämie,", "Rhabdomyolyse"], k: 5 },
+      { i: "spritze:2", t: ["Dantrolen 2,5 mg/kg i.v.,", "wiederholen bis", "Kontrolle"], k: 2 }
+    ]) }]
+  });
 })();

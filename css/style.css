@@ -808,6 +808,7 @@ select, input[type="text"] {
 .sw-fig .flb { fill: currentColor; fill-opacity: 0.16; stroke: currentColor; stroke-width: 1.5; }
 .sw-fig .fs { fill: currentColor; stroke: none; }
 .sw-fig .kt { fill: currentColor; }
+.sw-fig .pikto-z { fill: var(--bg); font-size: 11px; }
 .sw-fig img { width: 100%; height: auto; display: block; border-radius: 6px; background: #fff; }
 .sw-fig .sw-fig-quelle { display: block; margin-top: 4px; font-size: 0.72rem; }
 .sw-chapter .sw-fig { cursor: zoom-in; }

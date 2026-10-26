@@ -72,4 +72,35 @@
     synthese: [{ svg: FIG_BILIRUBIN, nach: "Bilirubin und Galle", caption: "Bilirubinstoffwechsel: ==Wo der Weg gestört ist, bestimmt, welches Bilirubin steigt== – vor der Leber das unkonjugierte, hinter der Konjugation das konjugierte (wasserlöslich, deshalb dunkler Urin)." }],
     leberversagen: [{ svg: FIG_HVPG, nach: "Portale Hypertension", caption: "Lebervenendruckgradient (HVPG) als Maß der portalen Hypertension, Schwellen wie im Text." }]
   });
+
+  // ---------- Bildgeschichten (Piktogramme) ----------
+  const B = F.bild;
+  window.__addSpezialFiguren("leber", {
+    aufbau: [{ nach: "Hepatic Arterial Buffer Response", caption: "Bildgeschichte: Die Pufferantwort der Leberarterie – ==sie gleicht einen sinkenden Pfortaderfluss teilweise aus, umgekehrt nicht==.", svg: B("Pufferantwort der Leberarterie", [
+      { i: "vene:1:down", t: ["Pfortaderfluss sinkt", "(z.B. Pneumoperitoneum)"] },
+      { i: "#Ado:2:up", t: ["Adenosin wird weniger aus-", "gewaschen und reichert", "sich an"] },
+      { i: "weit:5", t: ["Leberarteriolen weiten sich", "→ arterieller Fluss ↑"] },
+      { i: "leber:2:ok", t: ["Gesamtfluss teilweise", "ausgeglichen"], k: 2 }
+    ]) }],
+    stoffwechsel: [{ nach: "Eiweiß und Ammoniak", caption: "Bildgeschichte: Wie die Leber Stickstoff entgiftet – ==und warum Ammoniak bei Leberversagen das Gehirn erreicht==.", svg: B("Ammoniak-Entgiftung", [
+      { i: "darm:4 + muskel:4", t: ["Aminosäurenabbau und", "Darmbakterien →", "Ammoniak"] },
+      { i: "leber:2", t: ["Harnstoffzyklus (Zone 1):", "Harnstoff → Niere"] },
+      { i: "leber:3", t: ["Rest-Ammoniak:", "Glutamin-Synthetase", "(Zone 3)"] },
+      { i: "leber:5:x > gehirn:5", t: ["Leberversagen, Shunt:", "Ammoniak erreicht das", "Gehirn → Enzephalopathie"], k: 5 }
+    ]) }],
+    biotransformation: [{ nach: "Phase I und Phase II", caption: "Bildgeschichte: Biotransformation macht fettlösliche Arzneimittel wasserlöslich. ==Phase II bleibt bei Zirrhose länger erhalten== (deshalb Lorazepam günstiger als Midazolam).", svg: B("Biotransformation", [
+      { i: "tablette:4", t: ["Fettlösliches", "Arzneimittel"] },
+      { i: "enzym:4", t: ["Phase I (v.a. CYP):", "Oxidation, Reduktion,", "Hydrolyse"] },
+      { i: "enzym:2", t: ["Phase II: Kopplung an", "Glucuronsäure, Sulfat u.a."] },
+      { i: "tropfen:1 > niere:1", t: ["Wasserlöslich → Aus-", "scheidung über Niere", "oder Galle"], k: 1 }
+    ]) }],
+    leberversagen: [{ nach: "Portale Hypertension", caption: "Bildgeschichte: Vom Narbengewebe zum Organversagen.", svg: B("Portale Hypertension", [
+      { i: "leber:4", t: ["Fibrose und Knoten →", "Widerstand ↑"] },
+      { i: "weit:1", t: ["Splanchnikusgefäße weit", "→ mehr Zufluss"] },
+      { i: "vene:5:up", t: ["Pfortaderdruck ↑ →", "Varizen, große Milz"] },
+      { i: "manometer:4:down", t: ["Systemwiderstand ↓ →", "'zu wenig' arterielles", "Volumen"] },
+      { i: "niere:4 + tropfen:1:up", t: ["RAAS, Sympathikus, ADH:", "Aszites, Hyponatriämie"] },
+      { i: "niere:5:x", t: ["Starke Nierengefäß-", "verengung: hepato-", "renales Syndrom"], k: 5 }
+    ]) }]
+  });
 })();
