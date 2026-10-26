@@ -1,7 +1,7 @@
 // Abkürzungsverzeichnis: wird automatisch unter Karteikarten, Testfragen und
 // Spezialwissen-Kapiteln angezeigt (nur die Abkürzungen, die im jeweiligen Text
 // vorkommen). Mehrdeutige Kürzel (z.B. RR = Blutdruck oder relatives Risiko, SR,
-// LA, PA, VT, AF, MR, RA) sind bewusst NICHT enthalten, weil eine automatische
+// LA, PA, VT, AF, MR, RA, CT = Computertomographie oder Clotting Time) sind bewusst NICHT enthalten, weil eine automatische
 // Zuordnung falsch sein könnte – sie werden im Text selbst ausgeschrieben.
 window.GLOSSAR = {
   "AaDO2": "alveolo-arterielle Sauerstoffdifferenz",
@@ -50,7 +50,6 @@ window.GLOSSAR = {
   "CrCl": "Kreatinin-Clearance",
   "CRRT": "kontinuierliche Nierenersatztherapie",
   "CSHT": "kontextsensitive Halbwertszeit",
-  "CT": "Computertomographie",
   "CYP": "Cytochrom-P450-Enzym",
   "DAS": "Difficult Airway Society",
   "DGAI": "Deutsche Gesellschaft für Anästhesiologie und Intensivmedizin",
@@ -343,5 +342,19 @@ window.GLOSSAR = {
   "JAK": "Janus-Kinase",
   "STAT": "Signaltransduktor und Aktivator der Transkription",
   "PDE3": "Phosphodiesterase 3",
-  "Kd": "Dissoziationskonstante (Maß der Affinität)"
+  "Kd": "Dissoziationskonstante (Maß der Affinität)",
+  "NHE3": "Natrium-Protonen-Austauscher 3",
+  "NBCe1": "Natrium-Bicarbonat-Cotransporter 1",
+  "GLUT2": "Glukosetransporter 2",
+  "TRPV5": "Calciumkanal im distalen Tubulus (transient receptor potential vanilloid 5)",
+  "BK": "Kaliumkanal mit großer Leitfähigkeit (big K⁺ channel)",
+  "FGF23": "Fibroblasten-Wachstumsfaktor 23",
+  "MSFP": "mittlerer systemischer Füllungsdruck",
+  "TLC": "totale Lungenkapazität",
+  "IRV": "inspiratorisches Reservevolumen",
+  "ERV": "exspiratorisches Reservevolumen",
+  "CFT": "Gerinnselbildungszeit (clot formation time)",
+  "GnRH": "Gonadotropin-Releasing-Hormon",
+  "LH": "luteinisierendes Hormon",
+  "FSH": "follikelstimulierendes Hormon"
 };

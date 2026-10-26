@@ -792,6 +792,31 @@ select, input[type="text"] {
 .sw-fig .s3 { stroke: var(--yellow); }
 .sw-fig .s4 { stroke: var(--orange); }
 .sw-fig .s5 { stroke: var(--red); }
+/* Farbklassen für die Spezialwissen-Abbildungen (data/spezial_abb.js): Farbe über currentColor */
+.sw-fig .k0 { color: var(--text-muted); }
+.sw-fig .k1 { color: var(--accent); }
+.sw-fig .k2 { color: var(--green); }
+.sw-fig .k3 { color: var(--yellow); }
+.sw-fig .k4 { color: var(--orange); }
+.sw-fig .k5 { color: var(--red); }
+.sw-fig .k6 { color: var(--text); }
+.sw-fig .ln { stroke: currentColor; stroke-width: 1.5; fill: none; }
+.sw-fig .lnb { stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.sw-fig .lnd { stroke: currentColor; stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
+.sw-fig .ah { fill: currentColor; }
+.sw-fig .fl { fill: currentColor; fill-opacity: 0.16; stroke: none; }
+.sw-fig .flb { fill: currentColor; fill-opacity: 0.16; stroke: currentColor; stroke-width: 1.5; }
+.sw-fig .fs { fill: currentColor; stroke: none; }
+.sw-fig .kt { fill: currentColor; }
+.sw-fig img { width: 100%; height: auto; display: block; border-radius: 6px; background: #fff; }
+.sw-fig .sw-fig-quelle { display: block; margin-top: 4px; font-size: 0.72rem; }
+.sw-chapter .sw-fig { cursor: zoom-in; }
+.sw-fig-hint { float: right; font-size: 0.72rem; color: var(--text-muted); margin-left: 8px; }
+.fig-zoom { position: fixed; inset: 0; z-index: 1000; background: var(--bg); overflow: auto; padding: 48px 12px 24px; -webkit-overflow-scrolling: touch; }
+.fig-zoom .sw-fig { cursor: zoom-out; width: max(100%, 760px); max-width: 1150px; margin: 0 auto; }
+.fig-zoom-close { position: fixed; top: 8px; right: 12px; z-index: 1001; }
+.fig-zoom figcaption { position: sticky; left: 0; width: min(100%, calc(100vw - 48px)); }
+.fig-zoom .sw-fig-hint { display: none; }
 .sw-key { background: rgba(217, 164, 65, 0.22); color: var(--text); padding: 0 3px; border-radius: 3px; }
 .sw-einfach { border-left-color: var(--yellow); }
 .sw-falle { border-left-color: var(--red); }
