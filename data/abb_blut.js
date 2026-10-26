@@ -88,4 +88,51 @@
     gerinnungstests: [{ svg: FIG_ROTEM, nach: "Viskoelastische Tests (ROTEM/TEG)", caption: "ROTEM-Kurve (schematisch, keine Normwerte – diese sind gerätespezifisch): ==Die Breite der Kurve ist die Gerinnselfestigkeit==; der Unterschied zwischen EXTEM und FIBTEM zeigt den Beitrag der Thrombozyten." }],
     transfusion: [{ svg: FIG_AB0, nach: "AB0 und Rhesus", caption: "AB0-Verträglichkeit (Empfänger in den Zeilen, Spender in den Spalten): ==Bei Erythrozyten zählt das Antigen des Spenders, bei Plasma der Antikörper des Spenders== – darum sind die Matrizen spiegelbildlich. Zusätzlich Rhesus beachten." }]
   });
+
+  // ---------- Bildgeschichten (Piktogramme) ----------
+  const B = F.bild;
+  window.__addSpezialFiguren("blut", {
+    sauerstofftransport: [{ nach: "Anämietoleranz", caption: "Bildgeschichte: Wie der Körper eine Anämie ausgleicht – ==die Grenze setzt meist das Herz selbst==.", svg: B("Kompensation der Anämie", [
+      { i: "erythrozyt:5:down", t: ["Hb sinkt", "(Normovolämie)"] },
+      { i: "herz:2:up", t: ["Viskosität ↓ → Rückstrom", "und HZV ↑"] },
+      { i: "muskel:4", t: ["Gewebe schöpft mehr", "O₂ aus (2,3-BPG ↑)"] },
+      { i: "gehirn:1 + herz:1", t: ["Umverteilung zu Herz", "und Gehirn"] },
+      { i: "herz:5:x", t: ["Grenze: das Herz selbst", "bekommt nicht mehr", "genug Sauerstoff"], k: 5 }
+    ]) }],
+    haemostase: [
+      { nach: "Primäre Hämostase", caption: "Bildgeschichte: Der Plättchenpfropf in vier Schritten – mit den Angriffspunkten ASS, P2Y12- und GPIIb/IIIa-Hemmer.", svg: B("Primäre Hämostase", [
+        { i: "eng:5", t: ["Verletzung: Gefäß verengt", "sich, Kollagen liegt frei"] },
+        { i: "thrombozyt:3", t: ["Adhäsion: von-Willebrand-", "Faktor verbindet Kollagen", "und Plättchen"] },
+        { i: "thrombozyt:4:up", t: ["Aktivierung: ADP und", "Thromboxan A₂ frei", "(◀ P2Y12-Hemmer, ASS)"] },
+        { i: "gerinnsel:5", t: ["Aggregation: Fibrinogen", "vernetzt die Plättchen", "(◀ GPIIb/IIIa-Hemmer)"], k: 5 }
+      ]) },
+      { nach: "Fibrinolyse", caption: "Bildgeschichte: Auflösung des Gerinnsels – Tranexamsäure hemmt diesen Weg.", svg: B("Fibrinolyse", [
+        { i: "gefaess:1", t: ["Endothel setzt tPA frei", "(Ischämie, Stress, Trauma,", "Operation)"] },
+        { i: "enzym:1", t: ["tPA: Plasminogen", "→ Plasmin"] },
+        { i: "gerinnsel:5:x", t: ["Plasmin spaltet Fibrin", "→ D-Dimere"] },
+        { i: "enzym:2:x", t: ["Bremsen: PAI-1,", "α₂-Antiplasmin, TAFI"], k: 2 }
+      ]) }
+    ],
+    gerinnungstests: [{ nach: "Zielorientiertes Gerinnungsmanagement", caption: "Bildgeschichte: Zielorientiertes Gerinnungsmanagement – erst die Basis, dann gezielt nach Befund (Grenzwerte je nach Leitlinie und Gerät).", svg: B("Gerinnung gezielt behandeln", [
+      { i: "thermometer:4 + #Ca²⁺:4", t: ["Basis: Temperatur > 35 °C,", "pH > 7,2, ionisiertes", "Calcium normal"] },
+      { i: "gerinnsel:5:x > spritze:2", t: ["Hyperfibrinolyse", "→ Tranexamsäure"] },
+      { i: "infusion:3", t: ["Fibrinogen < 1,5–2 g/l", "→ Fibrinogenkonzentrat"] },
+      { i: "thrombozyt:4:down", t: ["Thrombozyten < 50/nl", "→ Konzentrat"] },
+      { i: "uhr:1:up > infusion:1", t: ["Gerinnungszeit verlängert", "→ PPSB oder Plasma"] }
+    ]) }],
+    transfusion: [{ nach: "Transfusionsreaktionen", caption: "Bildgeschichte: Die akute hämolytische Transfusionsreaktion – ==in Narkose oft nur an Hypotonie und Blutung erkennbar==.", svg: B("AB0-Fehltransfusion", [
+      { i: "infusion:5 + erythrozyt:5", t: ["Falsche Konserve", "(meist AB0-Verwechslung)"] },
+      { i: "erythrozyt:5:x", t: ["Anti-A/Anti-B (IgM) zer-", "stören die Spender-", "erythrozyten im Gefäß"] },
+      { i: "thermometer:5 + manometer:5:down", t: ["Fieber, Schüttelfrost,", "Hypotonie, Hämoglobin-", "urie, DIC"] },
+      { i: "bett:4 + gerinnsel:4", t: ["In Narkose oft nur", "Hypotonie und Blutung"] },
+      { i: "warnung:2", t: ["Sofort stoppen, Kreislauf", "stützen, Blutbank,", "Konserven prüfen"], k: 2 }
+    ]) }],
+    "anaemie-pbm": [{ nach: "Erythropoese", caption: "Bildgeschichte: Vom Sauerstoffsensor zur neuen Zelle – ==Anämie vor elektiven Eingriffen braucht Wochen Vorlauf==.", svg: B("Erythropoese", [
+      { i: "niere:4 + #O₂:1:down", t: ["Die Niere misst das", "O₂-Angebot (HIF)"] },
+      { i: "#EPO:4:up", t: ["Erythropoetin steigt"] },
+      { i: "knochen:3", t: ["Knochenmark: Vorläufer", "vermehren sich und reifen", "(ca. 5–7 Tage)"] },
+      { i: "erythrozyt:5", t: ["Retikulozyten (1–2 Tage),", "dann reife Erythrozyten"] },
+      { i: "uhr:2 + erythrozyt:2:up", t: ["Mit genug Eisen: Hb", "+1 g/dl pro 1–2 Wochen"], k: 2 }
+    ]) }]
+  });
 })();

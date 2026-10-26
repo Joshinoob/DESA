@@ -116,4 +116,30 @@
     pharmakodynamik: [{ svg: FIG_DOSIS, nach: "Dosis-Wirkungs-Kurven", caption: "Dosis-Wirkungs-Kurven (Modellkurven): ==Ein kompetitiver Antagonist verschiebt die Kurve nach rechts (mehr Agonist überwindet ihn), ein nicht-kompetitiver senkt Emax==; ein partieller Agonist erreicht auch bei voller Besetzung nicht Emax." }],
     pharmakokinetik: [{ svg: FIG_PK, nach: "Kompartimente und Umverteilung", caption: "Links: Plasmakonzentration nach Bolus (Modellkurve, logarithmisch). Rechts: kontextsensitive Halbwertszeit (schematisch, qualitativ nach Hughes et al. 1992): ==bei Fentanyl starker Anstieg mit der Infusionsdauer, bei Remifentanil praktisch keiner==." }]
   });
+
+  // ---------- Bildgeschichten (Piktogramme) ----------
+  const B = F.bild;
+  window.__addSpezialFiguren("pharmakologie", {
+    gpcr: [{ nach: "Abschalten, Desensibilisierung und Regulation", caption: "Bildgeschichte: Vom Dauerreiz zur Toleranz – und von der Dauerblockade zur Überempfindlichkeit (z.B. Rebound nach Absetzen eines β-Blockers).", svg: B("Desensibilisierung und Regulation", [
+      { i: "rezeptor:4:up", t: ["Dauerreiz: Rezeptor-", "kinasen (GRK) phospho-", "rylieren den Rezeptor"] },
+      { i: "rezeptor:5:x", t: ["β-Arrestin bindet: kein", "G-Protein mehr (Minuten)"] },
+      { i: "zelle:4", t: ["Rezeptor wird in die Zelle", "aufgenommen", "(Internalisierung)"] },
+      { i: "rezeptor:1:down", t: ["Anhaltend: weniger", "Rezeptoren", "(Stunden bis Tage)"] },
+      { i: "rezeptor:5:up", t: ["Dauerblockade: mehr", "Rezeptoren → Überempfind-", "lichkeit nach Absetzen"], k: 5 }
+    ]) }],
+    "enzym-kernrezeptoren": [{ nach: "Kernrezeptoren", caption: "Bildgeschichte: Wie Steroide wirken – ==über Gene, deshalb verzögert und länger als der Plasmaspiegel==.", svg: B("Kernrezeptoren", [
+      { i: "tablette:3 > zelle:3", t: ["Fettlöslicher Ligand", "(z.B. Steroid) dringt", "in die Zelle"] },
+      { i: "rezeptor:4", t: ["Bindung an den Rezeptor", "im Zytoplasma oder Kern"] },
+      { i: "dna:4", t: ["Komplex bindet an", "Erkennungssequenzen", "der DNA"] },
+      { i: "dna:2:up + dna:5:down", t: ["Gene an (Transaktivation)", "oder aus (Transrepression)"] },
+      { i: "uhr:1", t: ["Wirkung nach Stunden,", "hält über den Plasma-", "spiegel hinaus an"], k: 1 }
+    ]) }],
+    pharmakokinetik: [{ nach: "Kompartimente und Umverteilung", caption: "Bildgeschichte: Warum Einzeldosis und Dauerinfusion verschieden enden – ==nach einem Bolus erwacht man durch Umverteilung, nach langer Infusion erst durch Elimination==.", svg: B("Umverteilung und Erwachen", [
+      { i: "spritze:1 > gefaess:1", t: ["Bolus i.v.: hohe Konzen-", "tration in Blut und gut", "durchbluteten Organen"] },
+      { i: "gehirn:4:up", t: ["Schnelle Anflutung im", "Gehirn → Wirkbeginn"] },
+      { i: "muskel:1 + fett:3", t: ["Umverteilung in Muskel,", "später Fett → Plasma-", "spiegel fällt rasch"] },
+      { i: "person:2:ok", t: ["Erwachen durch", "Umverteilung, nicht", "durch Abbau"], k: 2 },
+      { i: "uhr:5 + fett:5:up", t: ["Lange Infusion: Speicher", "voll → Erwachen hängt", "an der Elimination"], k: 5 }
+    ]) }]
+  });
 })();

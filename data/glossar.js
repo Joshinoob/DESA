@@ -356,5 +356,10 @@ window.GLOSSAR = {
   "CFT": "Gerinnselbildungszeit (clot formation time)",
   "GnRH": "Gonadotropin-Releasing-Hormon",
   "LH": "luteinisierendes Hormon",
-  "FSH": "follikelstimulierendes Hormon"
+  "FSH": "follikelstimulierendes Hormon",
+  "IE": "Internationale Einheiten",
+  "IgM": "Immunglobulin M",
+  "IL-6": "Interleukin-6",
+  "PAI-1": "Plasminogen-Aktivator-Inhibitor 1",
+  "tPA": "gewebespezifischer Plasminogenaktivator (tissue plasminogen activator)"
 };

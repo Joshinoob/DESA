@@ -256,4 +256,83 @@
     regulation: [{ svg: FIG_BARO, nach: "In Sekunden: der Barorezeptorreflex", caption: "Barorezeptorreflex bei Blutdruckabfall (bei Anstieg spiegelbildlich): ==weniger Dehnung → weniger Meldungen → Sympathikus ↑, Vagus ↓ → Blutdruck steigt wieder==. Narkosemittel dämpfen diesen schnellen Regler." }],
     lebensalter: [{ svg: FIG_FETUS, nach: "Fetaler Kreislauf", caption: "Fetaler Kreislauf (vereinfacht): ==Sauerstoffreiches Blut aus der Plazenta gelangt über Ductus venosus und Foramen ovale bevorzugt in die linke Kammer (Herz, Gehirn)==; Blut der oberen Hohlvene fließt über rechte Kammer und Ductus arteriosus an der Lunge vorbei, die nur ca. 10–25 % des Auswurfs erhält." }]
   });
+
+  // ---------- Bildgeschichten (Piktogramme) ----------
+  const B = F.bild;
+  window.__addSpezialFiguren("herz", {
+    zelle: [{ nach: "Energie: viel Verbrauch, kaum Vorrat", caption: "Bildgeschichte: Was bei Ischämie in der Herzmuskelzelle passiert – ==die Kontraktion erlischt früh und spart Energie, der Zelltod beginnt nach ca. 20–40 min==.", svg: B("Ischämie in der Herzmuskelzelle", [
+      { i: "herz:5 + eng:5", t: ["Durchblutung stoppt", "(Ischämie)"] },
+      { i: "#O₂:1:down > #ATP:4:down", t: ["Kein Sauerstoff:", "nur anaerobe Glykolyse,", "sehr wenig ATP"] },
+      { i: "#H⁺:5:up + muskel:3:down", t: ["Säure und Phosphat steigen", "→ Myofilamente reagieren", "schlechter auf Calcium"] },
+      { i: "herz:3:down + uhr:0", t: ["Kontraktion erlischt nach", "ca. 1 min – spart Energie"] },
+      { i: "uhr:5 > zelle:5:x", t: ["Nach ca. 20–40 min:", "irreversibler Zelltod,", "zuerst im Subendokard"], k: 5 }
+    ]) }],
+    elektro: [{ nach: "Steuerung durch das vegetative Nervensystem", caption: "Bildgeschichte: Sympathikus und Vagus am Sinusknoten – ==über Gs bzw. Gi verändern sie cAMP und damit Frequenz, Leitung und Kraft==.", svg: B("Sympathikus und Vagus am Herzen", [
+      { i: "blitz:4 > rezeptor:4", t: ["Sympathikus → β1-Rezeptor", "→ Gs → cAMP ↑"], k: 4 },
+      { i: "#Ca²⁺:4:up", t: ["Schrittmacherstrom stärker,", "mehr Ca²⁺ durch", "L-Typ-Kanäle"] },
+      { i: "herz:4:up", t: ["Frequenz, Leitung, Kraft ↑,", "schnellere Erschlaffung"], k: 4 },
+      { i: "#ACh:1 > rezeptor:1", t: ["Vagus → Acetylcholin", "→ M2-Rezeptor → Gi"], k: 1 },
+      { i: "#K⁺:1 > zelle:1", t: ["cAMP ↓, Kaliumkanäle", "öffnen → Zelle negativer"] },
+      { i: "herz:1:down", t: ["Frequenz ↓,", "AV-Leitung langsamer"], k: 1 }
+    ]) }],
+    ekk: [{ nach: "Erschlaffung: Calcium muss wieder raus", caption: "Bildgeschichte: Erschlaffung ist aktiv – ==fehlt ATP, leidet zuerst die Diastole, dann die Systole== (Ischämiekaskade).", svg: B("Warum Erschlaffung Energie kostet", [
+      { i: "pumpe:1", t: ["SERCA-Pumpe und Lösen", "der Querbrücken", "brauchen ATP"] },
+      { i: "eng:5 > #ATP:4:down", t: ["Ischämie:", "ATP fehlt"] },
+      { i: "#Ca²⁺:4:up", t: ["Calcium bleibt länger", "in der Zelle"] },
+      { i: "herz:5:down", t: ["Zuerst gestörte Erschlaffung,", "dann schwächere", "Kontraktion"], k: 5 }
+    ]) }],
+    ekg: [{ nach: "Ischämie und Infarkt", caption: "Bildgeschichte: Vom Verletzungsstrom zur ST-Veränderung – ==ein unauffälliges EKG schließt eine Ischämie nicht aus==.", svg: B("Ischämie im EKG", [
+      { i: "eng:5 > herz:5", t: ["Ischämie trifft zuerst", "das Subendokard"] },
+      { i: "blitz:3", t: ["Verletzungsstrom zwischen", "ischämischem und", "gesundem Gewebe"] },
+      { i: "monitor:1:down", t: ["Subendokardial:", "ST-Senkung"], k: 1 },
+      { i: "monitor:5:up", t: ["Transmural: ST-Hebung", "über dem Areal"], k: 5 },
+      { i: "uhr:0 > warnung:4", t: ["EKG ändert sich spät –", "normales EKG schließt", "Ischämie nicht aus"], k: 4 }
+    ]) }],
+    klappen: [{ nach: "Die vier wichtigsten Klappenfehler", caption: "Bildgeschichte: Die Merkregeln für Klappenfehler folgen direkt aus der Physik von Zeit und Gegendruck.", svg: B("Stenose und Insuffizienz", [
+      { i: "eng:5", t: ["Stenose", "Fluss durch enge Öffnung", "braucht Zeit"], k: 5 },
+      { i: "uhr:2 + tropfen:1 + eng:4", t: ["langsam · voll · eng", "Frequenz niedrig-normal,", "Vorlast und Widerstand halten"], k: 2 },
+      { i: "herz:4", t: ["Insuffizienz", "Rückfluss hängt von Zeit", "und Gegendruck ab"], k: 4 },
+      { i: "uhr:5:up + tropfen:1 + weit:2", t: ["schnell · voll · weit", "Frequenz normal–hoch,", "Vorlast halten, Widerstand ↓"], k: 2 }
+    ]) }],
+    determinanten: [{ nach: "Herzfrequenz", caption: "Bildgeschichte: Tachykardie verkürzt vor allem die Diastole – ==weniger Füllung und weniger Durchblutung der linken Kammer==.", svg: B("Wenn die Frequenz steigt", [
+      { i: "herz:5:up", t: ["Herzfrequenz steigt"] },
+      { i: "uhr:4", t: ["Systole bleibt fast gleich,", "Diastole wird viel kürzer"] },
+      { i: "tropfen:1:down + eng:5", t: ["Weniger Füllungszeit und", "weniger Durchblutungszeit", "für die linke Kammer"] },
+      { i: "herz:5:down", t: ["Ab einer Grenze sinkt das", "Schlagvolumen stärker", "→ HZV fällt"], k: 5 }
+    ]) }],
+    hzv: [{ nach: "'Stressed' und 'unstressed volume'", caption: "Bildgeschichte: Warum der Blutdruck nach der Narkoseeinleitung fällt – ==erschlaffte Venen verringern das 'stressed volume' und damit den Rückstrom==.", svg: B("Hypotonie nach der Einleitung", [
+      { i: "spritze:4", t: ["Narkosemittel, Sympathiko-", "lyse, Spinal- oder", "Epiduralanästhesie"] },
+      { i: "vene:1 > weit:1", t: ["Venen erschlaffen:", "stressed → unstressed", "volume"] },
+      { i: "herz:5:down", t: ["Füllungsdruck ↓ →", "venöser Rückstrom ↓", "→ HZV ↓"] },
+      { i: "weit:4 + herz:4:down", t: ["Zusätzlich: Arterien weit,", "Herzmuskel dosisabhängig", "geschwächt"] },
+      { i: "manometer:5:down", t: ["Hypotonie nach", "Narkoseeinleitung"], k: 5 }
+    ]) }],
+    koronar: [{ nach: "Systolische Kompression", caption: "Bildgeschichte: Die linke Kammer wird vor allem in der Diastole durchblutet – ==Tachykardie, niedriger diastolischer Druck und hoher Füllungsdruck gefährden sie==.", svg: B("Durchblutung der linken Kammer", [
+      { i: "herz:5 > eng:5", t: ["Systole: Wand drückt", "die Gefäße zu, innen", "am stärksten"] },
+      { i: "uhr:1", t: ["Linke Kammer wird v.a.", "in der Diastole", "durchblutet"] },
+      { i: "manometer:1", t: ["Perfusionsdruck ≈ diasto-", "lischer Aortendruck minus", "Füllungsdruck links"] },
+      { i: "warnung:5", t: ["Gefährlich: Tachykardie,", "niedriger diastolischer", "Druck, hoher Füllungsdruck"], k: 5 }
+    ]) }],
+    rv: [{ nach: "Die Abwärtsspirale", caption: "Bildgeschichte: Die Abwärtsspirale des Rechtsherzversagens – ==zusätzliches Volumen dehnt die Kammer weiter und verschlimmert sie==.", svg: B("Rechtsherzversagen", [
+      { i: "lunge:5 + eng:5", t: ["Lungengefäßwiderstand ↑", "(Embolie, Hypoxie,", "Azidose, Beatmung)"] },
+      { i: "herz:4:up", t: ["Rechte Kammer weitet sich,", "Trikuspidalklappe", "wird undicht"] },
+      { i: "herz:5:down", t: ["Septum nach links → linke", "Kammer füllt schlechter", "→ Blutdruck ↓"] },
+      { i: "eng:5 > herz:5:x", t: ["Rechte Kammer schlechter", "durchblutet → Ischämie,", "Pumpleistung ↓"] },
+      { i: "infusion:5:x", t: ["Kreis schließt sich –", "mehr Volumen dehnt", "die Kammer weiter"], k: 5 }
+    ]) }],
+    insuffizienz: [{ nach: "Das 'Notprogramm' und seine Folgen", caption: "Bildgeschichte: Das 'Notprogramm' bei Herzinsuffizienz – ==kurzfristig stützend, langfristig schädlich==; genau hier setzen die Medikamente an.", svg: B("Das Notprogramm bei Herzinsuffizienz", [
+      { i: "herz:5:down", t: ["HZV sinkt → Barorezep-", "toren und Niere melden", "Minderdurchblutung"] },
+      { i: "blitz:4 + niere:4", t: ["Sympathikus, RAAS", "und ADH werden aktiv"] },
+      { i: "eng:5 + tropfen:1:up", t: ["Gefäße eng (Nachlast ↑),", "Salz-/Wasserrückhalt", "(Vorlast ↑, Ödeme)"] },
+      { i: "manometer:2:ok", t: ["Kurzfristig: Blutdruck", "und Füllung gestützt"], k: 2 },
+      { i: "herz:5:x", t: ["Langfristig: Wandspannung,", "O₂-Bedarf, Umbau, Fibrose,", "Rhythmusstörungen"], k: 5 }
+    ]) }],
+    lebensalter: [{ nach: "Umstellung bei der Geburt", caption: "Bildgeschichte: Vom fetalen zum Erwachsenenkreislauf – ==die Kurzschlüsse schließen sich zunächst nur funktionell==.", svg: B("Umstellung bei der Geburt", [
+      { i: "baby:1 + lunge:1:up", t: ["Erster Atemzug: Lunge", "entfaltet sich, O₂ steigt"] },
+      { i: "lunge:2 > weit:2", t: ["Lungengefäßwiderstand", "fällt → mehr Blut", "durch die Lunge"] },
+      { i: "plazenta:5:x", t: ["Abnabelung: Plazenta", "fällt weg →", "Systemwiderstand ↑"] },
+      { i: "herz:3:ok", t: ["Druck links > rechts →", "Foramen ovale wird", "angedrückt"] },
+      { i: "#O₂:1:up > gefaess:3:x", t: ["O₂ ↑, Prostaglandine ↓ →", "Ductus arteriosus schließt", "sich (meist 1–3 Tage)"], k: 2 }
+    ]) }]
+  });
 })();

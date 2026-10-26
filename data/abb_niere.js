@@ -507,4 +507,90 @@
       { svg: FIG_KREA, nach: "Kreatinin und GFR – eine gekrümmte Beziehung", caption: "Kreatinin ∝ 1/GFR im Gleichgewicht (Beispielrechnung mit 0,7 mg/dl bei 120 ml/min, tubuläre Sekretion vernachlässigt): ==Im flachen Teil der Kurve verbirgt sich ein großer GFR-Verlust hinter einem kleinen Kreatininanstieg==, im steilen Teil verdoppelt schon ein kleiner Verlust das Kreatinin." }
     ]
   });
+
+  // ---------- Bildgeschichten (Piktogramme) ----------
+  const B = F.bild;
+  window.__addSpezialFiguren("niere", {
+    filtration: [{ nach: "Die Filterschicht", caption: "Bildgeschichte: Was durch den glomerulären Filter kommt – ==entscheidend sind Größe UND Ladung==.", svg: B("Was durch den Filter kommt", [
+      { i: "tropfen:1 + salz:1 + glukose:1", t: ["Kleine Teilchen (< ca. 2 nm):", "Wasser, Salze, Glukose,", "Kreatinin → frei filtriert"], k: 2 },
+      { i: "muskel:4 > niere:4", t: ["Mittelgroße Teilchen:", "zunehmend zurückgehalten;", "Myoglobin passiert noch"], k: 4 },
+      { i: "#Albumin:5:x", t: ["Albumin (3,6 nm, negativ):", "Größe UND Ladung halten", "es zurück"], k: 5 }
+    ]) }],
+    perfusion: [{ nach: "Die Stellschrauben an den Arteriolen", caption: "Bildgeschichte: Wie die Niere bei Minderdurchblutung die Filtration rettet – ==und warum NSAR plus ACE-Hemmer plus Diuretikum ('Triple Whammy') gefährlich sind==.", svg: B("Filtration retten bei Minderdurchblutung", [
+      { i: "manometer:5:down", t: ["Blutdruck bzw. Volumen", "sinkt"] },
+      { i: "weit:2", t: ["Prostaglandine weiten", "das Vas afferens"] },
+      { i: "eng:4", t: ["Angiotensin II verengt", "das Vas efferens"] },
+      { i: "niere:2:ok", t: ["GFR bleibt erhalten"], k: 2 },
+      { i: "tablette:5:x + niere:5:down", t: ["NSAR nehmen Schritt 2,", "ACE-Hemmer/Sartane Schritt 3", "→ akutes Nierenversagen"], k: 5 }
+    ]) }],
+    clearance: [{ nach: "Kreatinin und GFR – eine gekrümmte Beziehung", caption: "Bildgeschichte: Warum Kreatinin ein später und unempfindlicher Marker ist.", svg: B("Kreatinin – ein später Marker", [
+      { i: "muskel:4", t: ["Muskeln bilden Kreatinin", "gleichmäßig, die Niere", "scheidet es aus"] },
+      { i: "niere:5:down", t: ["GFR halbiert sich"] },
+      { i: "uhr:4", t: ["Kreatinin verdoppelt sich –", "aber erst nach Stunden", "bis Tagen"] },
+      { i: "warnung:5", t: ["0,7 → 1,0 mg/dl wirkt", "harmlos, bedeutet aber", "ca. 30 % GFR-Verlust"], k: 5 }
+    ]) }],
+    proximal: [{ nach: "Ausscheidung (Sekretion)", caption: "Bildgeschichte: Warum Schleifendiuretika manchmal schlecht wirken – ==sie müssen erst ins Tubuluslumen ausgeschieden werden==.", svg: B("Der Weg des Furosemids", [
+      { i: "spritze:3", t: ["Furosemid ist stark eiweiß-", "gebunden und wird", "kaum filtriert"] },
+      { i: "nephron:1", t: ["Ins Lumen gelangt es über", "organische Anionen-", "transporter (proximal)"] },
+      { i: "kanal:3:x", t: ["Von der Tubulusseite", "blockiert es NKCC2 in", "der Henle-Schleife"] },
+      { i: "warnung:5", t: ["Hypalbuminämie, Urämie:", "weniger kommt an →", "höhere Dosis nötig"], k: 5 }
+    ]) }],
+    distal: [{ nach: "Kaliumhaushalt", caption: "Bildgeschichte: Warum Magnesium beim Kalium mitzählt.", svg: B("Magnesium und Kalium", [
+      { i: "#Mg²⁺:1", t: ["Magnesium in der Zelle", "bremst den Kaliumkanal", "ROMK"] },
+      { i: "#Mg²⁺:5:down", t: ["Magnesiummangel:", "die Bremse fällt weg"] },
+      { i: "niere:4 > #K⁺:4:down", t: ["Kalium geht über", "die Niere verloren"] },
+      { i: "infusion:2 + #Mg²⁺:2:ok", t: ["Hypokaliämie bessert sich", "erst mit Magnesium-", "ersatz"], k: 2 }
+    ]) }],
+    wasser: [{ nach: "Steuerung des antidiuretischen Hormons (ADH)", caption: "Bildgeschichte: Die postoperative Hyponatriämie – ==darum keine hypotonen Erhaltungsinfusionen, bei Kindern isotone Lösungen==.", svg: B("Postoperative Hyponatriämie", [
+      { i: "skalpell:4", t: ["Operation, Schmerz,", "Übelkeit → ADH steigt", "ohne Osmolalitätsreiz"] },
+      { i: "niere:1 + tropfen:1:up", t: ["Die Niere hält freies", "Wasser zurück"] },
+      { i: "infusion:4", t: ["Dazu natriumarme", "(hypotone) Infusionen"] },
+      { i: "#Na⁺:5:down", t: ["Wasser verdünnt das Blut", "→ Natrium fällt"] },
+      { i: "gehirn:5:up", t: ["Wasser strömt in Hirn-", "zellen: Hirnödem (Kinder,", "junge Frauen besonders)"], k: 5 }
+    ]) }],
+    saeurebasen: [{ nach: "Metabolische Alkalose: Entstehung und Aufrechterhaltung", caption: "Bildgeschichte: Warum die Alkalose nach Erbrechen bestehen bleibt – ==erst Kochsalz und Kaliumchlorid beenden sie==.", svg: B("Alkalose nach Erbrechen", [
+      { i: "tropfen:4:down + #Cl⁻:4:down", t: ["Erbrechen: Volumen-", "und Chloridmangel"] },
+      { i: "niere:1", t: ["RAAS aktiv → proximal", "mehr Na⁺ und HCO₃⁻", "zurückgeholt"] },
+      { i: "zelle:1:x", t: ["Ohne Chlorid kann Pendrin", "kein HCO₃⁻ abgeben"] },
+      { i: "#K⁺:4:down + #H⁺:4", t: ["Aldosteron, Hypokaliämie:", "mehr Säureabgabe"] },
+      { i: "infusion:2 + #KCl:2", t: ["Alkalose endet erst mit", "NaCl- und KCl-Ersatz"], k: 2 }
+    ]) }],
+    mineral: [{ nach: "Calcium im Blut", caption: "Bildgeschichte: Hypokalzämie bei Massivtransfusion – ==ionisiertes Calcium messen und ersetzen==.", svg: B("Citrat und Calcium", [
+      { i: "infusion:5 + infusion:5", t: ["Viele Blutkonserven bzw.", "Plasma mit Citrat"] },
+      { i: "leber:4:down", t: ["Citrat bindet Calcium – v.a.", "wenn die Leber langsam", "abbaut (Schock, Kälte)"] },
+      { i: "#Ca²⁺:5:down", t: ["Ionisiertes Calcium", "fällt"] },
+      { i: "herz:5:down + gerinnsel:5:down", t: ["Herzschwäche, Gefäße weit,", "Gerinnung schlechter →", "Calcium ersetzen"], k: 5 }
+    ]) }],
+    endokrin: [{ nach: "Erythropoetin (EPO)", caption: "Bildgeschichte: Wie die Niere Blutarmut erkennt – ein Regelkreis über den Sauerstoffgehalt.", svg: B("Erythropoetin-Regelkreis", [
+      { i: "#O₂:1:down", t: ["O₂-Gehalt sinkt", "(Anämie, Hypoxie)"] },
+      { i: "niere:4", t: ["Die Niere misst den Mangel:", "HIF-2α schaltet das", "EPO-Gen an"] },
+      { i: "knochen:3 > erythrozyt:5:up", t: ["EPO: Knochenmark bildet", "mehr Erythrozyten"] },
+      { i: "#O₂:2:ok", t: ["O₂-Gehalt normalisiert", "sich"], k: 2 }
+    ]) }],
+    diuretika: [{ nach: "Übersicht", caption: "Bildgeschichte: Warum die meisten Diuretika Kalium verlieren lassen.", svg: B("Diuretika und Kalium", [
+      { i: "tablette:3 > nephron:3", t: ["Schleifen- und Thiazid-", "diuretika bringen mehr Na⁺", "und Fluss ins Sammelrohr"] },
+      { i: "#Na⁺:4:up", t: ["Mehr Na⁺-Rückholung über", "ENaC, hoher Fluss,", "RAAS ↑"] },
+      { i: "#K⁺:5:down + #H⁺:5:down", t: ["Kalium- und Säureverlust:", "Hypokaliämie, metabolische", "Alkalose"], k: 5 }
+    ]) }],
+    aki: [{ nach: "Wie die Schädigung entsteht", caption: "Bildgeschichte: Eine perioperative akute Nierenschädigung entsteht meist aus mehreren Treffern zugleich.", svg: B("Wie die Niere Schaden nimmt", [
+      { i: "manometer:5:down", t: ["Minderdurchblutung:", "Hypotonie, Volumenmangel,", "niedriges HZV"] },
+      { i: "bakterium:5", t: ["Entzündung/Sepsis:", "Mikrozirkulation und", "Tubuli gestört"] },
+      { i: "vene:4:up", t: ["Venöser Stau,", "erhöhter Bauchdruck"] },
+      { i: "tablette:5 + spritze:5", t: ["Nephrotoxine: Kontrast-", "mittel, Aminoglykoside,", "NSAR, Vancomycin"] },
+      { i: "niere:5:x", t: ["Akute Nierenschädigung –", "Kreatinin steigt", "erst später"], k: 5 }
+    ]) }],
+    nierenersatz: [{ nach: "Wann beginnen?", caption: "Bildgeschichte: Die Notfallindikationen der Dialyse (AEIOU) – ==ohne sie bringt ein früher Beginn keinen Vorteil==.", svg: B("Notfallindikationen: AEIOU", [
+      { i: "#H⁺:5:up", t: ["A – Azidose", "(schwer, therapierefraktär)"] },
+      { i: "#K⁺:5:up", t: ["E – Elektrolyte,", "v.a. Hyperkaliämie"] },
+      { i: "warnung:4", t: ["I – Intoxikation", "(Lithium, Methanol,", "Ethylenglykol u.a.)"] },
+      { i: "lunge:1 + tropfen:1:up", t: ["O – Overload:", "Überwässerung,", "Lungenödem"] },
+      { i: "gehirn:5 + herz:5", t: ["U – Urämie mit Folgen", "(Perikarditis, Enzephalo-", "pathie, Blutung)"] }
+    ]) }],
+    lebensalter: [{ nach: "Schwangerschaft", caption: "Bildgeschichte: Warum ein 'normales' Kreatinin in der Schwangerschaft schon auffällig ist.", svg: B("Niere in der Schwangerschaft", [
+      { i: "schwanger:3", t: ["Mehr Blutvolumen und HZV,", "Gefäße weiten sich"] },
+      { i: "niere:2:up", t: ["Nierendurchblutung und", "GFR ca. +40–50 %"] },
+      { i: "waage:1:down", t: ["Kreatinin sinkt (oft ca.", "0,4–0,8 mg/dl)"] },
+      { i: "warnung:5", t: ["1,0 mg/dl ist bei", "Schwangeren schon", "auffällig"], k: 5 }
+    ]) }]
+  });
 })();

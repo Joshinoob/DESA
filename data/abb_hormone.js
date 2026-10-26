@@ -59,4 +59,32 @@
     nebenniere: [{ svg: FIG_NEBENNIERE, nach: "Zonen der Nebennierenrinde", caption: "Nebenniere von außen nach innen: 'Salz – Zucker – Sex' in der Rinde, Katecholamine im Mark (Schichtdicken schematisch)." }],
     schilddruese: [{ svg: FIG_SCHILDDRUESE, nach: "Synthese und Umwandlung", caption: "Die Schilddrüse gibt überwiegend T₄ ab; ==das wirksame T₃ entsteht großteils erst im Gewebe==. Die lange Halbwertszeit von T₄ erklärt, warum eine kurze Einnahmepause unkritisch ist." }]
   });
+
+  // ---------- Bildgeschichten (Piktogramme) ----------
+  const B = F.bild;
+  window.__addSpezialFiguren("hormone", {
+    stressantwort: [{ nach: "Hormonelle Antwort", caption: "Bildgeschichte: Die Stressantwort auf Operation und Trauma – ==neuraxiale Blockaden und hochdosierte Opioide dämpfen sie==.", svg: B("Stressantwort", [
+      { i: "skalpell:5", t: ["Gewebetrauma"] },
+      { i: "blitz:4 + #IL-6:4", t: ["Nozizeption und", "Zytokine (IL-6)"] },
+      { i: "gehirn:1", t: ["Hypothalamus: Sympathikus,", "CRH/ACTH, ADH"] },
+      { i: "druese:3:up", t: ["Katecholamine, Cortisol,", "Glukagon ↑; Insulin-", "wirkung ↓"] },
+      { i: "glukose:5:up + muskel:4:down", t: ["Hyperglykämie, Lipolyse,", "Proteinabbau, Salz-", "und Wasserretention"] },
+      { i: "leber:4 + thermometer:5", t: ["Akute-Phase-Reaktion,", "Fieber, Immun-", "suppression"] }
+    ]) }],
+    nebenniere: [{ nach: "Addison-Krise", caption: "Bildgeschichte: Die Addison-Krise erkennen und behandeln – ==Hydrocortison sofort, nicht auf das Labor warten==.", svg: B("Addison-Krise", [
+      { i: "druese:5:down", t: ["Cortisolmangel (+ Aldo-", "steronmangel bei", "primärer Form)"] },
+      { i: "manometer:5:down", t: ["Katecholamin-refraktäre", "Hypotonie, Hypoglykämie,", "Hyponatriämie"] },
+      { i: "spritze:2", t: ["Hydrocortison 100 mg i.v.", "sofort, dann 200 mg/24 h"], k: 2 },
+      { i: "infusion:2", t: ["Volumen (NaCl 0,9 %),", "Glukose"], k: 2 },
+      { i: "uhr:4:x", t: ["Nicht auf das Labor warten", "– vorher Blut abnehmen"] }
+    ]) }],
+    glukose: [{ nach: "Diabetische Ketoazidose (DKA) vs. hyperosmolares hyperglykämisches Syndrom (HHS)", caption: "Bildgeschichte: Behandlungsreihenfolge der diabetischen Ketoazidose – ==Kalium vor Insulin prüfen==.", svg: B("Diabetische Ketoazidose behandeln", [
+      { i: "infusion:1", t: ["1. Volumen:", "Kristalloide, zügig"] },
+      { i: "#K⁺:4", t: ["2. Kalium < 3,3 mmol/l:", "erst Kalium, dann Insulin"] },
+      { i: "spritze:2", t: ["3. Insulin i.v.", "(z.B. 0,1 IE/kg/h)"] },
+      { i: "glukose:3 > infusion:3", t: ["4. Glukose ca. 250 mg/dl:", "Glukose zusetzen, Insulin", "weiter bis Azidose weg"] },
+      { i: "#HCO₃⁻:0", t: ["5. Bicarbonat nur bei", "pH < 6,9–7,0"] },
+      { i: "gehirn:5", t: ["HHS: Osmolalität langsam", "senken (Hirnödem)"], k: 5 }
+    ]) }]
+  });
 })();

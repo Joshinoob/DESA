@@ -280,4 +280,78 @@
   window.__addSpezialFiguren("blut", {
     sauerstofftransport: [{ svg: FIG_ODC, nach: "Sauerstoffbindungskurve", caption: "Sauerstoffbindungskurve (berechnet nach Severinghaus 1979) mit Links- und Rechtsverschiebung (Beispielwerte). Details im Kapitel Lunge 'Sauerstoff- und CO₂-Transport'." }]
   });
+
+  // ---------- Bildgeschichten (Piktogramme) ----------
+  const B = F.bild;
+  window.__addSpezialFiguren("lunge", {
+    struktur: [{ nach: "Surfactant", caption: "Bildgeschichte: Was Surfactant bewirkt – ==er stabilisiert kleine Alveolen und senkt die Atemarbeit==.", svg: B("Surfactant", [
+      { i: "alveole:2", t: ["Surfactant senkt die Ober-", "flächenspannung – je kleiner", "die Alveole, desto stärker"] },
+      { i: "alveole:1:ok", t: ["Kleine und große Alveolen", "bleiben nebeneinander", "stabil"] },
+      { i: "lunge:2:ok", t: ["Compliance ↑ → weniger", "Atemarbeit, weniger", "Flüssigkeit in den Alveolen"], k: 2 }
+    ]) }],
+    mechanik: [{ nach: "Zeitkonstante", caption: "Bildgeschichte: Warum COPD-Patienten unter Beatmung hypoton werden können – ==die Luft kommt nicht mehr ganz heraus==.", svg: B("COPD unter Beatmung", [
+      { i: "lunge:4 + eng:4", t: ["COPD: hoher Widerstand", "→ lange Zeitkonstante"] },
+      { i: "uhr:5", t: ["Ausatemzeit zu kurz", "(hohe Frequenz) →", "Luft bleibt zurück"] },
+      { i: "lunge:5:up", t: ["Intrinsischer PEEP,", "dynamische Überblähung"] },
+      { i: "manometer:5:down", t: ["Druck im Brustkorb ↑ →", "Rückstrom ↓ → Hypotonie;", "Barotrauma möglich"], k: 5 },
+      { i: "maske:2", t: ["Abhilfe: Frequenz ↓,", "längere Ausatmung; im Notfall", "kurz diskonnektieren"], k: 2 }
+    ]) }],
+    atempumpe: [{ nach: "Nach Oberbauch- und Thoraxeingriffen", caption: "Bildgeschichte: Postoperative pulmonale Komplikationen – ==gute Schmerztherapie, frühe Mobilisation und Atemtraining durchbrechen die Kette==.", svg: B("Nach Oberbauch- und Thoraxeingriffen", [
+      { i: "skalpell:0", t: ["Schnitt im Oberbauch", "oder am Brustkorb"] },
+      { i: "muskel:4:down", t: ["Zwerchfell reflektorisch", "gehemmt, Schmerz,", "Schonatmung"] },
+      { i: "lunge:4:down", t: ["Vitalkapazität ca. −40–60 %", "am 1. Tag, Erholung", "über 1–2 Wochen"] },
+      { i: "alveole:5:x", t: ["Schwacher Husten,", "Atelektasen,", "Sekretverhalt"] },
+      { i: "lunge:5 + bakterium:5", t: ["Pneumonie und", "Ateminsuffizienz"], k: 5 }
+    ]) }],
+    ventilation: [{ nach: "Verteilung der Belüftung", caption: "Bildgeschichte: In Narkose mit Überdruckbeatmung gehen Belüftung und Durchblutung auseinander.", svg: B("Belüftung in Narkose", [
+      { i: "person:2 + lunge:2", t: ["Spontanatmung: Zwerchfell", "belüftet v.a. die unten", "liegenden Abschnitte"] },
+      { i: "bett:4 + maske:4", t: ["Narkose, Relaxierung,", "Überdruckbeatmung"] },
+      { i: "lunge:4", t: ["Luft geht bevorzugt nach", "oben, die Durchblutung", "bleibt unten"] },
+      { i: "#O₂:5:down", t: ["Missverhältnis → Sauer-", "stoffaufnahme schlechter"], k: 5 }
+    ]) }],
+    kreislauf: [{ nach: "Hypoxische pulmonale Vasokonstriktion (HPV)", caption: "Bildgeschichte: Hypoxische pulmonale Vasokonstriktion – ==die Lunge lenkt Blut von schlecht zu gut belüfteten Abschnitten==.", svg: B("Hypoxische Vasokonstriktion", [
+      { i: "alveole:4 + #O₂:1:down", t: ["Abschnitt schlecht belüftet", "→ alveolärer O₂-Druck", "sinkt"] },
+      { i: "zelle:4", t: ["O₂-Sensoren in den Muskel-", "zellen kleiner", "Lungenarterien"] },
+      { i: "#Ca²⁺:4:up", t: ["Zelle depolarisiert,", "Calcium strömt ein"] },
+      { i: "eng:5", t: ["Kleine Arterien", "verengen sich"] },
+      { i: "lunge:2:ok", t: ["Blut fließt in gut belüftete", "Abschnitte → V/Q besser"], k: 2 }
+    ]) }],
+    vq: [{ nach: "Shunt", caption: "Bildgeschichte: Warum das Herzzeitvolumen die Oxygenierung beeinflusst – ==über ein sauerstoffärmeres gemischtvenöses Blut im Shunt==.", svg: B("Herzzeitvolumen und Shunt", [
+      { i: "herz:5:down", t: ["HZV ↓, O₂-Verbrauch ↑", "oder Anämie"] },
+      { i: "muskel:4", t: ["Gewebe schöpft mehr O₂ aus", "→ gemischtvenöses Blut", "sauerstoffärmer"] },
+      { i: "gefaess:1", t: ["Shuntblut bringt noch", "weniger O₂ mit"] },
+      { i: "#O₂:5:down", t: ["Arterieller O₂ fällt –", "ohne Änderung an", "der Lunge"], k: 5 }
+    ]) }],
+    transport: [{ nach: "Sauerstoffvorrat und Atemstillstand", caption: "Bildgeschichte: Warum Präoxygenierung Zeit verschafft – ==die FRC wird zum Sauerstoffspeicher==.", svg: B("Präoxygenierung", [
+      { i: "lunge:0", t: ["Raumluft: nur ca. 1,5 l O₂", "gespeichert, in der FRC", "nur ca. 0,3–0,4 l"] },
+      { i: "maske:1 + #O₂:1:up", t: ["100 % O₂, bis ausgeatmet", "ca. 90 % O₂ erreicht sind"] },
+      { i: "lunge:1:ok", t: ["Die FRC (ca. 2,5 l) enthält", "jetzt ca. 2 l O₂"] },
+      { i: "uhr:2", t: ["Verbrauch ca. 250 ml/min", "→ theoretisch ca. 8 min"] },
+      { i: "person:2 + schwanger:5 + kind:5", t: ["Gesund: 90 % nach ca. 8 min;", "Adipositas, Schwangere,", "Kinder viel früher"], k: 5 }
+    ]) }],
+    regulation: [{ nach: "COPD und Sauerstoff", caption: "Bildgeschichte: Warum Sauerstoff bei COPD das CO₂ erhöhen kann – ==vor allem über HPV-Aufhebung und Haldane-Effekt==.", svg: B("COPD und Sauerstoff", [
+      { i: "lunge:4 + maske:1", t: ["COPD mit hohem CO₂", "erhält viel Sauerstoff"] },
+      { i: "weit:1", t: ["HPV aufgehoben → mehr", "Durchblutung schlecht", "belüfteter Bereiche"] },
+      { i: "erythrozyt:5 > #CO₂:5", t: ["O₂-beladenes Hämoglobin", "gibt CO₂ ab", "(Haldane-Effekt)"] },
+      { i: "#CO₂:5:up", t: ["CO₂ steigt – weniger durch", "Verlust des Atemantriebs"], k: 5 }
+    ]) }],
+    umwelt: [{ nach: "Große Höhe", caption: "Bildgeschichte: Anpassung an die Höhe in Stunden, Tagen und Wochen.", svg: B("Höhenanpassung", [
+      { i: "#O₂:1:down > lunge:1:up", t: ["O₂-Mangel → Glomus", "caroticum →", "Hyperventilation (Stunden)"] },
+      { i: "#CO₂:2:down > niere:2", t: ["CO₂ ↓ → Alkalose → die", "Niere scheidet über Tage", "Bicarbonat aus"] },
+      { i: "erythrozyt:5:up", t: ["2,3-BPG ↑, Erythropoetin ↑", "→ mehr rote Blutkörper-", "chen (Wochen)"] },
+      { i: "person:2:ok", t: ["Höhenanpassung", "(Akklimatisation)"], k: 2 }
+    ]) }],
+    lebensalter: [{ nach: "Adipositas", caption: "Bildgeschichte: Warum Adipöse so schnell desaturieren – ==kleine FRC unter der Closing Capacity plus hoher Sauerstoffverbrauch==.", svg: B("Adipositas und Apnoetoleranz", [
+      { i: "person:4 + fett:4", t: ["Bauch und Brustwand", "drücken auf die Lunge,", "v.a. im Liegen und in Narkose"] },
+      { i: "lunge:4:down", t: ["FRC ↓ – fällt unter", "die Closing Capacity"] },
+      { i: "alveole:5:x", t: ["Atelektasen, V/Q-Störung,", "höherer O₂-Verbrauch"] },
+      { i: "uhr:5 + #O₂:5:down", t: ["Sehr kurze Apnoetoleranz:", "90 % schon nach", "wenigen Minuten"], k: 5 }
+    ]) }],
+    narkose: [{ nach: "Was bei der Einleitung passiert", caption: "Bildgeschichte: Atelektasen in Narkose – ==sie entstehen bei fast allen Patienten und erklären einen Shunt von ca. 5–10 %==.", svg: B("Atelektasen in Narkose", [
+      { i: "spritze:0 > muskel:4:down", t: ["Muskeltonus fällt weg,", "Zwerchfell verlagert", "sich nach oben"] },
+      { i: "lunge:4:down", t: ["FRC sinkt in Minuten", "um ca. 0,4–0,5 l"] },
+      { i: "alveole:5:x", t: ["Atelektasen bei ca. 90 %", "(unten liegende", "Abschnitte)"] },
+      { i: "#O₂:5:down", t: ["Shunt ca. 5–10 %", "→ PaO₂ sinkt"], k: 5 }
+    ]) }]
+  });
 })();

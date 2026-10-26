@@ -80,4 +80,39 @@
     narkose: [{ svg: FIG_EEG, nach: "Typische EEG-Muster (frontal abgeleitet)", caption: "EEG-Muster vom Wachzustand bis zur Überdosierung (synthetische Schemakurven, Amplituden nicht maßstabsgetreu): ==Bei chirurgischer Narkosetiefe unter Propofol und Volatila dominieren langsame Delta-Wellen mit frontalem Alpha==; Burst-Suppression zeigt eine zu tiefe Narkose an." }],
     schutz: [{ svg: FIG_SCHWELLEN, nach: "Ischämische Kaskade", caption: "Durchblutungsschwellen (klassische Richtwerte aus Tier- und Patientenstudien, z.B. Astrup et al. 1981; die genauen Werte hängen von Dauer, Region und Narkose ab): ==Zwischen Funktionsausfall und Zelltod liegt die rettbare Penumbra.==" }]
   });
+
+  // ---------- Bildgeschichten (Piktogramme) ----------
+  const B = F.bild;
+  window.__addSpezialFiguren("gehirn", {
+    neuron: [
+      { nach: "Energiehaushalt", caption: "Bildgeschichte: Warum das Gehirn keine Reserve hat – ==Minuten entscheiden==.", svg: B("Wenn die Durchblutung stoppt", [
+        { i: "gehirn:5 + eng:5", t: ["Durchblutungsstopp"] },
+        { i: "uhr:4 + augen_zu:4", t: ["Nach ca. 10 s", "bewusstlos"] },
+        { i: "monitor:4", t: ["Nach ca. 20–40 s", "isoelektrisches EEG"] },
+        { i: "zelle:5:x", t: ["Nach ca. 3–5 min:", "Ionenpumpen versagen,", "irreversible Schäden"], k: 5 }
+      ]) },
+      { nach: "Synapse: Erregung und Hemmung", caption: "Bildgeschichte: Die chemische Synapse – Angriffspunkt der meisten Narkosemittel.", svg: B("Chemische Synapse", [
+        { i: "neuron:1 + blitz:3", t: ["Aktionspotenzial erreicht", "die Nervenendigung"] },
+        { i: "#Ca²⁺:4 > synapse:4", t: ["Calcium strömt ein →", "Bläschen verschmelzen"] },
+        { i: "rezeptor:2", t: ["Transmitter bindet an", "Rezeptoren"] },
+        { i: "kanal:2", t: ["Erregung (Na⁺/Ca²⁺ rein)", "oder Hemmung (Cl⁻ rein,", "K⁺ raus)"] },
+        { i: "enzym:1", t: ["Ende durch Wiederaufnahme", "oder Abbau"] }
+      ]) }
+    ],
+    durchblutung: [{ nach: "CO₂ und O₂", caption: "Bildgeschichte: CO₂-Reaktivität der Hirngefäße – ==Hyperventilation senkt den Hirndruck nur vorübergehend (ca. 6–24 h)==.", svg: B("CO₂ und Hirndruck", [
+      { i: "#CO₂:5:up", t: ["PaCO₂ steigt"] },
+      { i: "#H⁺:5:up", t: ["In Liquor und Gefäßwand", "sinkt der pH"] },
+      { i: "weit:1", t: ["Gefäßmuskeln erschlaffen,", "Gefäße weiten sich"] },
+      { i: "gehirn:4:up", t: ["Hirndurchblutung", "ca. +2–4 % pro mmHg"] },
+      { i: "manometer:5:up", t: ["Mehr Blutvolumen im", "Schädel → Hirndruck ↑"], k: 5 }
+    ]) }],
+    schutz: [{ nach: "Ischämische Kaskade", caption: "Bildgeschichte: Vom Sauerstoffmangel zum Zelltod – ==die Penumbra um den Kern ist noch zu retten==.", svg: B("Ischämische Kaskade", [
+      { i: "#O₂:1:down > #ATP:4:down", t: ["O₂-Mangel →", "ATP-Mangel"] },
+      { i: "pumpe:5:x", t: ["Na⁺/K⁺-Pumpe versagt:", "Na⁺ und Wasser strömen", "in die Zelle"] },
+      { i: "synapse:4:up", t: ["Massive Glutamat-", "Freisetzung"] },
+      { i: "kanal:5 + #Ca²⁺:5:up", t: ["NMDA-Kanäle öffnen:", "Calcium-Überladung"] },
+      { i: "enzym:5", t: ["Enzyme, Radikale,", "Mitochondrien versagen"] },
+      { i: "zelle:5:x", t: ["Zelltod – die Randzone", "(Penumbra) ist noch", "rettbar"], k: 5 }
+    ]) }]
+  });
 })();

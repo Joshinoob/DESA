@@ -77,4 +77,29 @@
     bga: [{ svg: FIG_AG, nach: "Anionenlücke", caption: "Anionenlücke = Na⁺ − (Cl⁻ + HCO₃⁻): ==Ersetzt eine fremde Säure das Bicarbonat, wächst die Lücke; ersetzt Chlorid das Bicarbonat, bleibt sie normal (hyperchlorämische Azidose)==. Werte gerundet, ohne Kalium." }],
     stewart: [{ svg: FIG_GAMBLE, nach: "Drei unabhängige Variablen", caption: "Gamblegramm (schematisch, Werte gerundet): Nach großen Mengen NaCl 0,9 % steigt Chlorid stärker als Natrium, ==die SID schrumpft und Bicarbonat muss wegen der Elektroneutralität sinken==." }]
   });
+
+  // ---------- Bildgeschichten (Piktogramme) ----------
+  const B = F.bild;
+  window.__addSpezialFiguren("saeurebasen", {
+    grundlagen: [{ nach: "Puffersysteme", caption: "Bildgeschichte: Warum das offene Bicarbonatsystem so stark puffert – ==die Lunge atmet die Säure als CO₂ ab, die Niere bildet Bicarbonat nach==.", svg: B("Das offene Puffersystem", [
+      { i: "#H⁺:5:up", t: ["Säure (H⁺) fällt an"] },
+      { i: "#HCO₃⁻:1", t: ["H⁺ + HCO₃⁻ → H₂CO₃", "→ CO₂ + H₂O"] },
+      { i: "lunge:2 > #CO₂:2", t: ["CO₂ wird abgeatmet –", "die Säure 'geht in", "die Luft'"] },
+      { i: "niere:1 > #HCO₃⁻:1:up", t: ["Die Niere bildet verbrauch-", "tes HCO₃⁻ neu"], k: 1 }
+    ]) }],
+    kompensation: [{ nach: "Renale Kompensation", caption: "Bildgeschichte: Kompensation einer metabolischen Azidose – ==die Lunge reagiert in Minuten bis Stunden, die Niere über Tage==. Weicht das PaCO₂ von der Winter-Formel ab, liegt eine zweite Störung vor.", svg: B("Kompensation einer metabolischen Azidose", [
+      { i: "#H⁺:5:up", t: ["Metabolische Azidose:", "pH sinkt"] },
+      { i: "gehirn:1 > lunge:1:up", t: ["Chemorezeptoren → mehr", "Atmung (Minuten, Maximum", "nach ca. 12–24 h)"] },
+      { i: "#CO₂:2:down", t: ["PaCO₂ sinkt – erwartet:", "1,5 × HCO₃⁻ + 8 (± 2)"] },
+      { i: "niere:1 > #HCO₃⁻:1:up", t: ["Niere: HCO₃⁻ zurückholen", "und neu bilden (Phosphat,", "Ammonium; über Tage)"] },
+      { i: "monitor:4", t: ["PaCO₂ höher als erwartet:", "zusätzliche respiratorische", "Azidose (z.B. Opioide)"], k: 4 }
+    ]) }],
+    stoerungen: [{ nach: "Metabolische Azidose", caption: "Bildgeschichte: Warum Natriumbicarbonat Grenzen hat – ==ohne ausreichende Abatmung säuert es die Zellen an==.", svg: B("Grenzen von Natriumbicarbonat", [
+      { i: "infusion:1", t: ["Natriumbicarbonat i.v."] },
+      { i: "#HCO₃⁻:1 > #CO₂:5", t: ["HCO₃⁻ + H⁺ →", "H₂O + CO₂"] },
+      { i: "zelle:5 + #CO₂:5", t: ["CO₂ dringt schneller in", "die Zellen als HCO₃⁻"] },
+      { i: "lunge:5:x", t: ["Ohne mehr Abatmung:", "intrazelluläre Azidose,", "PaCO₂ ↑"], k: 5 },
+      { i: "warnung:4", t: ["Außerdem: Natrium ↑,", "Volumenlast, ionisiertes", "Ca²⁺ ↓, Kalium ↓"] }
+    ]) }]
+  });
 })();
