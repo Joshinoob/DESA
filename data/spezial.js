@@ -1,5 +1,5 @@
 // Spezialwissen: vertiefte Organkapitel (Herz, Lunge, Niere, Gehirn, Leber, Blut & Gerinnung,
-// Nerv & Muskel, Säure-Basen, Hormone & Stressreaktion) – von der Zelle bis zum
+// Nerv & Muskel, Säure-Basen, Hormone & Stressreaktion, Pharmakologie-Grundlagen) – von der Zelle bis zum
 // Organsystem, mit klinischem Anästhesiebezug. Inhalte eigens verfasst auf Basis von
 // Standardlehrbüchern und Übersichtsarbeiten (Quellen je Organ unter "sources").
 //
@@ -20,7 +20,7 @@
 (function () {
   window.SPEZIAL = window.SPEZIAL || [];
   window.SPEZIAL_METHOD = {
-    intro: "Spezialwissen erklärt Herz, Lunge, Niere, Gehirn, Leber, Blut & Gerinnung, Nerv & Muskel, Säure-Basen sowie Hormone & Stressreaktion zusammenhängend auf Facharzt- und EDAIC-Niveau – von der Zelle über Gewebe und Organ bis zur Regulation im Gesamtorganismus und zur Bedeutung in Narkose und Intensivmedizin.",
+    intro: "Spezialwissen erklärt Herz, Lunge, Niere, Gehirn, Leber, Blut & Gerinnung, Nerv & Muskel, Säure-Basen, Hormone & Stressreaktion sowie die Pharmakologie-Grundlagen (Rezeptoren, Signalwege, Pharmakodynamik und -kinetik) zusammenhängend auf Facharzt- und EDAIC-Niveau – von der Zelle über Gewebe und Organ bis zur Regulation im Gesamtorganismus und zur Bedeutung in Narkose und Intensivmedizin.",
     steps: [
       "**Leitfrage zuerst:** Versuche sie kurz selbst zu beantworten, bevor du liest. Das aktiviert Vorwissen, und Neues wird besser verankert.",
       "**Lesen in Ebenen:** Jedes Kapitel hat eine Ebene (Zelle → Gewebe → Organ → System → Klinik). Achte darauf, wie die Mechanismen einer Ebene die nächste erklären.",
@@ -45,7 +45,7 @@
       (ch.selbsttest || []).forEach(function (item, i) {
         cards.push({
           id: "fc-sw-" + organ.id + "-" + ch.id + "-" + (i + 1),
-          module: "physiologie",
+          module: organ.module || "physiologie",
           subtopic: organ.subtopic,
           spezialwissen: organ.id,
           kapitel: ch.id,
