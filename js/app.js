@@ -2320,6 +2320,63 @@
     return "";
   }
 
+  // Abbildung (eigenes SVG-Schema oder lokale Bilddatei mit Quellen-/Lizenzangabe)
+  function spezialFigure(f) {
+    const q = f.quelle;
+    const quelle = q ? '<span class="sw-fig-quelle">Abbildung: ' + escapeHtml(q.text) + (q.lizenz ? " · Lizenz: " + escapeHtml(q.lizenz) : "") +
+      (q.url ? ' · <a href="' + escapeHtml(q.url) + '" target="_blank" rel="noopener">Quelle</a>' : "") + "</span>" : "";
+    const inner = f.src ? '<img src="' + escapeHtml(f.src) + '" alt="' + escapeHtml(f.alt || f.caption || "") + '" loading="lazy">' : f.svg;
+    return '<figure class="sw-fig">' + inner + "<figcaption>" + '<span class="sw-fig-hint" aria-hidden="true">⤢ antippen</span>' +
+      spezialInline(f.caption || "") + quelle + "</figcaption></figure>";
+  }
+
+  // Kapiteltext mit Abbildungen: eine Abbildung mit "nach" steht am Ende des Abschnitts mit dieser
+  // Zwischenüberschrift, Abbildungen ohne "nach" am Ende des Textes.
+  function spezialBodyHtml(ch) {
+    const figs = (ch.figure ? [ch.figure] : []).concat(ch.figures || []);
+    const used = [];
+    let section = null, html = "";
+    function flush() {
+      figs.forEach(function (f, i) {
+        if (used.indexOf(i) === -1 && f.nach && f.nach === section) { html += spezialFigure(f); used.push(i); }
+      });
+    }
+    ch.body.forEach(function (b) {
+      if (b && typeof b === "object" && b.h) { flush(); section = b.h; }
+      html += spezialBlock(b);
+    });
+    flush();
+    figs.forEach(function (f, i) { if (used.indexOf(i) === -1) html += spezialFigure(f); });
+    return html;
+  }
+
+  // Abbildung zum genauen Ansehen vergrößern (v.a. am Handy): antippen öffnet sie bildschirmfüllend und scrollbar.
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest) return;
+    if (e.target.closest("a")) return;
+    const open = document.querySelector(".fig-zoom");
+    if (open) {
+      if (e.target.closest(".fig-zoom-close") || e.target.closest(".fig-zoom .sw-fig") || e.target === open) { e.preventDefault(); open.remove(); }
+      return;
+    }
+    const fig = e.target.closest(".sw-chapter .sw-fig");
+    if (!fig) return;
+    const layer = document.createElement("div");
+    layer.className = "fig-zoom";
+    layer.setAttribute("role", "dialog");
+    layer.setAttribute("aria-label", "Abbildung vergrößert");
+    layer.innerHTML = '<button class="btn btn-sm btn-secondary fig-zoom-close" type="button">✕ Schließen</button>' + fig.outerHTML;
+    document.body.appendChild(layer);
+  });
+  document.addEventListener("keydown", function (e) {
+    const open = document.querySelector(".fig-zoom");
+    if (open && e.key === "Escape") open.remove();
+  });
+  window.addEventListener("hashchange", function () {
+    const open = document.querySelector(".fig-zoom");
+    if (open) open.remove();
+  });
+
   function spezialCards(organId, chapterId) {
     return FLASHCARDS.filter(function (c) {
       return c.spezialwissen === organId && (!chapterId || c.kapitel === chapterId);
@@ -2428,13 +2485,13 @@
       "<h1>" + escapeHtml(ch.title) + "</h1>" +
       '<div class="sw-box sw-leitfrage"><div class="sw-box-title">Leitfrage – kurz selbst beantworten, dann lesen</div><p>' + spezialInline(ch.leitfrage) + "</p></div>" +
       (ch.einfach ? '<div class="sw-box sw-einfach"><div class="sw-box-title">In einfachen Worten</div><p>' + spezialInline(ch.einfach) + "</p></div>" : "") +
-      '<div class="sw-body">' + ch.body.map(spezialBlock).join("") + "</div>" +
-      (ch.figure ? '<figure class="sw-fig">' + ch.figure.svg + "<figcaption>" + escapeHtml(ch.figure.caption) + "</figcaption></figure>" : "") +
+      '<div class="sw-body">' + spezialBodyHtml(ch) + "</div>" +
       '<div class="sw-box sw-merke"><div class="sw-box-title">Merke</div><ul class="sw-list">' + ch.merke.map(function (m) { return "<li>" + spezialInline(m) + "</li>"; }).join("") + "</ul></div>" +
       (warumHtml ? '<h2 class="sw-h2">Warum? – Selbsterklären</h2>' + warumHtml : "") +
       ((ch.klinik || []).length ? '<div class="sw-box sw-klinik"><div class="sw-box-title">Klinik &amp; Anästhesie</div><ul class="sw-list">' + ch.klinik.map(function (k) { return "<li>" + spezialInline(k) + "</li>"; }).join("") + "</ul></div>" : "") +
       (testHtml ? '<h2 class="sw-h2">Selbsttest – erst im Kopf antworten</h2>' + testHtml : "") +
-      glossaryHtml(JSON.stringify([ch.leitfrage, ch.einfach || "", ch.body, ch.merke, ch.warum || [], ch.klinik || [], ch.selbsttest || []]), "sw-glossary") +
+      glossaryHtml(JSON.stringify([ch.leitfrage, ch.einfach || "", ch.body, ch.merke, ch.warum || [], ch.klinik || [], ch.selbsttest || [],
+        (ch.figure ? [ch.figure] : []).concat(ch.figures || []).map(function (f) { return (f.caption || "") + " " + String(f.svg || "").replace(/<[^>]+>/g, " "); })]), "sw-glossary") +
       '<div class="cta-row sw-actions">' +
       '<button class="btn ' + (isRead ? "btn-primary" : "btn-secondary") + '" id="sw-mark-read">' + (isRead ? "✓ Gelesen" : "Als gelesen markieren") + "</button>" +
       (chapterCards.length ? '<a class="btn btn-secondary" href="#/learn-session/spezial/' + o.id + ":" + ch.id + '">Kapitelkarten ins Langzeitgedächtnis (' + chapterCards.length + ")</a>" : "") +
