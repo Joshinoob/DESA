@@ -3250,7 +3250,8 @@
     const slot = soeSlot(id);
     const pflicht = (soeTag && soeTag.pflicht && soeTag.pflicht[id] ? window.SOE_TEIL2.pflicht.find(function (q) { return q.id === soeTag.pflicht[id]; }) : null) || soePflichtFuer(id, slot);
     const fragen = ["Einstieg: Besprechen Sie das Szenario – Ihr strukturiertes Vorgehen."].concat(s.followups).concat(pflicht ? [pflicht.frage] : []);
-    soeSim = { s: s, slot: slot, pflicht: pflicht, fragen: fragen, phase: "vorbereitung", ende: Date.now() + 10 * 60000, frage: 0, start: 0, wechselGezeigt: false, noten: fragen.map(function () { return null; }) };
+    const fallbild = pflicht ? shuffle(fallbilderZu(pflicht.id))[0] || null : null;
+    soeSim = { s: s, slot: slot, pflicht: pflicht, fallbild: fallbild, fragen: fragen, phase: "vorbereitung", ende: Date.now() + 10 * 60000, frage: 0, start: 0, wechselGezeigt: false, noten: fragen.map(function () { return null; }) };
     renderSoeSim();
     clearSoeSimTimer();
     soeSimTimer = setInterval(soeSimTick, 1000);
@@ -3301,6 +3302,7 @@
         '<p class="muted">Frage ' + (S.frage + 1) + " von " + S.fragen.length + " · Richtwert ca. " + proFrage + " min pro Frage (alle Fragen zählen gleich viel). Antworte laut und strukturiert.</p>" +
         '<div class="sw-box sw-einfach"><div class="sw-box-title">Prüfer' + (istPflicht(S.frage) && profil ? " – Pflichtthema " + escapeHtml(profil.pflichtKurz) : "") + "</div><p>" + escapeHtml(S.fragen[S.frage]) + "</p></div>" +
         (S.frage === 0 ? '<details><summary>Szenario noch einmal lesen</summary><p>' + escapeHtml(s.scenario) + "</p></details>" : "") +
+        (istPflicht(S.frage) && S.fallbild ? '<p class="muted">Der Prüfer legt Ihnen dieses Bild vor: ' + escapeHtml(S.fallbild.aufgabe) + "</p>" + fallbildFigur(S.fallbild) : "") +
         '<div class="cta-row">' + (S.frage < S.fragen.length - 1 ? '<button class="btn btn-primary" id="soe-naechste">Nächste Frage</button>' : '<button class="btn btn-primary" id="soe-fertig">SOE beenden</button>') + "</div>";
     } else if (S.phase === "bewertung") {
       inhalt =
@@ -3320,6 +3322,7 @@
         "<h2>Musterantwort</h2><p>" + escapeHtml(s.modelAnswer) + "</p>" +
         "<h2>Worauf der Prüfer achtet</h2><p>" + escapeHtml(s.examTips) + "</p>" +
         (S.pflicht ? soePflichtHtml(S.pflicht, "Pflichtfrage: ") : "") +
+        (S.fallbild ? "<h2>Fallbild</h2>" + fallbildFigur(S.fallbild) + fallbildBefund(S.fallbild) : "") +
         '<div class="cta-row">' +
         (soeTag ? (naechste ? '<a class="btn btn-primary" href="#/soe-sim/' + naechste + '">Weiter mit SOE ' + (soeTag.ids.indexOf(naechste) + 1) + "</a>" : '<button class="btn btn-primary" id="soe-tag-ende">Prüfungstag auswerten</button>') : '<a class="btn btn-primary" href="#/soe">Zur Übersicht</a>') +
         "</div>";
@@ -3351,6 +3354,23 @@
     by("soe-tag-ende", renderSoeTagErgebnis);
   }
 
+  // Lizenzierte Fallbilder (data/fallbilder.js): Bild mit Bildnachweis, Befund getrennt aufdeckbar
+  function fallbilderZu(pflichtId) {
+    return (window.FALLBILDER || []).filter(function (f) { return f.pflicht === pflichtId; });
+  }
+  function fallbildFigur(f) {
+    const q = f.quelle;
+    return '<figure class="sw-fig fallbild"><img src="' + escapeHtml(f.src) + '" alt="' + escapeHtml(f.alt) + '" loading="lazy">' +
+      '<figcaption><span class="sw-fig-quelle">Bild: ' + escapeHtml(q.autor) + ", „" + escapeHtml(q.titel) + "“, " +
+      '<a href="' + escapeHtml(q.url) + '" target="_blank" rel="noopener">Wikimedia Commons</a>, Lizenz ' +
+      (q.lizenzUrl ? '<a href="' + escapeHtml(q.lizenzUrl) + '" target="_blank" rel="noopener">' + escapeHtml(q.lizenz) + "</a>" : escapeHtml(q.lizenz)) +
+      (q.geaendert ? " · " + escapeHtml(q.geaendert) : "") + "</span></figcaption></figure>";
+  }
+  function fallbildBefund(f) {
+    return '<div class="sw-box sw-einfach"><div class="sw-box-title">Befund</div><ul class="sw-list">' +
+      f.befund.map(function (b) { return "<li>" + richText(b) + "</li>"; }).join("") + "</ul></div>";
+  }
+
   function soePflichtHtml(q, prefix, ohneTitel) {
     return (ohneTitel ? "" : "<h2>" + escapeHtml((prefix || "") + q.thema) + "</h2>") +
       '<ul class="sw-list">' + q.kern.map(function (k) { return "<li>" + richText(k) + "</li>"; }).join("") + "</ul>" +
@@ -3378,8 +3398,25 @@
           '<div class="cta-row"><button type="button" class="btn btn-sm btn-primary" data-zeige="' + i + '">Kernpunkte zeigen</button></div>' +
           '<div class="hidden" id="pf-' + i + '">' + soePflichtHtml(q, "", true) + "</div></div>";
       }).join("") +
-      glossaryHtml(JSON.stringify(fragen.map(function (q) { return [q.frage, q.kern]; })), "sw-glossary") +
+      (function () {
+        const faelle = (window.FALLBILDER || []).filter(function (f) { return fragen.some(function (q) { return q.id === f.pflicht; }); });
+        if (!faelle.length) return "";
+        return '<h2 class="sw-h2" id="fallbilder">Fallbilder zum Befunden (' + faelle.length + ")</h2>" +
+          '<p class="muted">Echte, frei lizenzierte Bilder. Beschreibe laut: Bildart und Qualität → Auffälligkeit → Deutung → Konsequenz. Erst dann den Befund aufdecken.</p>' +
+          faelle.map(function (f, i) {
+            return '<div class="soe-note"><div class="session-progress">' + escapeHtml(f.titel) + "</div><p><strong>" + escapeHtml(f.aufgabe) + "</strong></p>" + fallbildFigur(f) +
+              '<div class="cta-row"><button type="button" class="btn btn-sm btn-primary" data-fall="' + i + '">Befund zeigen</button></div>' +
+              '<div class="hidden" id="fb-' + i + '">' + fallbildBefund(f) + "</div></div>";
+          }).join("");
+      })() +
+      glossaryHtml(JSON.stringify(fragen.map(function (q) { return [q.frage, q.kern]; }).concat((window.FALLBILDER || []).map(function (f) { return [f.aufgabe, f.befund]; }))), "sw-glossary") +
       "</main>";
+    app.querySelectorAll("[data-fall]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        document.getElementById("fb-" + b.getAttribute("data-fall")).classList.remove("hidden");
+        b.parentNode.classList.add("hidden");
+      });
+    });
     app.querySelectorAll("[data-zeige]").forEach(function (b) {
       b.addEventListener("click", function () {
         document.getElementById("pf-" + b.getAttribute("data-zeige")).classList.remove("hidden");
