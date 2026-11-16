@@ -3368,7 +3368,9 @@
   }
   function fallbildBefund(f) {
     return '<div class="sw-box sw-einfach"><div class="sw-box-title">Befund</div><ul class="sw-list">' +
-      f.befund.map(function (b) { return "<li>" + richText(b) + "</li>"; }).join("") + "</ul></div>";
+      f.befund.map(function (b) { return "<li>" + richText(b) + "</li>"; }).join("") + "</ul></div>" +
+      (f.loesung ? '<figure class="sw-fig fallbild"><img src="' + escapeHtml(f.loesung.src) + '" alt="' + escapeHtml(f.loesung.alt) + '" loading="lazy"><figcaption>' +
+        escapeHtml(f.loesung.text) + ' <span class="sw-fig-quelle">(markierte Fassung derselben Quelle)</span></figcaption></figure>' : "");
   }
 
   function soePflichtHtml(q, prefix, ohneTitel) {
