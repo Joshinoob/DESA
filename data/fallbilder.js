@@ -81,6 +81,6 @@ window.FALLBILDER = [
       "Typisch für **Hyperkaliämie**; ==Kalium außen ↑ → Ruhemembranpotenzial weniger negativ → Natriumkanäle teils inaktiviert → Erregungsleitung langsamer → später breiter QRS, Sinuswelle, Kammerflimmern==.",
       "Konsequenz: Kalium sofort bestimmen (Blutgas); bei EKG-Veränderungen **Calcium i.v.**, dann Insulin-Glukose, Salbutamol, Dialyse; Monitor."
     ],
-    quelle: { autor: "Mikael Häggström", titel: "ECG in hyperkalemia", url: "https://commons.wikimedia.org/wiki/File:ECG_in_hyperkalemia.png", lizenz: "gemeinfrei (Public Domain)", geaendert: "verkleinert, Hintergrund weiß" }
+    quelle: { autor: "Mikael Häggström", titel: "ECG in hyperkalemia", url: "https://commons.wikimedia.org/wiki/File:ECG_in_hyperkalemia.png", lizenz: "gemeinfrei (Public Domain)", geaendert: "verkleinert, Titel und Beschriftungen entfernt" }
   }
 ];
