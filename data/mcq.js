@@ -1,4 +1,5 @@
-// Testfragen-Datenbank (EDAIC-Stil: Single Best Answer, 5 Optionen).
+// Testfragen-Datenbank (Single Best Answer, 5 Optionen) zum Verstehen und Unterscheiden.
+// Das Originalformat der EDAIC Teil 1 (5 Aussagen, je richtig/falsch) steht in data/mtf.js.
 // Jede Frage: {id, module, subtopic, question, options:[5], correct: 0-basierter Index, explanation}
 window.MCQ = [
   // ===== ANATOMIE =====

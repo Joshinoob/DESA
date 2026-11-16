@@ -422,6 +422,12 @@
   function router() {
     try {
       routeTo();
+      // Mobil ist die Navigation eine waagerecht wischbare Leiste: aktiven Eintrag sichtbar machen
+      const aktiv = document.querySelector(".navlinks .navlink.active");
+      if (aktiv) {
+        const leiste = aktiv.parentNode, lr = leiste.getBoundingClientRect(), ar = aktiv.getBoundingClientRect();
+        leiste.scrollLeft += ar.left - lr.left - (lr.width - ar.width) / 2;
+      }
     } catch (e) {
       // Verhindert eine komplett weiße Seite bei einem unerwarteten Fehler (z.B. defekte
       // Content-Daten, nicht geladenes Skript) – zeigt stattdessen einen Hinweis mit
@@ -443,6 +449,8 @@
     // er bleibt auf allen anderen Seiten unverändert sichtbar.
     document.body.classList.toggle("learn-active", route === "learn-session");
     if (route !== "test-session") clearExamTimer();
+    if (route !== "mtf-session") clearMtfTimer();
+    if (route !== "soe-sim") clearSoeSimTimer();
     if (route === "learn") renderLearnSetup(arg);
     else if (route === "learn-session") startLearnSession(arg, parts[2]);
     else if (route === "test") renderTestSetup();
@@ -471,6 +479,13 @@
     else if (route === "literatur-test") startLiteratureQuiz(arg);
     else if (route === "soe") renderSOEList();
     else if (route === "soe-case") renderSOEDetail(arg);
+    else if (route === "soe-sim") startSoeSim(arg);
+    else if (route === "soe-tag") startSoeTag();
+    else if (route === "pruefung") renderPruefung();
+    else if (route === "zeichnen") renderZeichnenList();
+    else if (route === "zeichnen-aufgabe") renderZeichnenAufgabe(arg);
+    else if (route === "mtf") renderMtfSetup();
+    else if (route === "mtf-session") startMtfSession(arg);
     else if (route === "rechnen") renderRechnen(arg);
     else if (route === "kurven") renderKurvenStart();
     else if (route === "kurven-quiz") startKurvenQuiz(arg);
@@ -494,7 +509,9 @@
       ["drugs", "Medikamente"],
       ["leitlinien", "Leitlinien"],
       ["literatur", "Literatur"],
+      ["pruefung", "Prüfung"],
       ["soe", "Mündlich"],
+      ["zeichnen", "Zeichnen"],
       ["rechnen", "Rechnen"],
       ["kurven", "Kurven"],
       ["progress", "Fortschritt"]
@@ -641,6 +658,12 @@
       '<a class="btn btn-primary" href="#/learn-session/all">Jetzt lernen (' + sessionSize + ")</a>" +
       '<a class="btn btn-secondary" id="start-sim" href="#/test-session/blueprint-60">Prüfungssimulation starten (60 Fragen, 90 min)</a>' +
       (loadWrong().length ? '<a class="btn btn-secondary" href="#/test-session/fehler-all">Fehlertraining (' + wrongQuestions().length + ")</a>" : "") +
+      "</div>" +
+      '<div class="cta-row">' +
+      '<a class="btn btn-secondary" href="#/mtf">Teil 1 im Originalformat (Richtig/Falsch)</a>' +
+      '<a class="btn btn-secondary" href="#/zeichnen">Zeichentraining' + (function () { const st = loadZeichnen(); const n = (window.ZEICHNEN || []).filter(function (z) { return zeichnenStatus(z.id, st).faellig; }).length; return n ? " (" + n + " fällig)" : ""; })() + "</a>" +
+      '<a class="btn btn-secondary" href="#/soe-tag">SOE-Prüfungstag</a>' +
+      '<a class="btn btn-secondary" href="#/pruefung">Prüfung verstehen</a>' +
       "</div>" +
       '<details class="module-details" open>' +
       '<summary><h2>Module im Detail (' + CURRICULUM.length + ')</h2></summary>' +
@@ -868,17 +891,18 @@
       nav("test") +
       '<main class="container narrow">' +
       "<h1>Testmodus</h1>" +
-      '<p class="muted">Single-Best-Answer-Fragen im EDAIC-Stil. Jede Testfrage wird wie eine Karteikarte per Spaced Repetition eingeplant.</p>' +
+      '<p class="muted">Single-Best-Answer-Fragen zum Verstehen und Unterscheiden; jede Testfrage wird wie eine Karteikarte per Spaced Repetition eingeplant. <strong>Die EDAIC Teil 1 selbst verwendet Richtig/Falsch-Aussagen</strong> – dieses Format übst du hier:</p>' +
+      '<div class="cta-row"><a class="btn btn-secondary" href="#/mtf">Teil 1 im Originalformat (Richtig/Falsch)</a></div>' +
       '<label for="test-mode">Modus</label>' +
       '<select id="test-mode">' +
       '<option value="practice">Übungsmodus (sofortiges Feedback pro Frage)</option>' +
       '<option value="exam">Prüfungssimulation (Zeitlimit, Feedback erst am Ende, wie in der echten Prüfung)</option>' +
       "</select>" +
-      '<p class="muted">Die echte EDAIC-Part-1-Prüfung gibt ca. 90 Sekunden pro Frage vor (2 Papiere à 60 Fragen). Die Prüfungssimulation übernimmt dieses Zeitlimit – unter realistischem Zeitdruck zu üben verbessert nachweislich den Transfer aufs echte Prüfungsergebnis und deckt Selbstüberschätzung durch unbegrenztes Nachdenken beim Üben auf.</p>' +
+      '<p class="muted">Die echte EDAIC Teil 1 gibt pro Papier mit 60 Stämmen 120 min (Papier) bzw. 90 min (Computer) vor. Die Prüfungssimulation übernimmt 90 Sekunden pro Frage – unter realistischem Zeitdruck zu üben verbessert nachweislich den Transfer aufs echte Prüfungsergebnis und deckt Selbstüberschätzung durch unbegrenztes Nachdenken beim Üben auf.</p>' +
       '<label for="test-module">Modul</label>' +
       '<select id="test-module">' +
       (dueMcqCount > 0 ? '<option value="due">Fällige Testfragen (' + dueMcqCount + ")</option>" : "") +
-      '<option value="blueprint">Alle Module gewichtet (wie Prüfung: je ca. Hälfte Teil 1 und Teil 2)</option>' +
+      '<option value="blueprint">Alle Module gewichtet (je ca. Hälfte Grundlagen und Klinik, wie Paper A und B)</option>' +
       '<option value="mixed">Gemischt (zufällig aus allen Fragen)</option>' +
       (wrongQuestions().length ? '<option value="fehler">Fehlertraining: zuletzt falsch beantwortete Fragen (' + wrongQuestions().length + ")</option>" : "") +
       options + "</select>" +
@@ -2774,7 +2798,8 @@
       nav("soe") +
       '<main class="container">' +
       "<h1>Teil 2 – Mündliche Prüfung (SOE)</h1>" +
-      '<p class="muted">Lies das Szenario, sprich deine Antwort laut vor dich hin ("talk through") wie beim echten SOE, bevor du die Musterantwort aufdeckst – das trainiert freies mündliches Antworten, nicht nur Faktenwissen.</p>' +
+      '<p class="muted">Lies das Szenario, sprich deine Antwort laut vor dich hin ("talk through") wie beim echten SOE, bevor du die Musterantwort aufdeckst – das trainiert freies mündliches Antworten, nicht nur Faktenwissen. Die Simulation bildet den echten Ablauf nach: 10 min Vorbereitung, 25 min Prüfung mit Prüferwechsel nach 12,5 min und Bewertung mit der offiziellen Skala 0/1/2.</p>' +
+      '<div class="cta-row"><a class="btn btn-primary" href="#/soe-tag">Prüfungstag simulieren (4 SOEs)</a><a class="btn btn-secondary" href="#/zeichnen">Zeichentraining</a><a class="btn btn-secondary" href="#/pruefung">So wird bewertet</a></div>' +
       groupsHtml +
       "</main>";
   }
@@ -2794,7 +2819,7 @@
       '<p class="lookup-source" data-card-id="' + escapeHtml(s.id) + '-scenario" data-card-front="' + escapeHtml(s.title) + '">' + escapeHtml(s.scenario) + "</p>" +
       "<h2>Vertiefende Rückfragen des Prüfers</h2>" +
       "<ul>" + followupsHtml + "</ul>" +
-      '<div class="cta-row" id="soe-reveal-row"><button class="btn btn-primary" id="soe-reveal-btn">Musterantwort zeigen</button></div>' +
+      '<div class="cta-row" id="soe-reveal-row"><a class="btn btn-primary" href="#/soe-sim/' + s.id + '">Als Prüfung üben (10 + 25 min)</a><button class="btn btn-secondary" id="soe-reveal-btn">Musterantwort zeigen</button></div>' +
       '<div class="hidden" id="soe-answer">' +
       "<h2>Musterantwort</h2>" +
       '<p class="lookup-source" data-card-id="' + escapeHtml(s.id) + '-answer" data-card-front="' + escapeHtml(s.title) + '">' + escapeHtml(s.modelAnswer) + "</p>" +
@@ -2810,6 +2835,512 @@
     });
   }
 
+  // ---------- Prüfung verstehen: Formate, Bewertung, Antwortschemata, Lernmethoden ----------
+  function renderPruefung() {
+    const P = window.PRUEFUNG;
+    const toc = P.abschnitte.map(function (s) { return '<li><a href="#/pruefung" data-jump="pr-' + s.id + '">' + escapeHtml(s.titel) + "</a></li>"; }).join("");
+    const body = P.abschnitte.map(function (s) {
+      return '<section class="pr-abschnitt" id="pr-' + s.id + '"><h2>' + escapeHtml(s.titel) + "</h2>" + s.bloecke.map(spezialBlock).join("") + "</section>";
+    }).join("");
+    app.innerHTML =
+      nav("pruefung") +
+      '<main class="container narrow sw-chapter">' +
+      "<h1>Prüfung verstehen</h1>" +
+      '<p class="muted">Wie die Prüfungen aufgebaut sind, wie bewertet wird und wie du genau dafür übst – zusammengefasst aus den offiziellen Unterlagen der ESAIC und der Ärztekammern.</p>' +
+      '<div class="cta-row">' +
+      '<a class="btn btn-primary" href="#/mtf">Teil 1 üben: Richtig/Falsch</a>' +
+      '<a class="btn btn-secondary" href="#/zeichnen">Zeichentraining</a>' +
+      '<a class="btn btn-secondary" href="#/soe-tag">SOE-Prüfungstag simulieren</a>' +
+      "</div>" +
+      '<ul class="pr-toc">' + toc + "</ul>" +
+      '<div class="sw-body">' + body + "</div>" +
+      glossaryHtml(JSON.stringify(P.abschnitte), "sw-glossary") +
+      '<details class="sw-sources"><summary>Quellen</summary><ul class="sw-list">' + P.quellen.map(function (q) { return "<li>" + escapeHtml(q) + "</li>"; }).join("") + "</ul></details>" +
+      "</main>";
+    app.querySelectorAll("[data-jump]").forEach(function (el) {
+      el.addEventListener("click", function (e) {
+        e.preventDefault();
+        const t = document.getElementById(el.getAttribute("data-jump"));
+        if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+  }
+
+  // ---------- Zeichentraining ----------
+  const ZEICHNEN_KEY = "desa_zeichnen_v1";
+  const ZEICHNEN_TAGE = [1, 3, 7, 14, 30, 60];
+  function loadZeichnen() {
+    try { return JSON.parse(localStorage.getItem(ZEICHNEN_KEY) || "{}"); } catch (e) { return {}; }
+  }
+  function saveZeichnen(st) {
+    try { localStorage.setItem(ZEICHNEN_KEY, JSON.stringify(st)); } catch (e) { /* Speicher blockiert */ }
+  }
+  function zeichnenStatus(id, st) {
+    const e = st[id];
+    if (!e) return { text: "neu", cls: "neu", faellig: true };
+    const faellig = Date.now() >= e.next;
+    return { text: faellig ? "fällig" : "sicher bis " + new Date(e.next).toLocaleDateString("de-DE"), cls: faellig ? "faellig" : "ok", faellig: faellig };
+  }
+
+  // Musterzeichnung finden: Spezialwissen-Abbildung (aria-label), Kurve aus dem Kurven-Quiz oder eigenes SVG
+  function zeichnenModell(m) {
+    if (m.svg) return m.svg;
+    if (m.kurve) {
+      const k = (window.KURVEN || []).find(function (x) { return x.id === m.kurve; });
+      try { return k ? k.svg() : ""; } catch (e) { return ""; }
+    }
+    if (m.abb) {
+      const needle = 'aria-label="' + m.abb + '"';
+      let found = "";
+      SPEZIAL.forEach(function (o) {
+        o.chapters.forEach(function (ch) {
+          (ch.figure ? [ch.figure] : []).concat(ch.figures || []).forEach(function (f) {
+            if (!found && f.svg && f.svg.indexOf(needle) !== -1) found = f.svg;
+          });
+        });
+      });
+      return found;
+    }
+    return "";
+  }
+
+  function renderZeichnenList() {
+    const st = loadZeichnen();
+    const liste = window.ZEICHNEN || [];
+    const faellig = liste.filter(function (z) { return zeichnenStatus(z.id, st).faellig; });
+    const gruppen = {};
+    liste.forEach(function (z) { (gruppen[z.bereich] = gruppen[z.bereich] || []).push(z); });
+    const html = Object.keys(gruppen).sort().map(function (g) {
+      return "<h2>" + escapeHtml(g) + '</h2><div class="algo-grid">' + gruppen[g].map(function (z) {
+        const s = zeichnenStatus(z.id, st);
+        return '<div class="algo-card"><div class="algo-card-title">' + escapeHtml(z.titel) + "</div>" +
+          '<div class="zeichnen-status zeichnen-' + s.cls + '">' + escapeHtml(s.text) + "</div>" +
+          '<div class="cta-row"><a class="btn btn-sm btn-primary" href="#/zeichnen-aufgabe/' + z.id + '">Zeichnen</a></div></div>';
+      }).join("") + "</div>";
+    }).join("");
+    app.innerHTML =
+      nav("zeichnen") +
+      '<main class="container">' +
+      "<h1>Zeichentraining für die mündliche Prüfung</h1>" +
+      '<p class="muted">Im SOE liegen Papier und Stift bereit, und die Prüfer erwarten Kurven und Schemata – die ESAIC nennt z.B. die Sauerstoffbindungskurve und PK/PD-Graphen. So übst du: Aufgabe lesen → ohne Vorlage zeichnen (auf Papier oder auf der Zeichenfläche) und laut erklären → mit Checkliste und Musterzeichnung vergleichen → ehrlich bewerten. Sicher gekonnte Aufgaben kommen in wachsenden Abständen wieder.</p>' +
+      '<div class="cta-row">' + (faellig.length ? '<a class="btn btn-primary" href="#/zeichnen-aufgabe/' + faellig[Math.floor(Math.random() * faellig.length)].id + '">Fällige Aufgabe zeichnen (' + faellig.length + " fällig)</a>" : '<span class="muted">Keine Aufgabe fällig – gut gemacht.</span>') +
+      '<a class="btn btn-secondary" href="#/pruefung">Prüfungsformate</a></div>' +
+      html + "</main>";
+  }
+
+  function zeichenflaeche(container) {
+    const canvas = container.querySelector("canvas");
+    const ctx = canvas.getContext("2d");
+    const striche = [];
+    let aktiv = null, farbe = "#e8eef4", radierer = false;
+    function groesse() {
+      const ratio = window.devicePixelRatio || 1;
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      canvas.width = Math.round(w * ratio); canvas.height = Math.round(h * ratio);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      zeichne();
+    }
+    function zeichne() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      striche.forEach(function (s) {
+        ctx.globalCompositeOperation = s.radierer ? "destination-out" : "source-over";
+        ctx.strokeStyle = s.farbe; ctx.lineWidth = s.radierer ? 18 : 2.5; ctx.lineCap = "round"; ctx.lineJoin = "round";
+        ctx.beginPath();
+        s.punkte.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
+        if (s.punkte.length === 1) ctx.lineTo(s.punkte[0][0] + 0.1, s.punkte[0][1]);
+        ctx.stroke();
+      });
+      ctx.globalCompositeOperation = "source-over";
+    }
+    function pos(e) { const b = canvas.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; }
+    canvas.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      canvas.setPointerCapture(e.pointerId);
+      aktiv = { farbe: farbe, radierer: radierer, punkte: [pos(e)] };
+      striche.push(aktiv); zeichne();
+    });
+    canvas.addEventListener("pointermove", function (e) { if (!aktiv) return; e.preventDefault(); aktiv.punkte.push(pos(e)); zeichne(); });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) { canvas.addEventListener(ev, function () { aktiv = null; }); });
+    container.querySelectorAll("[data-farbe]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        farbe = b.getAttribute("data-farbe"); radierer = false;
+        container.querySelectorAll(".zf-btn").forEach(function (x) { x.classList.remove("zf-aktiv"); }); b.classList.add("zf-aktiv");
+      });
+    });
+    container.querySelector("[data-zf=radierer]").addEventListener("click", function (e) {
+      radierer = true; container.querySelectorAll(".zf-btn").forEach(function (x) { x.classList.remove("zf-aktiv"); }); e.currentTarget.classList.add("zf-aktiv");
+    });
+    container.querySelector("[data-zf=undo]").addEventListener("click", function () { striche.pop(); zeichne(); });
+    container.querySelector("[data-zf=leeren]").addEventListener("click", function () { striche.length = 0; zeichne(); });
+    groesse();
+    window.addEventListener("resize", function beiGroesse() {
+      if (!canvas.isConnected) { window.removeEventListener("resize", beiGroesse); return; }
+      groesse();
+    });
+  }
+
+  function renderZeichnenAufgabe(id) {
+    const z = (window.ZEICHNEN || []).find(function (x) { return x.id === id; });
+    if (!z) { renderZeichnenList(); return; }
+    const modelle = z.modelle.map(function (m) {
+      const svg = zeichnenModell(m);
+      return svg ? '<figure class="sw-fig">' + svg + (m.text ? "<figcaption>" + escapeHtml(m.text) + "</figcaption>" : "") + "</figure>" : "";
+    }).join("");
+    const kapitel = z.kapitel ? SPEZIAL.find(function (o) { return o.id === z.kapitel[0]; }) : null;
+    app.innerHTML =
+      nav("zeichnen") +
+      '<main class="container narrow sw-chapter">' +
+      '<a class="back-link" href="#/zeichnen">← Alle Zeichenaufgaben</a>' +
+      '<div class="session-progress">' + escapeHtml(z.bereich) + "</div>" +
+      "<h1>" + escapeHtml(z.titel) + "</h1>" +
+      '<div class="sw-box sw-leitfrage"><div class="sw-box-title">Aufgabe des Prüfers</div><p>' + escapeHtml(z.aufgabe) + "</p></div>" +
+      '<p class="muted">Zeichne ohne Vorlage – auf Papier oder hier mit Finger, Stift oder Maus – und erkläre dabei laut, was du zeichnest. Achsen und Einheiten zuerst.</p>' +
+      '<div class="zeichenflaeche" id="zf">' +
+      '<div class="zf-leiste">' +
+      '<button type="button" class="btn btn-sm btn-secondary zf-btn zf-aktiv" data-farbe="#e8eef4">Stift</button>' +
+      '<button type="button" class="btn btn-sm btn-secondary zf-btn" data-farbe="#4fa3e0">Blau</button>' +
+      '<button type="button" class="btn btn-sm btn-secondary zf-btn" data-farbe="#e2726d">Rot</button>' +
+      '<button type="button" class="btn btn-sm btn-secondary zf-btn" data-zf="radierer">Radierer</button>' +
+      '<button type="button" class="btn btn-sm btn-secondary" data-zf="undo">↶ Zurück</button>' +
+      '<button type="button" class="btn btn-sm btn-secondary" data-zf="leeren">Leeren</button>' +
+      "</div><canvas aria-label=\"Zeichenfläche\"></canvas></div>" +
+      '<div class="cta-row" id="z-check-row"><button class="btn btn-primary" id="z-check">Mit Checkliste vergleichen</button></div>' +
+      '<div class="hidden" id="z-checkliste"><h2 class="sw-h2">Was auf die Zeichnung gehört</h2>' +
+      '<ul class="z-check">' + z.checkliste.map(function (c, i) { return '<li><label><input type="checkbox" data-zc="' + i + '"> ' + spezialInline(c) + "</label></li>"; }).join("") + "</ul>" +
+      '<div class="cta-row" id="z-modell-row"><button class="btn btn-primary" id="z-modell">Musterzeichnung zeigen</button></div></div>' +
+      '<div class="hidden" id="z-loesung"><h2 class="sw-h2">Musterzeichnung</h2>' + modelle +
+      '<div class="sw-box sw-merke"><div class="sw-box-title">Beim Zeichnen sagen</div><ul class="sw-list">' + z.erklaeren.map(function (e) { return "<li>" + spezialInline(e) + "</li>"; }).join("") + "</ul></div>" +
+      (kapitel ? '<p><a href="#/spezial-kapitel/' + z.kapitel[0] + "/" + z.kapitel[1] + '">Zum Kapitel im Spezialwissen →</a></p>' : "") +
+      '<h2 class="sw-h2">Wie gut konntest du es?</h2>' +
+      '<p class="muted" id="z-check-summary"></p>' +
+      '<div class="cta-row">' +
+      '<button class="btn btn-secondary" data-bewertung="0">Noch nicht</button>' +
+      '<button class="btn btn-secondary" data-bewertung="1">Teilweise</button>' +
+      '<button class="btn btn-primary" data-bewertung="2">Sicher – inkl. Erklärung</button>' +
+      "</div></div>" +
+      glossaryHtml(JSON.stringify([z.aufgabe, z.checkliste, z.erklaeren]), "sw-glossary") +
+      "</main>";
+    zeichenflaeche(document.getElementById("zf"));
+    document.getElementById("z-check").addEventListener("click", function () {
+      document.getElementById("z-checkliste").classList.remove("hidden");
+      document.getElementById("z-check-row").classList.add("hidden");
+    });
+    document.getElementById("z-modell").addEventListener("click", function () {
+      document.getElementById("z-loesung").classList.remove("hidden");
+      document.getElementById("z-modell-row").classList.add("hidden");
+      const n = app.querySelectorAll("[data-zc]:checked").length;
+      document.getElementById("z-check-summary").textContent = n + " von " + z.checkliste.length + " Punkten der Checkliste hattest du auf deiner Zeichnung.";
+    });
+    app.querySelectorAll("[data-bewertung]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        const wert = Number(b.getAttribute("data-bewertung"));
+        const st = loadZeichnen();
+        const alt = st[z.id] || { stufe: 0 };
+        const stufe = wert === 2 ? Math.min(alt.stufe + 1, ZEICHNEN_TAGE.length) : wert === 1 ? Math.max(alt.stufe, 0) : 0;
+        const tage = wert === 2 ? ZEICHNEN_TAGE[stufe - 1] : wert === 1 ? 1 : 0;
+        st[z.id] = { stufe: stufe, next: Date.now() + tage * 86400000, last: Date.now() };
+        saveZeichnen(st);
+        showToast(wert === 2 ? "Gespeichert – nächste Wiederholung in " + tage + " Tag" + (tage === 1 ? "" : "en") + "." : wert === 1 ? "Gespeichert – morgen noch einmal." : "Gespeichert – bleibt fällig.");
+        location.hash = "#/zeichnen";
+      });
+    });
+  }
+
+  // ---------- Teil 1 im Originalformat: Mehrfach-Richtig/Falsch ----------
+  const MTF_ERG_KEY = "desa_mtf_ergebnisse_v1";
+  let mtfState = null;
+  let mtfTimer = null;
+  function clearMtfTimer() { if (mtfTimer) { clearInterval(mtfTimer); mtfTimer = null; } }
+  function loadMtfErgebnisse() { try { return JSON.parse(localStorage.getItem(MTF_ERG_KEY) || "[]"); } catch (e) { return []; } }
+
+  function renderMtfSetup() {
+    const MTFQ = window.MTF || [];
+    const nA = MTFQ.filter(function (q) { return q.paper === "A"; }).length, nB = MTFQ.length - nA;
+    const erg = loadMtfErgebnisse().slice(-5).reverse();
+    app.innerHTML =
+      nav("test") +
+      '<main class="container narrow">' +
+      "<h1>Teil 1 im Originalformat: Richtig/Falsch</h1>" +
+      '<p class="muted">So ist die EDAIC Teil 1 aufgebaut: ein Stamm mit fünf Aussagen, <strong>jede einzeln richtig oder falsch</strong> – alle können richtig sein, alle falsch oder jede Mischung. Jede richtige Entscheidung gibt einen Punkt, <strong>falsche oder leere Antworten kosten nichts</strong>. Deshalb immer alle Aussagen beantworten.</p>' +
+      '<label for="mtf-paper">Papier</label><select id="mtf-paper">' +
+      '<option value="AB">Paper A + B gemischt (' + MTFQ.length + " Stämme)</option>" +
+      '<option value="A">Paper A – Basiswissenschaften (' + nA + ")</option>" +
+      '<option value="B">Paper B – Klinik (' + nB + ")</option></select>" +
+      '<label for="mtf-mode">Modus</label><select id="mtf-mode">' +
+      '<option value="practice">Üben: Auflösung nach jedem Stamm</option>' +
+      '<option value="exam90">Prüfung am Computer: 90 s pro Stamm, Auflösung am Ende</option>' +
+      '<option value="exam120">Prüfung auf Papier: 120 s pro Stamm, Auflösung am Ende</option></select>' +
+      '<label for="mtf-count">Anzahl Stämme</label><select id="mtf-count"><option value="10">10</option><option value="20">20</option><option value="all">Alle</option></select>' +
+      '<div class="cta-row"><button class="btn btn-primary" id="mtf-start">Starten</button><a class="btn btn-secondary" href="#/test">Single-Best-Answer-Fragen</a></div>' +
+      (erg.length ? "<h2>Letzte Ergebnisse</h2><ul>" + erg.map(function (r) { return "<li>" + new Date(r.datum).toLocaleDateString("de-DE") + ": Paper " + escapeHtml(r.paper) + " – " + r.punkte + " / " + r.max + " Punkte (" + Math.round(100 * r.punkte / r.max) + " %)</li>"; }).join("") + "</ul>" : "") +
+      '<p class="muted">Die Bestehensgrenze der echten Prüfung wird jährlich festgelegt und nicht veröffentlicht – nutze das Ergebnis als Trend, nicht als Vorhersage.</p>' +
+      "</main>";
+    document.getElementById("mtf-start").addEventListener("click", function () {
+      location.hash = "#/mtf-session/" + document.getElementById("mtf-paper").value + "-" + document.getElementById("mtf-count").value + "-" + document.getElementById("mtf-mode").value;
+    });
+  }
+
+  function startMtfSession(arg) {
+    const teile = String(arg || "AB-10-practice").split("-");
+    const paper = teile[0], anzahl = teile[1], modus = teile[2] || "practice";
+    let pool = (window.MTF || []).filter(function (q) { return paper.indexOf(q.paper) !== -1; });
+    // Reihenfolge der Stämme und der Aussagen in jeder Runde neu mischen (keine Positionsmuster)
+    pool = shuffle(pool).map(function (q) { return Object.assign({}, q, { aussagen: shuffle(q.aussagen) }); });
+    if (anzahl !== "all") pool = pool.slice(0, Number(anzahl) || 10);
+    if (!pool.length) { renderMtfSetup(); return; }
+    const sek = modus === "exam120" ? 120 : modus === "exam90" ? 90 : 0;
+    mtfState = { fragen: pool, antworten: pool.map(function () { return [null, null, null, null, null]; }), idx: 0, modus: modus, paper: paper, geprueft: {}, deadline: sek ? Date.now() + sek * pool.length * 1000 : null };
+    clearMtfTimer();
+    if (mtfState.deadline) mtfTimer = setInterval(mtfTick, 1000);
+    renderMtfFrage();
+  }
+
+  function mtfTick() {
+    if (!mtfState || !mtfState.deadline) { clearMtfTimer(); return; }
+    const rest = mtfState.deadline - Date.now();
+    const el = document.getElementById("mtf-timer");
+    if (rest <= 0) { clearMtfTimer(); finishMtf(); return; }
+    if (el) { const s = Math.floor(rest / 1000); el.textContent = "⏱ " + Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60); el.classList.toggle("exam-timer-warn", rest < 60000); }
+  }
+
+  function renderMtfFrage() {
+    const S = mtfState, q = S.fragen[S.idx], ant = S.antworten[S.idx];
+    const pruefung = S.modus !== "practice", geprueft = !!S.geprueft[S.idx];
+    const zeilen = q.aussagen.map(function (a, i) {
+      const wahl = ant[i];
+      let fb = "";
+      if (geprueft) {
+        const ok = wahl === a[1];
+        fb = '<div class="mtf-fb ' + (wahl === null ? "mtf-leer" : ok ? "mtf-ok" : "mtf-falsch") + '">' + (wahl === null ? "nicht beantwortet – " : ok ? "✓ " : "✕ ") + "<strong>" + (a[1] ? "richtig" : "falsch") + "</strong>: " + escapeHtml(a[2]) + "</div>";
+      }
+      return '<li class="mtf-zeile"><div class="mtf-text"><span class="mtf-buchst">' + "ABCDE"[i] + "</span> " + escapeHtml(a[0]) + "</div>" +
+        '<div class="mtf-knoepfe">' +
+        '<button type="button" class="btn btn-sm ' + (wahl === true ? "btn-primary" : "btn-secondary") + '" data-i="' + i + '" data-w="1"' + (geprueft ? " disabled" : "") + ">R</button>" +
+        '<button type="button" class="btn btn-sm ' + (wahl === false ? "btn-primary" : "btn-secondary") + '" data-i="' + i + '" data-w="0"' + (geprueft ? " disabled" : "") + ">F</button>" +
+        "</div>" + fb + "</li>";
+    }).join("");
+    const offen = S.antworten.reduce(function (n, a) { return n + a.filter(function (x) { return x === null; }).length; }, 0);
+    app.innerHTML =
+      nav("test", true) +
+      '<main class="container narrow">' +
+      '<div class="session-progress">Stamm ' + (S.idx + 1) + " / " + S.fragen.length + " · Paper " + q.paper + " · " + escapeHtml(q.thema) +
+      (S.deadline ? ' · <span id="mtf-timer" class="exam-timer"></span>' : "") + "</div>" +
+      '<h2 class="mtf-stamm">' + escapeHtml(q.stamm) + "</h2>" +
+      '<ol class="mtf-liste">' + zeilen + "</ol>" +
+      '<div class="cta-row">' +
+      (S.idx > 0 && pruefung ? '<button class="btn btn-secondary" id="mtf-zurueck">← Zurück</button>' : "") +
+      (!pruefung && !geprueft ? '<button class="btn btn-primary" id="mtf-pruefen">Auflösen</button>' : "") +
+      ((pruefung || geprueft) && S.idx < S.fragen.length - 1 ? '<button class="btn btn-primary" id="mtf-weiter">Weiter →</button>' : "") +
+      ((pruefung || geprueft) && S.idx === S.fragen.length - 1 ? '<button class="btn btn-primary" id="mtf-ende">' + (pruefung ? "Abgeben" : "Auswertung") + "</button>" : "") +
+      "</div>" +
+      (pruefung ? '<p class="muted">Noch unbeantwortet: ' + offen + " Aussagen. Ohne Minuspunkte lohnt es sich, jede Aussage zu entscheiden.</p>" : "") +
+      "</main>";
+    if (S.deadline) mtfTick();
+    app.querySelectorAll("[data-i]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        const i = Number(b.getAttribute("data-i")), w = b.getAttribute("data-w") === "1";
+        ant[i] = ant[i] === w ? null : w;
+        renderMtfFrage();
+      });
+    });
+    const by = function (id, fn) { const el = document.getElementById(id); if (el) el.addEventListener("click", fn); };
+    by("mtf-pruefen", function () { S.geprueft[S.idx] = true; renderMtfFrage(); });
+    by("mtf-weiter", function () { S.idx++; renderMtfFrage(); window.scrollTo(0, 0); });
+    by("mtf-zurueck", function () { S.idx--; renderMtfFrage(); window.scrollTo(0, 0); });
+    by("mtf-ende", function () {
+      const offen2 = S.antworten.reduce(function (n, a) { return n + a.filter(function (x) { return x === null; }).length; }, 0);
+      if (pruefung && offen2 > 0 && !confirm(offen2 + " Aussagen sind noch unbeantwortet. Trotzdem abgeben?")) return;
+      finishMtf();
+    });
+  }
+
+  function finishMtf() {
+    clearMtfTimer();
+    const S = mtfState;
+    if (!S) return;
+    let punkte = 0, max = 0;
+    const proThema = {};
+    S.fragen.forEach(function (q, qi) {
+      q.aussagen.forEach(function (a, i) {
+        max++;
+        const ok = S.antworten[qi][i] === a[1];
+        if (ok) punkte++;
+        const t = proThema[q.thema] = proThema[q.thema] || { p: 0, m: 0 };
+        t.m++; if (ok) t.p++;
+      });
+    });
+    const liste = loadMtfErgebnisse();
+    liste.push({ datum: new Date().toISOString(), paper: S.paper === "AB" ? "A+B" : S.paper, punkte: punkte, max: max });
+    try { localStorage.setItem(MTF_ERG_KEY, JSON.stringify(liste.slice(-50))); } catch (e) { /* Speicher blockiert */ }
+    const schwach = Object.keys(proThema).filter(function (t) { return proThema[t].p / proThema[t].m < 0.8; });
+    const review = S.fragen.map(function (q, qi) {
+      return '<details class="mtf-review"><summary>' + escapeHtml(q.stamm) + " – " + q.aussagen.filter(function (a, i) { return S.antworten[qi][i] === a[1]; }).length + "/5</summary><ol class=\"mtf-liste\">" +
+        q.aussagen.map(function (a, i) {
+          const w = S.antworten[qi][i], ok = w === a[1];
+          return '<li class="mtf-zeile"><div class="mtf-text"><span class="mtf-buchst">' + "ABCDE"[i] + "</span> " + escapeHtml(a[0]) + '</div><div class="mtf-fb ' + (w === null ? "mtf-leer" : ok ? "mtf-ok" : "mtf-falsch") + '">' +
+            (w === null ? "nicht beantwortet – " : ok ? "✓ " : "✕ ") + "<strong>" + (a[1] ? "richtig" : "falsch") + "</strong>: " + escapeHtml(a[2]) + "</div></li>";
+        }).join("") + "</ol></details>";
+    }).join("");
+    app.innerHTML =
+      nav("test") +
+      '<main class="container narrow">' +
+      "<h1>Auswertung</h1>" +
+      '<div class="stat-cards"><div class="stat-card"><div class="stat-value">' + punkte + " / " + max + '</div><div class="stat-label">Punkte (je Aussage 1)</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + Math.round(100 * punkte / max) + ' %</div><div class="stat-label">richtig entschieden</div></div></div>' +
+      (schwach.length ? '<p>Unter 80 % lagst du bei: <strong>' + schwach.map(escapeHtml).join(", ") + "</strong> – dort im Spezialwissen nacharbeiten.</p>" : "<p>In allen Themen mindestens 80 % – stark.</p>") +
+      "<h2>Alle Stämme mit Erklärungen</h2>" + review +
+      '<div class="cta-row"><a class="btn btn-primary" href="#/mtf">Neue Runde</a><a class="btn btn-secondary" href="#/pruefung">Prüfungsformate</a></div>' +
+      "</main>";
+    mtfState = null;
+  }
+
+  // ---------- SOE-Simulation: 10 min Vorbereitung, 25 min Prüfung, Selbstbewertung 0/1/2 ----------
+  let soeSim = null;
+  let soeSimTimer = null;
+  let soeTag = null;
+  const SOE_SIM_KEY = "desa_soe_sim_v1";
+  function clearSoeSimTimer() { if (soeSimTimer) { clearInterval(soeSimTimer); soeSimTimer = null; } }
+  function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60); }
+
+  function startSoeTag() {
+    const basis = shuffle(SOE_SCENARIOS.filter(function (s) { return s.category === "Basiswissenschaften"; })).slice(0, 2);
+    const klinik = shuffle(SOE_SCENARIOS.filter(function (s) { return s.category !== "Basiswissenschaften"; })).slice(0, 2);
+    soeTag = { ids: basis.concat(klinik).map(function (s) { return s.id; }), punkte: [], max: [] };
+    app.innerHTML =
+      nav("soe") +
+      '<main class="container narrow">' +
+      "<h1>SOE-Prüfungstag simulieren</h1>" +
+      '<p>Wie am echten Prüfungstag: <strong>vormittags 2 SOEs Basiswissenschaften, nachmittags 2 SOEs Klinik</strong>, jeweils 10 min Vorbereitung und 25 min Prüfung. Sprich laut – ideal mit einem Lernpartner als Prüfer, der die Rückfragen stellt.</p>' +
+      '<ol>' + soeTag.ids.map(function (id) { const s = SOE_SCENARIOS.find(function (x) { return x.id === id; }); return "<li>" + escapeHtml(s.category) + ": " + escapeHtml(s.title) + "</li>"; }).join("") + "</ol>" +
+      '<div class="cta-row"><a class="btn btn-primary" href="#/soe-sim/' + soeTag.ids[0] + '">SOE 1 beginnen</a><a class="btn btn-secondary" href="#/soe">Abbrechen</a></div>' +
+      "</main>";
+  }
+
+  function startSoeSim(id) {
+    const s = SOE_SCENARIOS.find(function (x) { return x.id === id; });
+    if (!s) { renderSOEList(); return; }
+    if (soeTag && soeTag.ids.indexOf(id) === -1) soeTag = null;
+    const fragen = ["Einstieg: Besprechen Sie das Szenario – Ihr strukturiertes Vorgehen."].concat(s.followups);
+    soeSim = { s: s, fragen: fragen, phase: "vorbereitung", ende: Date.now() + 10 * 60000, frage: 0, start: 0, wechselGezeigt: false, noten: fragen.map(function () { return null; }) };
+    renderSoeSim();
+    clearSoeSimTimer();
+    soeSimTimer = setInterval(soeSimTick, 1000);
+  }
+
+  function soeSimTick() {
+    const S = soeSim;
+    if (!S) { clearSoeSimTimer(); return; }
+    const rest = S.ende - Date.now();
+    const el = document.getElementById("soe-timer");
+    if (el) el.textContent = "⏱ " + mmss(rest);
+    if (S.phase === "pruefung") {
+      if (!S.wechselGezeigt && Date.now() - S.start >= 12.5 * 60000) {
+        S.wechselGezeigt = true;
+        const b = document.getElementById("soe-wechsel");
+        if (b) b.classList.remove("hidden");
+        showToast("12,5 min – Prüferwechsel: der zweite Prüfer übernimmt.");
+      }
+      if (el) el.classList.toggle("exam-timer-warn", rest < 120000);
+    }
+    if (rest <= 0) {
+      if (S.phase === "vorbereitung") { soeSimPruefung(); }
+      else if (S.phase === "pruefung") { clearSoeSimTimer(); S.phase = "bewertung"; renderSoeSim(); }
+    }
+  }
+
+  function soeSimPruefung() {
+    soeSim.phase = "pruefung"; soeSim.start = Date.now(); soeSim.ende = Date.now() + 25 * 60000; soeSim.frage = 0;
+    renderSoeSim();
+  }
+
+  function renderSoeSim() {
+    const S = soeSim, s = S.s;
+    const tagInfo = soeTag ? " · Prüfungstag: SOE " + (soeTag.ids.indexOf(s.id) + 1) + " / 4" : "";
+    let inhalt = "";
+    if (S.phase === "vorbereitung") {
+      inhalt =
+        '<div class="sw-box sw-leitfrage"><div class="sw-box-title">Einstiegsszenario (10 min Vorbereitung)</div><p>' + escapeHtml(s.scenario) + "</p></div>" +
+        '<p class="muted">Notiere Stichpunkte: Problemliste, Gliederung, Zeichnung, die du zeigen willst. In der Prüfung zählt nur, was du sagst.</p>' +
+        '<textarea class="soe-notizen" id="soe-notizen" rows="7" placeholder="Deine Notizen (werden nicht gespeichert)"></textarea>' +
+        '<div class="cta-row"><button class="btn btn-primary" id="soe-los">Vorbereitung beenden – Prüfung beginnen</button></div>';
+    } else if (S.phase === "pruefung") {
+      const proFrage = Math.round(25 / S.fragen.length);
+      inhalt =
+        '<div class="' + (S.wechselGezeigt ? "" : "hidden ") + 'sw-box sw-falle" id="soe-wechsel"><div class="sw-box-title">Prüferwechsel</div><p>Nach 12,5 min übernimmt der zweite Prüfer – kein schlechtes Zeichen, sondern Ablauf.</p></div>' +
+        '<p class="muted">Frage ' + (S.frage + 1) + " von " + S.fragen.length + " · Richtwert ca. " + proFrage + " min pro Frage (alle Fragen zählen gleich viel). Antworte laut und strukturiert.</p>" +
+        '<div class="sw-box sw-einfach"><div class="sw-box-title">Prüfer</div><p>' + escapeHtml(S.fragen[S.frage]) + "</p></div>" +
+        (S.frage === 0 ? '<details><summary>Szenario noch einmal lesen</summary><p>' + escapeHtml(s.scenario) + "</p></details>" : "") +
+        '<div class="cta-row">' + (S.frage < S.fragen.length - 1 ? '<button class="btn btn-primary" id="soe-naechste">Nächste Frage</button>' : '<button class="btn btn-primary" id="soe-fertig">SOE beenden</button>') + "</div>";
+    } else if (S.phase === "bewertung") {
+      inhalt =
+        "<h2>Selbstbewertung wie die Prüfer</h2>" +
+        '<p class="muted">Bewerte jede Frage ehrlich mit der offiziellen Skala: <strong>2</strong> = flüssig, angewandt, sicher in Kernthemen, korrigiert eigene Fehler; <strong>1</strong> = nur Faktenwissen, oberflächlich oder unstrukturiert, aber nicht gefährlich; <strong>0</strong> = Frage nicht beantwortet, schwere Lücken, mehrere Antworten zur Auswahl oder gefährliches Vorgehen.</p>' +
+        S.fragen.map(function (f, i) {
+          return '<div class="soe-note"><p>' + escapeHtml(f) + '</p><div class="cta-row">' + [0, 1, 2].map(function (n) {
+            return '<button type="button" class="btn btn-sm ' + (S.noten[i] === n ? "btn-primary" : "btn-secondary") + '" data-note="' + i + ":" + n + '">' + n + "</button>";
+          }).join("") + "</div></div>";
+        }).join("") +
+        '<div class="cta-row"><button class="btn btn-primary" id="soe-auswerten"' + (S.noten.indexOf(null) !== -1 ? " disabled" : "") + ">Auswerten und Musterantwort zeigen</button></div>";
+    } else {
+      const p = S.noten.reduce(function (a, b) { return a + b; }, 0), m = S.noten.length * 2;
+      const naechste = soeTag ? soeTag.ids[soeTag.ids.indexOf(s.id) + 1] : null;
+      inhalt =
+        '<div class="stat-cards"><div class="stat-card"><div class="stat-value">' + p + " / " + m + '</div><div class="stat-label">Selbstbewertung</div></div></div>' +
+        "<h2>Musterantwort</h2><p>" + escapeHtml(s.modelAnswer) + "</p>" +
+        "<h2>Worauf der Prüfer achtet</h2><p>" + escapeHtml(s.examTips) + "</p>" +
+        '<div class="cta-row">' +
+        (soeTag ? (naechste ? '<a class="btn btn-primary" href="#/soe-sim/' + naechste + '">Weiter mit SOE ' + (soeTag.ids.indexOf(naechste) + 1) + "</a>" : '<button class="btn btn-primary" id="soe-tag-ende">Prüfungstag auswerten</button>') : '<a class="btn btn-primary" href="#/soe">Zur Übersicht</a>') +
+        "</div>";
+    }
+    app.innerHTML =
+      nav("soe", S.phase !== "fertig") +
+      '<main class="container narrow">' +
+      '<div class="session-progress">' + escapeHtml(s.category) + tagInfo + (S.phase === "vorbereitung" || S.phase === "pruefung" ? ' · <span id="soe-timer" class="exam-timer"></span>' : "") + "</div>" +
+      "<h1>" + escapeHtml(s.title) + "</h1>" + inhalt + "</main>";
+    if (S.phase === "vorbereitung" || S.phase === "pruefung") soeSimTick();
+    const by = function (id, fn) { const el = document.getElementById(id); if (el) el.addEventListener("click", fn); };
+    by("soe-los", soeSimPruefung);
+    by("soe-naechste", function () { S.frage++; renderSoeSim(); });
+    by("soe-fertig", function () { clearSoeSimTimer(); S.phase = "bewertung"; renderSoeSim(); });
+    app.querySelectorAll("[data-note]").forEach(function (b) {
+      b.addEventListener("click", function () { const t = b.getAttribute("data-note").split(":"); S.noten[Number(t[0])] = Number(t[1]); renderSoeSim(); });
+    });
+    by("soe-auswerten", function () {
+      S.phase = "fertig";
+      const p = S.noten.reduce(function (a, b) { return a + b; }, 0);
+      try {
+        const l = JSON.parse(localStorage.getItem(SOE_SIM_KEY) || "[]");
+        l.push({ id: s.id, datum: new Date().toISOString(), punkte: p, max: S.noten.length * 2 });
+        localStorage.setItem(SOE_SIM_KEY, JSON.stringify(l.slice(-100)));
+      } catch (e) { /* Speicher blockiert */ }
+      if (soeTag) { soeTag.punkte[soeTag.ids.indexOf(s.id)] = p; soeTag.max[soeTag.ids.indexOf(s.id)] = S.noten.length * 2; }
+      renderSoeSim();
+    });
+    by("soe-tag-ende", renderSoeTagErgebnis);
+  }
+
+  function renderSoeTagErgebnis() {
+    const T = soeTag;
+    const sum = function (a, i, j) { return a.slice(i, j).reduce(function (x, y) { return x + (y || 0); }, 0); };
+    const vm = sum(T.punkte, 0, 2), vmMax = sum(T.max, 0, 2), nm = sum(T.punkte, 2, 4), nmMax = sum(T.max, 2, 4);
+    const ges = vm + nm, gesMax = (vmMax + nmMax) || 1;
+    if (!vmMax || !nmMax) { renderSOEList(); return; }
+    const ok1 = vm / vmMax >= 25 / 40, ok2 = nm / nmMax >= 25 / 40, ok3 = ges / gesMax >= 60 / 80;
+    app.innerHTML =
+      nav("soe") +
+      '<main class="container narrow">' +
+      "<h1>Auswertung des Prüfungstags</h1>" +
+      '<table class="sw-table"><thead><tr><th>Teil</th><th>Selbstbewertung</th><th>Offizielle Schwelle (umgerechnet)</th></tr></thead><tbody>' +
+      "<tr><td>Vormittag (SOE 1 + 2)</td><td>" + vm + " / " + vmMax + " (" + Math.round(100 * vm / vmMax) + " %)</td><td>" + (ok1 ? "✓" : "✕") + " ≥ 62,5 % (25 von 40)</td></tr>" +
+      "<tr><td>Nachmittag (SOE 3 + 4)</td><td>" + nm + " / " + nmMax + " (" + Math.round(100 * nm / nmMax) + " %)</td><td>" + (ok2 ? "✓" : "✕") + " ≥ 62,5 % (25 von 40)</td></tr>" +
+      "<tr><td>Gesamt</td><td>" + ges + " / " + gesMax + " (" + Math.round(100 * ges / gesMax) + " %)</td><td>" + (ok3 ? "✓" : "✕") + " ≥ 75 % (60 von 80)</td></tr>" +
+      "</tbody></table>" +
+      '<p class="muted">In der echten Prüfung bewerten 8 Prüfer je 5 Themen pro SOE. Die Umrechnung auf deine Selbstbewertung dient nur der Orientierung – am aussagekräftigsten ist eine Bewertung durch einen Lernpartner.</p>' +
+      '<div class="cta-row"><a class="btn btn-primary" href="#/soe-tag">Neuer Prüfungstag</a><a class="btn btn-secondary" href="#/soe">Zur Übersicht</a></div>' +
+      "</main>";
+    soeTag = null;
+  }
+
   // ---------- Kurzanleitung (Onboarding) ----------
   // Ersetzt echte Screenshots (die bei jeder UI-Änderung veralten würden) durch ein
   // kurzes, immer aktuelles In-App-Tutorial: je ein Icon + knapper Erklärtext pro
@@ -2818,10 +3349,10 @@
   const ONBOARDING_SLIDES = [
     { icon: "🎯", title: "Willkommen beim DESA-Trainer", text: "Eine Lern-App für die EDAIC-Prüfung mit Spaced Repetition: fällige Karten kommen automatisch zur richtigen Zeit wieder dran. Aller Fortschritt bleibt nur lokal in deinem Browser gespeichert." },
     { icon: "🗂️", title: "Lernen", text: "Karteikarten nach dem Leitner-Prinzip. Vor dem Aufdecken schätzt du kurz deine Sicherheit ein (Konfidenz-Rating) – das verbessert nachweislich die Selbsteinschätzung und das Behalten. Tipp: Ein unklares Wort auf der Karte antippen/anklicken schlägt es nach und plant es fürs Wiederholen ein." },
-    { icon: "📝", title: "Test", text: "Single-Best-Answer-Fragen wie im EDAIC-Stil. Übungsmodus mit sofortigem Feedback oder Prüfungssimulation mit Zeitlimit (90 Sek./Frage) – wie in der echten Prüfung." },
+    { icon: "📝", title: "Test", text: "Single-Best-Answer-Fragen zum Verstehen sowie Fragen im echten EDAIC-Teil-1-Format (5 Aussagen, je richtig oder falsch, keine Minuspunkte). Übungsmodus mit sofortigem Feedback oder Prüfungssimulation mit Zeitlimit." },
     { icon: "🚨", title: "Algorithmen & Physiologie", text: "Notfall-Abläufe und physiologische Regelkreise als Nachlese-Timeline oder als Trainer: an jedem Punkt den richtigen nächsten Schritt auswählen." },
     { icon: "💊", title: "Tabellen, Medikamente & Leitlinien", text: "Vergleichstabellen zum Kontrastieren verwandter Fakten sowie Nachschlage-Ansichten für Medikamente und Leitlinien – jeweils mit \"Gelernt\"-Abhaken. Leitlinien lassen sich zusätzlich thematisch komplett durchgehen oder mit passenden Testfragen abfragen, ganz ohne SRS-Ablauf." },
-    { icon: "🎙️", title: "Mündlich & Fortschritt", text: "SOE-Szenarien zum lauten Selbst-Antworten für Teil 2. Im Fortschrittsbereich siehst du Lernphasen, Fälligkeitsvorschau und Kalibrierung deiner Selbsteinschätzung." }
+    { icon: "🎙️", title: "Mündlich, Zeichnen & Fortschritt", text: "SOE-Szenarien für Teil 2 – auch als Simulation mit 10 min Vorbereitung, 25 min Prüfung und Bewertung 0/1/2. Im Zeichentraining übst du Kurven und Strukturen, die Prüfer gern zeichnen lassen. Unter 'Prüfung' stehen Formate, Bewertung und Lernmethoden." }
   ];
 
   function renderOnboarding() {
