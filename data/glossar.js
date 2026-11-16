@@ -4,6 +4,14 @@
 // LA, PA, VT, AF, MR, RA, CT = Computertomographie oder Clotting Time) sind bewusst NICHT enthalten, weil eine automatische
 // Zuordnung falsch sein könnte – sie werden im Text selbst ausgeschrieben.
 window.GLOSSAR = {
+  "TEP": "Totalendoprothese",
+  "TAVI": "kathetergestützte Aortenklappenimplantation (transcatheter aortic valve implantation)",
+  "LDH": "Laktatdehydrogenase",
+  "HNO": "Hals-Nasen-Ohren-Heilkunde",
+  "HELLP": "Hämolyse, erhöhte Leberwerte, niedrige Thrombozyten (hemolysis, elevated liver enzymes, low platelets)",
+  "FEV₁": "Einsekundenkapazität (forciertes exspiratorisches Volumen in 1 s)",
+  "DES": "medikamentenfreisetzender Koronarstent (drug-eluting stent)",
+  "A5": "Amplitude (Gerinnselfestigkeit) 5 min nach Gerinnungsbeginn in der Viskoelastik (ROTEM)",
   "AaDO2": "alveolo-arterielle Sauerstoffdifferenz",
   "AaDO₂": "alveolo-arterielle Sauerstoffdifferenz",
   "AABB": "Association for the Advancement of Blood & Biotherapies",

@@ -482,6 +482,8 @@
     else if (route === "soe-sim") startSoeSim(arg);
     else if (route === "soe-tag") startSoeTag();
     else if (route === "soe-themen") renderSoeThemen(arg);
+    else if (route === "faelle") renderFaelleListe();
+    else if (route === "fall") renderFall(arg);
     else if (route === "pruefung") renderPruefung();
     else if (route === "zeichnen") renderZeichnenList();
     else if (route === "zeichnen-aufgabe") renderZeichnenAufgabe(arg);
@@ -512,6 +514,7 @@
       ["literatur", "Literatur"],
       ["pruefung", "Prüfung"],
       ["soe", "Mündlich"],
+      ["faelle", "Fälle"],
       ["zeichnen", "Zeichnen"],
       ["rechnen", "Rechnen"],
       ["kurven", "Kurven"],
@@ -661,6 +664,7 @@
       (loadWrong().length ? '<a class="btn btn-secondary" href="#/test-session/fehler-all">Fehlertraining (' + wrongQuestions().length + ")</a>" : "") +
       "</div>" +
       '<div class="cta-row">' +
+      '<a class="btn btn-secondary" href="#/faelle">Fälle zur Selbstprüfung</a>' +
       '<a class="btn btn-secondary" href="#/soe">SOE-Szenarien</a>' +
       '<a class="btn btn-secondary" href="#/soe-themen/4">Bildbefundung</a>' +
       '<a class="btn btn-secondary" href="#/zeichnen">Zeichentraining' + (function () { const st = loadZeichnen(); const n = (window.ZEICHNEN || []).filter(function (z) { return zeichnenStatus(z.id, st).faellig; }).length; return n ? " (" + n + " fällig)" : ""; })() + "</a>" +
@@ -2805,7 +2809,7 @@
       "<h1>Teil 2 – Mündliche Prüfung (SOE)</h1>" +
       '<p>Geordnet wie am Prüfungstag: Jede SOE beginnt mit einem Einstiegsszenario und hat <strong>5 gleich gewichtete Fragen</strong>, darunter ein Pflichtthema (Anatomie, Messtechnik, Zwischenfall, Bildbefund).</p>' +
       '<p class="muted">Lies das Szenario, sprich deine Antwort laut vor dich hin ("talk through") wie beim echten SOE, bevor du die Musterantwort aufdeckst – das trainiert freies mündliches Antworten, nicht nur Faktenwissen. Die Simulation bildet den echten Ablauf nach: 10 min Vorbereitung, 25 min Prüfung mit Prüferwechsel nach 12,5 min und Bewertung mit der offiziellen Skala 0/1/2.</p>' +
-      '<div class="cta-row"><a class="btn btn-primary" href="#/soe-tag">Prüfungstag simulieren (4 SOEs)</a><a class="btn btn-secondary" href="#/soe-themen/4">Bildbefundung</a><a class="btn btn-secondary" href="#/zeichnen">Zeichentraining</a><a class="btn btn-secondary" href="#/pruefung">So wird bewertet</a></div>' +
+      '<div class="cta-row"><a class="btn btn-primary" href="#/soe-tag">Prüfungstag simulieren (4 SOEs)</a><a class="btn btn-secondary" href="#/faelle">Fälle zur Selbstprüfung</a><a class="btn btn-secondary" href="#/soe-themen/4">Bildbefundung</a><a class="btn btn-secondary" href="#/zeichnen">Zeichentraining</a><a class="btn btn-secondary" href="#/pruefung">So wird bewertet</a></div>' +
       groupsHtml +
       "</main>";
   }
@@ -3424,6 +3428,106 @@
         document.getElementById("pf-" + b.getAttribute("data-zeige")).classList.remove("hidden");
         b.parentNode.classList.add("hidden");
       });
+    });
+  }
+
+  // ---------- Ausführliche Fälle zur Selbstprüfung (data/faelle.js) ----------
+  const FAELLE_KEY = "desa_faelle_v1";
+  function loadFaelle() { try { return JSON.parse(localStorage.getItem(FAELLE_KEY) || "{}"); } catch (e) { return {}; } }
+  function saveFaelle(st) { try { localStorage.setItem(FAELLE_KEY, JSON.stringify(st)); } catch (e) { /* Speicher blockiert */ } }
+  let fallState = null;
+
+  function renderFaelleListe() {
+    fallState = null;
+    const F = window.FAELLE || [];
+    const st = loadFaelle();
+    const T = window.SOE_TEIL2;
+    const gruppen = [1, 2, 3, 4].map(function (n) {
+      const liste = F.filter(function (f) { return f.soe === n; });
+      if (!liste.length) return "";
+      return "<h2>" + escapeHtml(T ? T.profile[n - 1].titel : "SOE " + n) + "</h2>" + '<div class="algo-grid">' + liste.map(function (f) {
+        const e = st[f.id];
+        return '<div class="algo-card"><div class="algo-card-title">' + escapeHtml(f.titel) + "</div>" +
+          '<p class="muted">' + escapeHtml(f.kurz) + "</p>" +
+          (e ? '<p class="muted">Zuletzt: <strong>' + e.prozent + " %</strong> · " + new Date(e.datum).toLocaleDateString("de-DE") + "</p>" : "") +
+          '<div class="cta-row"><a class="btn btn-sm btn-primary" href="#/fall/' + f.id + '">' + (e ? "Wiederholen" : "Fall starten") + "</a></div></div>";
+      }).join("") + "</div>";
+    }).join("");
+    app.innerHTML =
+      nav("faelle") +
+      '<main class="container">' +
+      "<h1>Fälle zur Selbstprüfung</h1>" +
+      '<p>Ausführliche Verläufe wie im SOE: Ausgangslage → neue Befunde → Frage. <strong>Antworte zuerst laut oder schriftlich</strong>, dann decke die Kernpunkte auf und hake ab, was du genannt hattest. Am Ende siehst du deinen Anteil, die typischen Fallstricke und Links zum Vertiefen.</p>' +
+      '<p class="muted">Eigene Fälle aus Fachwissen und aktuellen Leitlinien, gegliedert nach den Themen der großen Lehrbücher (u.a. Miller\'s Anesthesia) – kein Lehrbuchtext. Werte und Dosierungen vor der Anwendung gegen aktuelle Leitlinien prüfen.</p>' +
+      gruppen + "</main>";
+  }
+
+  function renderFall(id) {
+    const f = (window.FAELLE || []).find(function (x) { return x.id === id; });
+    if (!f) { renderFaelleListe(); return; }
+    if (!fallState || fallState.id !== id) fallState = { id: id, schritt: -1, offen: false, haken: f.schritte.map(function (s) { return s.punkte.map(function () { return false; }); }), notiz: "" };
+    const S = fallState;
+    const T = window.SOE_TEIL2;
+    let inhalt = "";
+    if (S.schritt === -1) {
+      inhalt =
+        '<div class="sw-box sw-leitfrage"><div class="sw-box-title">Ausgangslage</div><p>' + escapeHtml(f.ausgang) + "</p></div>" +
+        "<h2>Lernziele</h2><ul class=\"sw-list\">" + f.lernziele.map(function (z) { return "<li>" + escapeHtml(z) + "</li>"; }).join("") + "</ul>" +
+        '<p class="muted">Themen: ' + escapeHtml(f.themen.join(" · ")) + " · " + f.schritte.length + " Schritte</p>" +
+        '<div class="cta-row"><button class="btn btn-primary" id="fall-weiter">Fall beginnen</button></div>';
+    } else if (S.schritt < f.schritte.length) {
+      const sch = f.schritte[S.schritt];
+      inhalt =
+        '<details><summary>Ausgangslage</summary><p>' + escapeHtml(f.ausgang) + "</p></details>" +
+        (S.schritt > 0 ? '<details><summary>Bisheriger Verlauf</summary><ol>' + f.schritte.slice(0, S.schritt).map(function (x) { return "<li>" + escapeHtml(x.info) + "</li>"; }).join("") + "</ol></details>" : "") +
+        '<div class="sw-box sw-einfach"><div class="sw-box-title">Verlauf</div><p>' + escapeHtml(sch.info) + "</p></div>" +
+        '<div class="sw-box sw-leitfrage"><div class="sw-box-title">Frage</div><p><strong>' + escapeHtml(sch.frage) + "</strong></p></div>" +
+        (!S.offen
+          ? '<textarea class="soe-notizen" id="fall-notiz" rows="5" placeholder="Deine Antwort in Stichpunkten (optional, wird nicht gespeichert)">' + escapeHtml(S.notiz) + "</textarea>" +
+            '<div class="cta-row"><button class="btn btn-primary" id="fall-aufdecken">Kernpunkte aufdecken</button></div>'
+          : (S.notiz ? '<details open><summary>Deine Antwort</summary><p class="muted" style="white-space:pre-wrap">' + escapeHtml(S.notiz) + "</p></details>" : "") +
+            "<h2>Erwartete Kernpunkte – abhaken, was du genannt hast</h2>" +
+            '<ul class="z-check">' + sch.punkte.map(function (pt, i) {
+              return '<li><label><input type="checkbox" data-haken="' + i + '"' + (S.haken[S.schritt][i] ? " checked" : "") + "> " + richText(pt) + "</label></li>";
+            }).join("") + "</ul>" +
+            '<div class="sw-box sw-einfach"><div class="sw-box-title">Erklärung</div><p>' + richText(sch.erklaerung) + "</p></div>" +
+            '<div class="cta-row"><button class="btn btn-primary" id="fall-weiter">' + (S.schritt < f.schritte.length - 1 ? "Weiter im Verlauf →" : "Fall auswerten") + "</button></div>");
+    } else {
+      let ges = 0, max = 0;
+      const zeilen = f.schritte.map(function (sch, i) {
+        const n = S.haken[i].filter(Boolean).length;
+        ges += n; max += sch.punkte.length;
+        const pr = Math.round(100 * n / sch.punkte.length);
+        return "<tr><td>" + (i + 1) + ". " + escapeHtml(sch.frage) + '</td><td class="' + (pr >= 60 ? "" : "z-schwach") + '">' + n + " / " + sch.punkte.length + "</td></tr>";
+      }).join("");
+      const prozent = Math.round(100 * ges / Math.max(1, max));
+      if (!S.gespeichert) {
+        const st = loadFaelle(); st[f.id] = { prozent: prozent, datum: Date.now() }; saveFaelle(st); S.gespeichert = true;
+      }
+      const note = prozent >= 75 ? "sicher – entspricht etwa einer 2 im SOE" : prozent >= 50 ? "lückenhaft – etwa eine 1: Kernpunkte wiederholen" : "unsicher – etwa eine 0: Thema neu erarbeiten";
+      inhalt =
+        '<div class="stat-cards"><div class="stat-card"><div class="stat-value">' + prozent + ' %</div><div class="stat-label">Kernpunkte genannt</div></div></div>' +
+        '<p><strong>Einschätzung:</strong> ' + note + ".</p>" +
+        '<div class="table-scroll"><table class="module-table"><thead><tr><th>Frage</th><th>Genannt</th></tr></thead><tbody>' + zeilen + "</tbody></table></div>" +
+        '<div class="sw-box sw-falle"><div class="sw-box-title">Typische Fallstricke</div><ul class="sw-list">' + f.fallstricke.map(function (x) { return "<li>" + escapeHtml(x) + "</li>"; }).join("") + "</ul></div>" +
+        (f.links && f.links.length ? "<h2>Vertiefen</h2><div class=\"cta-row\">" + f.links.map(function (l) { return '<a class="btn btn-sm btn-secondary" href="' + l[0] + '">' + escapeHtml(l[1]) + "</a>"; }).join("") + "</div>" : "") +
+        '<div class="cta-row"><button class="btn btn-primary" id="fall-neu">Fall wiederholen</button><a class="btn btn-secondary" href="#/faelle">Alle Fälle</a></div>';
+    }
+    app.innerHTML =
+      nav("faelle", S.schritt >= 0 && S.schritt < f.schritte.length) +
+      '<main class="container narrow sw-chapter">' +
+      '<a class="back-link" href="#/faelle">← Alle Fälle</a>' +
+      '<div class="session-progress">' + escapeHtml(T ? T.profile[f.soe - 1].titel : "SOE " + f.soe) +
+      (S.schritt >= 0 && S.schritt < f.schritte.length ? " · Schritt " + (S.schritt + 1) + " / " + f.schritte.length : "") + "</div>" +
+      "<h1>" + escapeHtml(f.titel) + "</h1>" + inhalt +
+      glossaryHtml(JSON.stringify([f.ausgang, f.schritte]), "sw-glossary") +
+      "</main>";
+    const by = function (idd, fn) { const el = document.getElementById(idd); if (el) el.addEventListener("click", fn); };
+    by("fall-weiter", function () { S.schritt++; S.offen = false; S.notiz = ""; renderFall(id); window.scrollTo(0, 0); });
+    by("fall-aufdecken", function () { const n = document.getElementById("fall-notiz"); S.notiz = n ? n.value : ""; S.offen = true; renderFall(id); });
+    by("fall-neu", function () { fallState = null; renderFall(id); window.scrollTo(0, 0); });
+    app.querySelectorAll("[data-haken]").forEach(function (cb) {
+      cb.addEventListener("change", function () { S.haken[S.schritt][Number(cb.getAttribute("data-haken"))] = cb.checked; });
     });
   }
 
