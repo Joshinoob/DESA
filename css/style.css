@@ -902,3 +902,7 @@ main h1, main h2 { overflow-wrap: break-word; }
 .soe-notizen { width: 100%; box-sizing: border-box; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; font: inherit; }
 .soe-note { border-bottom: 1px solid var(--border); padding: 6px 0; }
 .soe-note p { margin: 4px 0; }
+
+/* Lizenzierte Fallbilder (Röntgen, CT, Ultraschall, EKG) */
+.sw-fig.fallbild img { background: #000; max-height: 70vh; object-fit: contain; }
+.sw-fig.fallbild figcaption a { color: inherit; }
