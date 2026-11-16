@@ -481,6 +481,7 @@
     else if (route === "soe-case") renderSOEDetail(arg);
     else if (route === "soe-sim") startSoeSim(arg);
     else if (route === "soe-tag") startSoeTag();
+    else if (route === "soe-themen") renderSoeThemen(arg);
     else if (route === "pruefung") renderPruefung();
     else if (route === "zeichnen") renderZeichnenList();
     else if (route === "zeichnen-aufgabe") renderZeichnenAufgabe(arg);
@@ -656,13 +657,13 @@
       "</div>" +
       '<div class="cta-row">' +
       '<a class="btn btn-primary" href="#/learn-session/all">Jetzt lernen (' + sessionSize + ")</a>" +
-      '<a class="btn btn-secondary" id="start-sim" href="#/test-session/blueprint-60">Prüfungssimulation starten (60 Fragen, 90 min)</a>' +
+      '<a class="btn btn-primary" href="#/soe-tag">SOE-Prüfungstag (4 SOEs)</a>' +
       (loadWrong().length ? '<a class="btn btn-secondary" href="#/test-session/fehler-all">Fehlertraining (' + wrongQuestions().length + ")</a>" : "") +
       "</div>" +
       '<div class="cta-row">' +
-      '<a class="btn btn-secondary" href="#/mtf">Teil 1 im Originalformat (Richtig/Falsch)</a>' +
+      '<a class="btn btn-secondary" href="#/soe">SOE-Szenarien</a>' +
+      '<a class="btn btn-secondary" href="#/soe-themen/4">Bildbefundung</a>' +
       '<a class="btn btn-secondary" href="#/zeichnen">Zeichentraining' + (function () { const st = loadZeichnen(); const n = (window.ZEICHNEN || []).filter(function (z) { return zeichnenStatus(z.id, st).faellig; }).length; return n ? " (" + n + " fällig)" : ""; })() + "</a>" +
-      '<a class="btn btn-secondary" href="#/soe-tag">SOE-Prüfungstag</a>' +
       '<a class="btn btn-secondary" href="#/pruefung">Prüfung verstehen</a>' +
       "</div>" +
       '<details class="module-details" open>' +
@@ -673,8 +674,6 @@
       "</details>" +
       '<p class="muted"><a href="#" id="show-onboarding-link">Kurzanleitung erneut anzeigen</a></p>' +
       "</main>";
-    const sim = document.getElementById("start-sim");
-    if (sim) sim.addEventListener("click", function () { pendingTestMode = "exam"; });
 
   }
 
@@ -2778,12 +2777,15 @@
   // Kein Karteikarten-Format: SOE-Szenarien sind lange, zusammenhängende Antworten, die man
   // laut vor sich hin sprechen üben soll ("talk through"), nicht auswendig lernen wie Fakten.
   function renderSOEList() {
+    const T = window.SOE_TEIL2;
     const groups = {};
     SOE_SCENARIOS.forEach(function (s) {
-      (groups[s.category] = groups[s.category] || []).push(s);
+      (groups[soeSlot(s.id)] = groups[soeSlot(s.id)] || []).push(s);
     });
-    const groupsHtml = Object.keys(groups).map(function (cat) {
-      const cards = groups[cat].map(function (s) {
+    const groupsHtml = [1, 2, 3, 4].filter(function (n) { return groups[n]; }).map(function (n) {
+      const pr = T.profile[n - 1];
+      const anzahl = T.pflicht.filter(function (q) { return q.soe === n; }).length;
+      const cards = groups[n].map(function (s) {
         return (
           '<div class="algo-card">' +
           '<div class="algo-card-title">' + escapeHtml(s.title) + "</div>" +
@@ -2791,15 +2793,19 @@
           "</div>"
         );
       }).join("");
-      return "<h2>" + escapeHtml(cat) + "</h2>" + '<div class="algo-grid">' + cards + "</div>";
+      return "<h2>" + escapeHtml(pr.titel) + ' <span class="muted">(' + pr.zeit + ")</span></h2>" +
+        '<p class="muted">' + escapeHtml(pr.inhalt) + " Pflicht: " + escapeHtml(pr.pflicht) + ".</p>" +
+        '<div class="cta-row"><a class="btn btn-sm btn-secondary" href="#/soe-themen/' + n + '">Pflichtfragen ' + escapeHtml(pr.pflichtKurz) + " (" + anzahl + ")</a></div>" +
+        '<div class="algo-grid">' + cards + "</div>";
     }).join("");
 
     app.innerHTML =
       nav("soe") +
       '<main class="container">' +
       "<h1>Teil 2 – Mündliche Prüfung (SOE)</h1>" +
+      '<p>Geordnet wie am Prüfungstag: Jede SOE beginnt mit einem Einstiegsszenario und hat <strong>5 gleich gewichtete Fragen</strong>, darunter ein Pflichtthema (Anatomie, Messtechnik, Zwischenfall, Bildbefund).</p>' +
       '<p class="muted">Lies das Szenario, sprich deine Antwort laut vor dich hin ("talk through") wie beim echten SOE, bevor du die Musterantwort aufdeckst – das trainiert freies mündliches Antworten, nicht nur Faktenwissen. Die Simulation bildet den echten Ablauf nach: 10 min Vorbereitung, 25 min Prüfung mit Prüferwechsel nach 12,5 min und Bewertung mit der offiziellen Skala 0/1/2.</p>' +
-      '<div class="cta-row"><a class="btn btn-primary" href="#/soe-tag">Prüfungstag simulieren (4 SOEs)</a><a class="btn btn-secondary" href="#/zeichnen">Zeichentraining</a><a class="btn btn-secondary" href="#/pruefung">So wird bewertet</a></div>' +
+      '<div class="cta-row"><a class="btn btn-primary" href="#/soe-tag">Prüfungstag simulieren (4 SOEs)</a><a class="btn btn-secondary" href="#/soe-themen/4">Bildbefundung</a><a class="btn btn-secondary" href="#/zeichnen">Zeichentraining</a><a class="btn btn-secondary" href="#/pruefung">So wird bewertet</a></div>' +
       groupsHtml +
       "</main>";
   }
@@ -2838,8 +2844,10 @@
   // ---------- Prüfung verstehen: Formate, Bewertung, Antwortschemata, Lernmethoden ----------
   function renderPruefung() {
     const P = window.PRUEFUNG;
-    const toc = P.abschnitte.map(function (s) { return '<li><a href="#/pruefung" data-jump="pr-' + s.id + '">' + escapeHtml(s.titel) + "</a></li>"; }).join("");
-    const body = P.abschnitte.map(function (s) {
+    // Teil 1 ist bestanden: Teil 2 zuerst, Teil 1 nur noch zur Einordnung am Ende
+    const abschnitte = P.abschnitte.filter(function (a) { return a.id !== "teil1"; }).concat(P.abschnitte.filter(function (a) { return a.id === "teil1"; }));
+    const toc = abschnitte.map(function (s) { return '<li><a href="#/pruefung" data-jump="pr-' + s.id + '">' + escapeHtml(s.titel) + "</a></li>"; }).join("");
+    const body = abschnitte.map(function (s) {
       return '<section class="pr-abschnitt" id="pr-' + s.id + '"><h2>' + escapeHtml(s.titel) + "</h2>" + s.bloecke.map(spezialBlock).join("") + "</section>";
     }).join("");
     app.innerHTML =
@@ -2848,9 +2856,9 @@
       "<h1>Prüfung verstehen</h1>" +
       '<p class="muted">Wie die Prüfungen aufgebaut sind, wie bewertet wird und wie du genau dafür übst – zusammengefasst aus den offiziellen Unterlagen der ESAIC und der Ärztekammern.</p>' +
       '<div class="cta-row">' +
-      '<a class="btn btn-primary" href="#/mtf">Teil 1 üben: Richtig/Falsch</a>' +
+      '<a class="btn btn-primary" href="#/soe-tag">SOE-Prüfungstag simulieren</a>' +
+      '<a class="btn btn-secondary" href="#/soe">Szenarien und Pflichtfragen</a>' +
       '<a class="btn btn-secondary" href="#/zeichnen">Zeichentraining</a>' +
-      '<a class="btn btn-secondary" href="#/soe-tag">SOE-Prüfungstag simulieren</a>' +
       "</div>" +
       '<ul class="pr-toc">' + toc + "</ul>" +
       '<div class="sw-body">' + body + "</div>" +
@@ -3202,26 +3210,47 @@
   function clearSoeSimTimer() { if (soeSimTimer) { clearInterval(soeSimTimer); soeSimTimer = null; } }
   function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60); }
 
+  function soeSlot(id) {
+    const T = window.SOE_TEIL2;
+    if (T && T.slot[id]) return T.slot[id];
+    const s = SOE_SCENARIOS.find(function (x) { return x.id === id; });
+    return s && s.category === "Basiswissenschaften" ? 1 : 3;
+  }
+  function soePflichtFuer(id, slot) {
+    const pool = ((window.SOE_TEIL2 || {}).pflicht || []).filter(function (q) { return q.soe === slot && (q.nicht || []).indexOf(id) === -1; });
+    return pool.length ? shuffle(pool)[0] : null;
+  }
+
   function startSoeTag() {
-    const basis = shuffle(SOE_SCENARIOS.filter(function (s) { return s.category === "Basiswissenschaften"; })).slice(0, 2);
-    const klinik = shuffle(SOE_SCENARIOS.filter(function (s) { return s.category !== "Basiswissenschaften"; })).slice(0, 2);
-    soeTag = { ids: basis.concat(klinik).map(function (s) { return s.id; }), punkte: [], max: [] };
+    const T = window.SOE_TEIL2;
+    const ids = [1, 2, 3, 4].map(function (n) {
+      return shuffle(SOE_SCENARIOS.filter(function (s) { return soeSlot(s.id) === n; }))[0].id;
+    });
+    const pflicht = {};
+    ids.forEach(function (id, i) { const q = soePflichtFuer(id, i + 1); if (q) pflicht[id] = q.id; });
+    soeTag = { ids: ids, pflicht: pflicht, punkte: [], max: [] };
     app.innerHTML =
       nav("soe") +
       '<main class="container narrow">' +
       "<h1>SOE-Prüfungstag simulieren</h1>" +
-      '<p>Wie am echten Prüfungstag: <strong>vormittags 2 SOEs Basiswissenschaften, nachmittags 2 SOEs Klinik</strong>, jeweils 10 min Vorbereitung und 25 min Prüfung. Sprich laut – ideal mit einem Lernpartner als Prüfer, der die Rückfragen stellt.</p>' +
-      '<ol>' + soeTag.ids.map(function (id) { const s = SOE_SCENARIOS.find(function (x) { return x.id === id; }); return "<li>" + escapeHtml(s.category) + ": " + escapeHtml(s.title) + "</li>"; }).join("") + "</ol>" +
-      '<div class="cta-row"><a class="btn btn-primary" href="#/soe-sim/' + soeTag.ids[0] + '">SOE 1 beginnen</a><a class="btn btn-secondary" href="#/soe">Abbrechen</a></div>' +
+      '<p>Wie am echten Prüfungstag: <strong>vormittags SOE 1 und 2 (Basiswissenschaften), nachmittags SOE 3 und 4 (Klinik)</strong>, jeweils 10 min Vorbereitung und 25 min Prüfung mit 5 Fragen, davon eine zum Pflichtthema der SOE. Sprich laut – ideal mit einem Lernpartner als Prüfer.</p>' +
+      "<ol>" + ids.map(function (id, i) {
+        const s = SOE_SCENARIOS.find(function (x) { return x.id === id; });
+        return "<li><strong>" + escapeHtml(T.profile[i].titel) + "</strong>: " + escapeHtml(s.title) + ' <span class="muted">+ Pflichtthema ' + escapeHtml(T.profile[i].pflichtKurz) + "</span></li>";
+      }).join("") + "</ol>" +
+      '<div class="cta-row"><a class="btn btn-primary" href="#/soe-sim/' + ids[0] + '">SOE 1 beginnen</a><button type="button" class="btn btn-secondary" id="soe-tag-neu">Neu auslosen</button><a class="btn btn-secondary" href="#/soe">Abbrechen</a></div>' +
       "</main>";
+    document.getElementById("soe-tag-neu").addEventListener("click", startSoeTag);
   }
 
   function startSoeSim(id) {
     const s = SOE_SCENARIOS.find(function (x) { return x.id === id; });
     if (!s) { renderSOEList(); return; }
     if (soeTag && soeTag.ids.indexOf(id) === -1) soeTag = null;
-    const fragen = ["Einstieg: Besprechen Sie das Szenario – Ihr strukturiertes Vorgehen."].concat(s.followups);
-    soeSim = { s: s, fragen: fragen, phase: "vorbereitung", ende: Date.now() + 10 * 60000, frage: 0, start: 0, wechselGezeigt: false, noten: fragen.map(function () { return null; }) };
+    const slot = soeSlot(id);
+    const pflicht = (soeTag && soeTag.pflicht && soeTag.pflicht[id] ? window.SOE_TEIL2.pflicht.find(function (q) { return q.id === soeTag.pflicht[id]; }) : null) || soePflichtFuer(id, slot);
+    const fragen = ["Einstieg: Besprechen Sie das Szenario – Ihr strukturiertes Vorgehen."].concat(s.followups).concat(pflicht ? [pflicht.frage] : []);
+    soeSim = { s: s, slot: slot, pflicht: pflicht, fragen: fragen, phase: "vorbereitung", ende: Date.now() + 10 * 60000, frage: 0, start: 0, wechselGezeigt: false, noten: fragen.map(function () { return null; }) };
     renderSoeSim();
     clearSoeSimTimer();
     soeSimTimer = setInterval(soeSimTick, 1000);
@@ -3255,7 +3284,9 @@
 
   function renderSoeSim() {
     const S = soeSim, s = S.s;
-    const tagInfo = soeTag ? " · Prüfungstag: SOE " + (soeTag.ids.indexOf(s.id) + 1) + " / 4" : "";
+    const tagInfo = soeTag ? " · Prüfungstag " + (soeTag.ids.indexOf(s.id) + 1) + " / 4" : "";
+    const profil = window.SOE_TEIL2 ? window.SOE_TEIL2.profile[S.slot - 1] : null;
+    const istPflicht = function (i) { return S.pflicht && i === S.fragen.length - 1; };
     let inhalt = "";
     if (S.phase === "vorbereitung") {
       inhalt =
@@ -3268,7 +3299,7 @@
       inhalt =
         '<div class="' + (S.wechselGezeigt ? "" : "hidden ") + 'sw-box sw-falle" id="soe-wechsel"><div class="sw-box-title">Prüferwechsel</div><p>Nach 12,5 min übernimmt der zweite Prüfer – kein schlechtes Zeichen, sondern Ablauf.</p></div>' +
         '<p class="muted">Frage ' + (S.frage + 1) + " von " + S.fragen.length + " · Richtwert ca. " + proFrage + " min pro Frage (alle Fragen zählen gleich viel). Antworte laut und strukturiert.</p>" +
-        '<div class="sw-box sw-einfach"><div class="sw-box-title">Prüfer</div><p>' + escapeHtml(S.fragen[S.frage]) + "</p></div>" +
+        '<div class="sw-box sw-einfach"><div class="sw-box-title">Prüfer' + (istPflicht(S.frage) && profil ? " – Pflichtthema " + escapeHtml(profil.pflichtKurz) : "") + "</div><p>" + escapeHtml(S.fragen[S.frage]) + "</p></div>" +
         (S.frage === 0 ? '<details><summary>Szenario noch einmal lesen</summary><p>' + escapeHtml(s.scenario) + "</p></details>" : "") +
         '<div class="cta-row">' + (S.frage < S.fragen.length - 1 ? '<button class="btn btn-primary" id="soe-naechste">Nächste Frage</button>' : '<button class="btn btn-primary" id="soe-fertig">SOE beenden</button>') + "</div>";
     } else if (S.phase === "bewertung") {
@@ -3288,14 +3319,15 @@
         '<div class="stat-cards"><div class="stat-card"><div class="stat-value">' + p + " / " + m + '</div><div class="stat-label">Selbstbewertung</div></div></div>' +
         "<h2>Musterantwort</h2><p>" + escapeHtml(s.modelAnswer) + "</p>" +
         "<h2>Worauf der Prüfer achtet</h2><p>" + escapeHtml(s.examTips) + "</p>" +
+        (S.pflicht ? soePflichtHtml(S.pflicht, "Pflichtfrage: ") : "") +
         '<div class="cta-row">' +
         (soeTag ? (naechste ? '<a class="btn btn-primary" href="#/soe-sim/' + naechste + '">Weiter mit SOE ' + (soeTag.ids.indexOf(naechste) + 1) + "</a>" : '<button class="btn btn-primary" id="soe-tag-ende">Prüfungstag auswerten</button>') : '<a class="btn btn-primary" href="#/soe">Zur Übersicht</a>') +
         "</div>";
     }
     app.innerHTML =
       nav("soe", S.phase !== "fertig") +
-      '<main class="container narrow">' +
-      '<div class="session-progress">' + escapeHtml(s.category) + tagInfo + (S.phase === "vorbereitung" || S.phase === "pruefung" ? ' · <span id="soe-timer" class="exam-timer"></span>' : "") + "</div>" +
+      '<main class="container narrow sw-chapter">' +
+      '<div class="session-progress">' + escapeHtml(profil ? profil.titel : s.category) + tagInfo + (S.phase === "vorbereitung" || S.phase === "pruefung" ? ' · <span id="soe-timer" class="exam-timer"></span>' : "") + "</div>" +
       "<h1>" + escapeHtml(s.title) + "</h1>" + inhalt + "</main>";
     if (S.phase === "vorbereitung" || S.phase === "pruefung") soeSimTick();
     const by = function (id, fn) { const el = document.getElementById(id); if (el) el.addEventListener("click", fn); };
@@ -3317,6 +3349,43 @@
       renderSoeSim();
     });
     by("soe-tag-ende", renderSoeTagErgebnis);
+  }
+
+  function soePflichtHtml(q, prefix, ohneTitel) {
+    return (ohneTitel ? "" : "<h2>" + escapeHtml((prefix || "") + q.thema) + "</h2>") +
+      '<ul class="sw-list">' + q.kern.map(function (k) { return "<li>" + richText(k) + "</li>"; }).join("") + "</ul>" +
+      (q.svg ? '<figure class="sw-fig">' + q.svg + "</figure>" : "") +
+      (q.link ? '<div class="cta-row"><a class="btn btn-sm btn-secondary" href="' + q.link[0] + '">' + escapeHtml(q.link[1]) + "</a></div>" : "");
+  }
+
+  function renderSoeThemen(arg) {
+    const T = window.SOE_TEIL2;
+    const n = Math.min(4, Math.max(1, Number(arg) || 1));
+    const pr = T.profile[n - 1];
+    const fragen = T.pflicht.filter(function (q) { return q.soe === n; });
+    const reiter = T.profile.map(function (x) {
+      return '<a class="btn btn-sm ' + (x.nr === n ? "btn-primary" : "btn-secondary") + '" href="#/soe-themen/' + x.nr + '">SOE ' + x.nr + " · " + escapeHtml(x.pflichtKurz) + "</a>";
+    }).join("");
+    app.innerHTML =
+      nav("soe") +
+      '<main class="container narrow sw-chapter">' +
+      '<a class="back-link" href="#/soe">← Alle Szenarien</a>' +
+      "<h1>" + escapeHtml(pr.titel) + "</h1>" +
+      '<p class="muted">' + escapeHtml(pr.inhalt) + " <strong>Pflicht:</strong> " + escapeHtml(pr.pflicht) + ". Beantworte jede Frage zuerst laut in etwa 4–5 min (eine von 5 gleich gewichteten Fragen), dann vergleiche mit den Kernpunkten.</p>" +
+      '<div class="cta-row">' + reiter + "</div>" +
+      fragen.map(function (q, i) {
+        return '<div class="soe-note"><div class="session-progress">' + escapeHtml(q.thema) + "</div><p><strong>" + escapeHtml(q.frage) + "</strong></p>" +
+          '<div class="cta-row"><button type="button" class="btn btn-sm btn-primary" data-zeige="' + i + '">Kernpunkte zeigen</button></div>' +
+          '<div class="hidden" id="pf-' + i + '">' + soePflichtHtml(q, "", true) + "</div></div>";
+      }).join("") +
+      glossaryHtml(JSON.stringify(fragen.map(function (q) { return [q.frage, q.kern]; })), "sw-glossary") +
+      "</main>";
+    app.querySelectorAll("[data-zeige]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        document.getElementById("pf-" + b.getAttribute("data-zeige")).classList.remove("hidden");
+        b.parentNode.classList.add("hidden");
+      });
+    });
   }
 
   function renderSoeTagErgebnis() {

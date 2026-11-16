@@ -8,7 +8,7 @@
     abschnitte: [
       {
         id: "teil1",
-        titel: "EDAIC Teil 1 – schriftlich (MCQ)",
+        titel: "EDAIC Teil 1 – schriftlich (bereits bestanden, nur zur Einordnung)",
         bloecke: [
           { table: { head: ["Merkmal", "Offizielle Vorgabe"], rows: [
             ["Aufbau", "2 Papiere à 60 Fragen: **Paper A** Basiswissenschaften (Anatomie, Physiologie, Pharmakologie, Physik/Messtechnik, Statistik), **Paper B** Klinik (Innere und Notfallmedizin, Allgemein- und Regionalanästhesie, spezielle Anästhesie inkl. Schmerz, Intensivmedizin)"],
