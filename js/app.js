@@ -604,7 +604,9 @@
     FLASHCARDS.forEach(function (c) { const st = progress[c.id]; if (st && st.box >= 4) gemeistert++; });
     const streak = window.SRS.getStreak();
     const zst = loadZeichnen();
-    const zFaellig = (window.ZEICHNEN || []).filter(function (z) { return zeichnenStatus(z.id, zst).faellig; }).length;
+    // Fällig = schon geübt und Wiederholung erreicht; nie geübte Aufgaben zählen als „neu“
+    const zFaellig = (window.ZEICHNEN || []).filter(function (z) { return zst[z.id] && zeichnenStatus(z.id, zst).faellig; }).length;
+    const zNeu = (window.ZEICHNEN || []).filter(function (z) { return !zst[z.id]; }).length;
     const zSicher = (window.ZEICHNEN || []).filter(function (z) { return zst[z.id] && zst[z.id].stufe >= 2; }).length;
     const fst = loadFaelle();
     const fIds = Object.keys(fst);
@@ -636,18 +638,18 @@
       "</div>" +
       '<h2>Dein Plan für heute</h2>' +
       '<ol class="heute-plan">' +
-      schritt(1, "Wiederholen", sessionSize ? totalDue + " fällige Karten" + (totalNew ? " + bis zu 15 neue" : "") + " – Wissen frisch halten" : "Alles wiederholt – heute nichts fällig", "#/learn-session/all", sessionSize ? "Starten (" + sessionSize + ")" : "Freies Lernen", !sessionSize) +
+      schritt(1, "Wiederholen", sessionSize ? (totalDue ? totalDue + " fällige Karten" + (totalNew ? " + bis zu 15 neue" : "") : Math.min(totalNew, 15) + " neue Karten") + " – Wissen frisch halten" : "Alles wiederholt – heute nichts fällig", "#/learn-session/all", sessionSize ? "Starten (" + sessionSize + ")" : "Freies Lernen", !sessionSize) +
       (vorschlag ? schritt(2, "Ein Fall laut durchsprechen", escapeHtml(vorschlag.f.titel) + " (" + vorschlag.text + ")", "#/fall/" + vorschlag.f.id, "Fall starten", false) : "") +
-      schritt(3, "Zeichnen", zFaellig ? zFaellig + " Zeichnungen fällig – Kurve zeichnen und dabei erklären" : "Nichts fällig – eine neue Zeichnung üben", "#/zeichnen", zFaellig ? "Zeichnen (" + zFaellig + ")" : "Ansehen", !zFaellig && zSicher > 0) +
+      schritt(3, "Zeichnen", zFaellig ? zFaellig + " Zeichnungen zur Wiederholung fällig – zeichnen und dabei erklären" : zNeu ? "Eine neue Zeichnung üben (" + zNeu + " noch offen) – zeichnen und dabei erklären" : "Alle Zeichnungen sicher – nichts fällig", "#/zeichnen", zFaellig ? "Zeichnen (" + zFaellig + ")" : "Zeichnen", !zFaellig && !zNeu) +
       schritt(4, "Prüfungstag simulieren", tageSeitSim === null ? "Noch nie gemacht – 4 SOEs wie am echten Tag" : "Zuletzt vor " + tageSeitSim + " Tagen – ideal etwa einmal pro Woche", "#/soe-tag", "Simulieren", tageSeitSim !== null && tageSeitSim < 7) +
       "</ol>" +
-      '<div class="stat-cards">' +
+      '<div class="stat-cards heute-stats">' +
       '<div class="stat-card"><div class="stat-value">' + (streak > 0 ? "🔥 " + streak : streak) + '</div><div class="stat-label">Tage am Stück</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + Math.round(100 * gemeistert / Math.max(1, FLASHCARDS.length)) + ' %</div><div class="stat-label">Karten gemeistert</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + fIds.length + " / " + (window.FAELLE || []).length + '</div><div class="stat-label">Fälle' + (fSchnitt !== null ? " · Ø " + fSchnitt + " %" : "") + "</div></div>" +
       '<div class="stat-card"><div class="stat-value">' + zSicher + " / " + (window.ZEICHNEN || []).length + '</div><div class="stat-label">Zeichnungen sicher</div></div>' +
       "</div>" +
-      '<p class="muted"><a href="#/pruefung">So läuft die mündliche Prüfung</a> · <a href="#" id="show-onboarding-link">Kurzanleitung</a></p>' +
+      '<p class="muted heute-links"><a href="#/pruefung">So läuft die mündliche Prüfung</a> · <a href="#" id="show-onboarding-link">Kurzanleitung</a></p>' +
       "</main>";
     const by = function (id, fn) { const el = document.getElementById(id); if (el) el.addEventListener("click", fn); };
     by("datum-aendern", function () { document.getElementById("datum-form").classList.remove("hidden"); });

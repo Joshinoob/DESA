@@ -85,7 +85,7 @@
         titel: "So lernst du für diese Formate am besten",
         bloecke: [
           { table: { head: ["Methode", "Warum sie wirkt", "Hier in der App"], rows: [
-            ["**Abrufen statt Wiederlesen** (Retrieval Practice)", "Aktives Erinnern festigt Wissen deutlich stärker als erneutes Lesen (Roediger & Karpicke 2006; Dunlosky et al. 2013)", "Karteikarten, Selbsttests, Richtig/Falsch-Fragen, Zeichenaufgaben ohne Vorlage"],
+            ["**Abrufen statt Wiederlesen** (Retrieval Practice)", "Aktives Erinnern festigt Wissen deutlich stärker als erneutes Lesen (Roediger & Karpicke 2006; Dunlosky et al. 2013)", "Karteikarten, Selbsttests, Fälle, Zeichenaufgaben ohne Vorlage"],
             ["**Verteiltes Wiederholen** (Spacing)", "Wiederholung mit wachsendem Abstand hält länger als Pauken (Cepeda et al. 2006)", "Spaced Repetition für Karten und Zeichenaufgaben"],
             ["**Selbst zeichnen** (Generative Drawing)", "Wer eine Kurve oder Struktur selbst erzeugt, muss das Wesentliche auswählen und verknüpfen; Zeichnen schneidet in Metaanalysen meist besser ab als Zusammenfassen (Fiorella & Zhang 2018) – am besten mit Anleitung und Vergleich mit einer Vorlage", "Zeichentraining mit Checkliste und Musterzeichnung"],
             ["**Selbsterklären und laut erklären**", "Erklären deckt Lücken auf und verbessert Verständnis und Transfer (Chi et al. 1994); entspricht direkt dem SOE-Format", "Warum-Fragen im Spezialwissen, SOE-Simulation"],
