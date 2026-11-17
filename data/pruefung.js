@@ -1,4 +1,4 @@
-// Prüfung verstehen: Formate von EDAIC Teil 1/Teil 2 und der deutschen Facharztprüfung,
+// Prüfung verstehen: Format der EDAIC Teil 2 (mündlich) und der deutschen Facharztprüfung,
 // Bewertungsmaßstäbe, Antwortschemata und Lernmethoden. Inhalte aus den öffentlich
 // zugänglichen Unterlagen der ESAIC (Diploma Guide 2025, "How to prepare for the EDAIC" 2022,
 // MCQ-Instructions 2021) und der Ärztekammern zusammengefasst – keine Prüfungsfragen.
@@ -6,31 +6,6 @@
 (function () {
   window.PRUEFUNG = {
     abschnitte: [
-      {
-        id: "teil1",
-        titel: "EDAIC Teil 1 – schriftlich (bereits bestanden, nur zur Einordnung)",
-        bloecke: [
-          { table: { head: ["Merkmal", "Offizielle Vorgabe"], rows: [
-            ["Aufbau", "2 Papiere à 60 Fragen: **Paper A** Basiswissenschaften (Anatomie, Physiologie, Pharmakologie, Physik/Messtechnik, Statistik), **Paper B** Klinik (Innere und Notfallmedizin, Allgemein- und Regionalanästhesie, spezielle Anästhesie inkl. Schmerz, Intensivmedizin)"],
-            ["Fragetyp", "Ein Stamm mit **5 Aussagen**, jede **einzeln richtig oder falsch** – alle 5 können richtig sein, alle falsch oder jede Mischung"],
-            ["Zeit", "120 min pro Papier auf Papier, 90 min am Computer (also ca. 2 min bzw. 1,5 min pro Stamm mit 5 Aussagen)"],
-            ["Bewertung", "+1 für jede richtige Aussage, **kein Abzug** für falsche oder leere Antworten → bis zu 300 Punkte pro Papier"],
-            ["Bestehen", "Beide Papiere müssen bestanden werden; die Bestehensgrenze wird jedes Jahr anhand von Referenzfragen leicht angepasst"]
-          ] } },
-          { kette: [
-            "Kein Punktabzug für falsche Antworten",
-            "Eine leere Antwort bringt sicher 0 Punkte, eine geratene im Mittel 0,5",
-            "==Jede Aussage beantworten – die ESAIC schreibt selbst: 'Candidates should answer all the questions'=="
-          ], titel: "Die wichtigste Taktik" },
-          { ul: [
-            "**Stamm und Aussage immer zusammen lesen** und jede Aussage unabhängig von den anderen entscheiden – aus der Zahl der bisherigen 'Richtig' lässt sich nichts ableiten.",
-            "**Zeitplan vorher festlegen:** z.B. 3 Blöcke à 20 Fragen in je ca. 30 min und 30 min für das Übertragen auf den Antwortbogen (Papierprüfung).",
-            "**Zwei Durchgänge:** zuerst alles Sichere markieren, dann die Fragen zum Nachdenken.",
-            "Absolute Wörter ('immer', 'nie', 'ausschließlich') sind oft falsch, aber nicht immer – jede Aussage inhaltlich prüfen statt nach Mustern raten."
-          ] },
-          { falle: "„Teil 1 sind Single-Best-Answer-Fragen.“ – Falsch. Die EDAIC verwendet Mehrfach-Richtig/Falsch-Fragen. In dieser App gibt es beides: Single-Best-Answer-Fragen trainieren das Erkennen der besten Option, die Richtig/Falsch-Fragen trainieren genau das Prüfungsformat." }
-        ]
-      },
       {
         id: "teil2",
         titel: "EDAIC Teil 2 – mündlich (SOE)",
@@ -121,7 +96,7 @@
             "Thema im Spezialwissen erarbeiten (Leitfrage, Warum-Fragen)",
             "Kernkurve bzw. Struktur ohne Vorlage zeichnen und laut dazu erklären",
             "Mit Checkliste und Musterzeichnung vergleichen, Lücken nachlesen",
-            "Karten und Richtig/Falsch-Fragen zum Thema über Tage verteilt wiederholen",
+            "Karten und Fälle zum Thema über Tage verteilt wiederholen",
             "==Einmal pro Woche eine SOE unter Zeitbedingungen – am besten mit einem Lernpartner, der die Rolle des Prüfers übernimmt=="
           ], titel: "Ein Lernzyklus pro Thema" },
           "Die ESAIC empfiehlt ausdrücklich, Falldiskussionen mit Ausbildern, Kollegen und Mentoren so oft wie möglich zu üben – besonders, wenn die Prüfung nicht in der Muttersprache abgelegt wird."
@@ -129,9 +104,8 @@
       }
     ],
     quellen: [
-      "ESAIC. Diploma Guide 2025 (EDAIC Teil 1 und Teil 2: Aufbau, Bewertung, Bestehensregeln). esaic.org.",
+      "ESAIC. Diploma Guide 2025 (EDAIC Teil 2: Aufbau, Bewertung, Bestehensregeln). esaic.org.",
       "ESAIC. How to prepare for the EDAIC (2022): SOE-Ablauf, geführte Fragen, Bewertungsbeschreibungen 0/1/2, Gründe für Nichtbestehen, Bilder, Diagramme und Graphen. esaic.org.",
-      "ESAIC. EDAIC Part I – Instructions to candidates (2021): Richtig/Falsch-Format, keine Minuspunkte. esaic.org.",
       "Ärztekammer Westfalen-Lippe. Westfälisches Ärzteblatt, Serie Junge Ärzte: Ablauf der Facharztprüfung (Ausschuss, Mindestdauer 30 min).",
       "Bundesärztekammer. (Muster-)Weiterbildungsordnung 2018 und Logbuch Facharzt Anästhesiologie.",
       "Roediger HL, Karpicke JD. Psychol Sci 2006;17:249–255. – Dunlosky J et al. Psychol Sci Public Interest 2013;14:4–58. – Cepeda NJ et al. Psychol Bull 2006;132:354–380.",
