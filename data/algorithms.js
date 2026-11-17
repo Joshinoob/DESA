@@ -2,15 +2,15 @@
 // (Timeline-Ansicht) und (b) als interaktiver "Was ist der nächste Schritt?"-Trainer.
 // Prozedurales/sequenzielles Wissen (Reanimation, schwieriger Atemweg, Notfallmanagement)
 // wird durch Reihenfolge-Übung besser gefestigt als durch isolierte Karteikarten.
-// Quellen: ERC Leitlinien 2021/2025 (ALS), Difficult Airway Society (DAS) Algorithmus,
-// ASRA-Practice-Advisory LAST 2020, MHAUS/S1-Leitlinie Maligne Hyperthermie 2018,
+// Quellen: ERC-Leitlinien 2025 (ALS), Difficult Airway Society (DAS) Algorithmus,
+// ASRA-Practice-Advisory LAST 2020, EMHG-Leitlinie 2024/MHAUS,
 // aktuelle Anaphylaxie-Leitlinien (u.a. Resuscitation Council/AAGBI).
 window.ALGORITHMS = [
   {
     id: "als-schockbar",
     title: "ALS Erwachsener – schockbarer Rhythmus (VF/pVT)",
     category: "Reanimation",
-    source: "ERC-Leitlinien 2021/2025 (Adult Advanced Life Support)",
+    source: "ERC-Leitlinien 2025 (Adult Advanced Life Support)",
     steps: [
       "Patient reagiert nicht, keine normale Atmung → Hilfe/Reanimationsteam alarmieren, Defibrillator anfordern",
       "Sofort Thoraxkompressionen beginnen (30:2 bei ungesichertem Atemweg), Frequenz 100–120/min, Tiefe 5–6cm",
@@ -39,7 +39,7 @@ window.ALGORITHMS = [
     id: "als-nicht-schockbar",
     title: "ALS Erwachsener – nicht-schockbarer Rhythmus (PEA/Asystolie)",
     category: "Reanimation",
-    source: "ERC-Leitlinien 2021/2025 (Adult Advanced Life Support)",
+    source: "ERC-Leitlinien 2025 (Adult Advanced Life Support)",
     steps: [
       "Patient reagiert nicht, keine normale Atmung → Hilfe/Reanimationsteam alarmieren, Defibrillator anfordern",
       "Sofort Thoraxkompressionen beginnen (30:2), Frequenz 100–120/min, Tiefe 5–6cm",
@@ -113,7 +113,7 @@ window.ALGORITHMS = [
     id: "maligne-hyperthermie",
     title: "Maligne Hyperthermie – Akutmanagement",
     category: "Notfallmedizin",
-    source: "S1-Leitlinie Maligne Hyperthermie 2018 / MHAUS",
+    source: "EMHG-Leitlinie MH-Krise 2024 / MHAUS",
     steps: [
       "Trigger sofort stoppen (volatile Anästhetika/Succinylcholin absetzen)",
       "Hilfe holen, MH-Notfallwagen/Dantrolen anfordern",
@@ -189,7 +189,7 @@ window.ALGORITHMS = [
     id: "nls",
     title: "Neugeborenen-Erstversorgung und -Reanimation (Newborn Life Support)",
     category: "Reanimation",
-    source: "ERC-Leitlinien 2025 Newborn Resuscitation (Adrenalin-Dosis als Spanne, ERC 2021: 20 µg/kg)",
+    source: "ERC-Leitlinien 2025 (Newborn Resuscitation and Support of Transition of Infants at Birth)",
     steps: [
       "Vor der Geburt: Team, Wärme (Raum 23–25 °C), Material und Beatmungsgerät prüfen",
       "Abnabeln (bei vitalen Kindern frühestens nach 60 s), abtrocknen/warm einwickeln, Frühgeborene <32 SSW in Plastikfolie",
@@ -199,7 +199,7 @@ window.ALGORITHMS = [
       "Bei Thoraxhebung: Beatmung ca. 30/min fortsetzen, SpO2 präduktal (rechte Hand) messen, O2 nach Zielwerten titrieren",
       "HF <60/min nach 30 s effektiver Beatmung → Thoraxkompressionen 3:1, O2 auf 100 %",
       "Alle 30 s Herzfrequenz kontrollieren; Zugang (Nabelvenenkatheter oder i.o.)",
-      "HF weiterhin <60/min → Adrenalin i.v./i.o. 10–30 µg/kg (intratracheal 100 µg/kg nur ohne Zugang), Wiederholung ca. alle 3–5 min",
+      "HF weiterhin <60/min → Adrenalin i.v./i.o. 10–30 µg/kg (intratracheal 100 µg/kg nur ohne Zugang), Wiederholung alle 4 min",
       "Volumen bei Blutverlust 10 ml/kg; Glukose 2,5 ml/kg G10 % bei Hypoglykämie; an Pneumothorax/Fehlbildung denken",
       "Nach Stabilisierung: Temperatur 36,5–37,5 °C, Verlegung; bei HIE ≥36 SSW therapeutische Hypothermie innerhalb 6 h erwägen"
     ],

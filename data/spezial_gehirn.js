@@ -259,7 +259,7 @@
       { ul: [
         "Schnelle Reperfusion (Thrombolyse, mechanische Thrombektomie).",
         "Vermeiden sekundärer Schäden: Hypoxie, Hypotonie, Hypo-/Hyperkapnie, Fieber, Hypo- und schwere Hyperglykämie, Krampfanfälle.",
-        "Temperatur: Fieber vermeiden; gezielte Temperaturkontrolle nach Reanimation (ERC 2025: Fieber >37,7 °C mindestens 72 h vermeiden). Tiefe Hypothermie schützt bei Kreislaufstillstand in der Herzchirurgie (Stoffwechsel ↓ ca. 6–7 % pro °C).",
+        "Temperatur: Fieber vermeiden; gezielte Temperaturkontrolle nach Reanimation (ERC-ESICM 2025: Fieber mindestens 72 h vermeiden, Ziel ≤ 37,5 °C). Tiefe Hypothermie schützt bei Kreislaufstillstand in der Herzchirurgie (Stoffwechsel ↓ ca. 6–7 % pro °C).",
         "Pharmakologische Neuroprotektion (Magnesium, Barbiturate, Nimodipin außer bei SAB, Kortikoide, Xenon u.a.) hat sich beim Menschen außer in speziellen Situationen nicht durchgesetzt; Nimodipin verbessert das Ergebnis nach Subarachnoidalblutung."
       ] },
       { h: "Schädel-Hirn-Trauma: primärer und sekundärer Schaden" },

@@ -39,7 +39,7 @@ window.FALLBILDER = [
     aufgabe: "40-jähriger Mann mit schwerer fieberhafter Infektion, zunehmend hypoxisch, Horovitz-Quotient unter 150 mmHg trotz PEEP. Befunden Sie das Bild und nennen Sie die Diagnose.",
     befund: [
       "Aufnahme im Liegen (a.-p.), EKG-Elektroden; **beidseitige, fleckig bis flächig zusammenfließende Verschattungen**, betont in Mittel- und Unterfeldern.",
-      "Im Zusammenhang mit akutem Beginn, Auslöser (hier eine Rickettsien-Infektion, murines Fleckfieber) und Oxygenierungsstörung → **ARDS** (Berlin-Definition: Beginn innerhalb 1 Woche, beidseitige Verschattungen, nicht allein kardial oder durch Überwässerung erklärt, PaO₂/FiO₂ ≤ 300 mmHg unter PEEP ≥ 5).",
+      "Im Zusammenhang mit akutem Beginn, Auslöser (hier eine Rickettsien-Infektion, murines Fleckfieber) und Oxygenierungsstörung → **ARDS** (globale ARDS-Definition 2024: Beginn innerhalb 1 Woche, beidseitige Verschattungen, nicht allein kardial oder durch Überwässerung erklärt, PaO₂/FiO₂ ≤ 300 mmHg bzw. SpO₂/FiO₂ ≤ 315 unter PEEP ≥ 5).",
       "Abgrenzen: kardiales Lungenödem (großes Herz, Kerley-Linien, Ergüsse, Echo), Pneumonie, Blutung.",
       "Konsequenz: lungenprotektive Beatmung (6 ml/kg Standardkörpergewicht, Plateaudruck ≤ 30 cmH₂O, PEEP nach FiO₂), **Bauchlage bei PaO₂/FiO₂ < 150 mmHg**, restriktive Flüssigkeit, Ursache behandeln. ==Zu große Atemzüge → Überdehnung gesunder Areale → weiterer Lungenschaden=="
     ],

@@ -457,7 +457,7 @@
         ["4. Herzton", "Vorhofkontraktion gegen steifen Ventrikel", "Diastolische Dysfunktion; fehlt bei Vorhofflimmern"]
       ] } },
       { h: "Die vier wichtigsten Klappenfehler" },
-      { table: { head: ["Fehler", "Belastung des Herzens", "Schweregrad 'schwer' (ESC/EACTS 2021)", "Hämodynamische Ziele"], rows: [
+      { table: { head: ["Fehler", "Belastung des Herzens", "Schweregrad 'schwer' (ESC/EACTS 2025)", "Hämodynamische Ziele"], rows: [
         ["Aortenstenose", "Drucklast → konzentrische Hypertrophie, steifer Ventrikel, subendokardiale Ischämie", "Öffnungsfläche < 1,0 cm², mittlerer Gradient ≥ 40 mmHg, Maximalgeschwindigkeit ≥ 4 m/s", "Sinusrhythmus, Frequenz niedrig-normal, Vorlast erhalten, Gefäßwiderstand und Blutdruck halten"],
         ["Mitralstenose", "Vorhofdruck ↑ → Lungenstauung, Vorhofflimmern, pulmonale Hypertonie", "Klinisch relevant ab Öffnungsfläche ≤ 1,5 cm²", "Frequenz niedrig (lange Diastole), Sinusrhythmus, Anstieg des Lungengefäßwiderstands vermeiden"],
         ["Aorteninsuffizienz", "Volumenlast → exzentrische Hypertrophie", "z.B. Regurgitationsvolumen ≥ 60 ml", "Frequenz normal bis hoch, Nachlast niedrig, Vorlast erhalten; Bradykardie vermeiden"],
@@ -476,7 +476,7 @@
       { h: "Besonderheiten" },
       { ul: [
         "**Aortenstenose:** Das Schlagvolumen ist weitgehend fixiert → ==ein Blutdruckabfall wird kaum durch mehr Auswurf kompensiert und senkt sofort die Koronarperfusion des hypertrophen Ventrikels== → Abwärtsspirale. Hypotonie früh mit Vasopressor (z.B. Phenylephrin, Noradrenalin) behandeln.",
-        "**Mitralinsuffizienz:** Die EF wird durch den Rückfluss in den Vorhof geschönt – ==eine EF ≤ 60 % gilt bei schwerer Mitralinsuffizienz bereits als Zeichen beginnender Ventrikeldysfunktion== (OP-Indikation nach ESC/EACTS 2021).",
+        "**Mitralinsuffizienz:** Die EF wird durch den Rückfluss in den Vorhof geschönt – ==eine EF ≤ 60 % gilt bei schwerer Mitralinsuffizienz bereits als Zeichen beginnender Ventrikeldysfunktion== (OP-Indikation nach ESC/EACTS 2025).",
         "**Hypertrophe obstruktive Kardiomyopathie:** dynamische Ausflussbahnobstruktion – sie wird durch Hypovolämie, Tachykardie, Inotropika und Vasodilatatoren schlimmer, durch Volumen, β-Blocker und reine Vasokonstriktoren (Phenylephrin) besser."
       ] }
     ],
@@ -498,7 +498,7 @@
     ],
     selbsttest: [
       { q: "Spezialwissen Herz: Wodurch entstehen der 1. bis 4. Herzton?", a: "1. Schluss der AV-Klappen; 2. Schluss der Taschenklappen (physiologisch inspiratorisch gespalten); 3. frühdiastolische schnelle Füllung (beim Jungen normal, sonst Volumenüberlastung); 4. Vorhofkontraktion gegen steifen Ventrikel (fehlt bei Vorhofflimmern)." },
-      { q: "Spezialwissen Herz: Welche Kriterien definieren eine schwere Aortenstenose?", a: "Öffnungsfläche < 1,0 cm², mittlerer Gradient ≥ 40 mmHg, maximale Flussgeschwindigkeit ≥ 4 m/s (ESC/EACTS 2021)." },
+      { q: "Spezialwissen Herz: Welche Kriterien definieren eine schwere Aortenstenose?", a: "Öffnungsfläche < 1,0 cm², mittlerer Gradient ≥ 40 mmHg, maximale Flussgeschwindigkeit ≥ 4 m/s (ESC/EACTS 2025)." },
       { q: "Spezialwissen Herz: Welche hämodynamischen Ziele gelten bei Aortenstenose bzw. Mitralstenose?", a: "'Langsam, voll, eng': Frequenz niedrig-normal, Sinusrhythmus, Vorlast erhalten, Gefäßwiderstand/Blutdruck halten; bei Mitralstenose zusätzlich Anstieg des Lungengefäßwiderstands vermeiden." },
       { q: "Spezialwissen Herz: Welche hämodynamischen Ziele gelten bei Aorten- bzw. Mitralinsuffizienz?", a: "'Schnell, voll, weit': Frequenz normal bis hoch, Vorlast erhalten, Nachlast niedrig; Bradykardie und Vasokonstriktion vermeiden." },
       { q: "Spezialwissen Herz: Warum ist der posteromediale Papillarmuskel rupturgefährdeter?", a: "Er wird meist nur aus einem Gefäß versorgt (der anterolaterale doppelt); beim Hinterwandinfarkt kann er reißen und eine akute schwere Mitralinsuffizienz verursachen." },
@@ -784,12 +784,12 @@
     leitfrage: "Warum verschlimmern die Ausgleichsmechanismen des Körpers eine Herzinsuffizienz langfristig – und warum kann eine Narkoseeinleitung bei Herzbeuteltamponade tödlich sein?",
     einfach: "Wenn das Herz schwächer wird, schaltet der Körper auf Notprogramm: Er verengt die Gefäße und hält Salz und Wasser zurück, um den Blutdruck zu halten. Kurzfristig hilft das, langfristig überlastet es das schwache Herz noch mehr. Moderne Medikamente unterbrechen genau dieses Notprogramm. Bei einer Herzbeuteltamponade drückt Flüssigkeit von außen auf das Herz – es kann sich nicht mehr füllen.",
     body: [
-      { h: "Einteilung nach der Ejektionsfraktion (ESC 2021)" },
+      { h: "Einteilung nach der Ejektionsfraktion (ESC 2026)" },
       { table: { head: ["Form", "Linksventrikuläre Ejektionsfraktion"], rows: [
-        ["Herzinsuffizienz mit reduzierter EF (HFrEF)", "≤ 40 %"],
-        ["Herzinsuffizienz mit leicht reduzierter EF (HFmrEF)", "41–49 %"],
-        ["Herzinsuffizienz mit erhaltener EF (HFpEF)", "≥ 50 % + Nachweis struktureller/funktioneller Herzveränderungen bzw. erhöhter natriuretischer Peptide"]
+        ["Herzinsuffizienz mit reduzierter EF (HFrEF)", "< 50 %"],
+        ["Herzinsuffizienz mit erhaltener EF (HFpEF)", "≥ 50 % + objektiver Nachweis struktureller bzw. funktioneller Herzveränderungen (z.B. erhöhte natriuretische Peptide, diastolische Funktionsstörung)"]
       ] } },
+      "Die ESC-Leitlinie 2026 kennt nur noch **zwei Formen**; die frühere Zwischengruppe entfällt. Statt „akuter“ spricht sie von **dekompensierter** Herzinsuffizienz.",
       "Natriuretische Peptide helfen bei der Diagnose: Bei nicht akuten Beschwerden macht ein NT-proBNP < 125 pg/ml (bzw. BNP < 35 pg/ml) eine Herzinsuffizienz unwahrscheinlich, bei akuter Atemnot liegen die Grenzwerte höher (NT-proBNP < 300 pg/ml, BNP < 100 pg/ml).",
       { h: "Das 'Notprogramm' und seine Folgen" },
       { kette: [
@@ -800,14 +800,15 @@
         "==Langfristig: mehr Wandspannung, Sauerstoffbedarf, Umbau (Remodeling), Fibrose und Rhythmusstörungen → das Herz wird weiter geschwächt=="
       ], titel: "Warum die Kompensation schadet" },
       "Gegenspieler sind die **natriuretischen Peptide** (ANP aus dem Vorhof, BNP aus der Kammer): Sie fördern die Salzausscheidung und erweitern Gefäße.",
-      { h: "Die vier Säulen der Therapie bei HFrEF (ESC 2021)" },
+      { h: "Grundtherapie (ESC 2026)" },
       { ul: [
         "**ACE-Hemmer bzw. Angiotensin-Rezeptor-Neprilysin-Inhibitor (Sacubitril/Valsartan)** – bremsen das RAAS, Neprilysin-Hemmung verstärkt die natriuretischen Peptide.",
         "**β-Blocker** – bremsen den Sympathikus, senken Frequenz und Sauerstoffbedarf.",
         "**Mineralokortikoid-Rezeptor-Antagonisten (Spironolacton, Eplerenon)** – bremsen Aldosteron.",
         "**SGLT2-Hemmer (Dapagliflozin, Empagliflozin)** – Salzausscheidung, Entlastung."
       ] },
-      "==Alle vier unterbrechen das schädliche Notprogramm – sie senken nachweislich Sterblichkeit und Krankenhausaufnahmen.== Schleifendiuretika lindern die Stauung, verbessern aber nicht die Prognose.",
+      "Diese vier sind die Grundtherapie bei **HFrEF** (bei ACE-Hemmer-Unverträglichkeit Angiotensin-Rezeptorblocker). Bei **HFpEF** bilden **SGLT2-Hemmer und Mineralokortikoid-Rezeptor-Antagonisten** (z.B. Finerenon) die Grundtherapie; SGLT2-Hemmer und Mineralokortikoid-Antagonisten werden damit bei symptomatischer Herzinsuffizienz unabhängig von der Ejektionsfraktion empfohlen.",
+      "==Die Medikamente unterbrechen das schädliche Notprogramm – sie senken nachweislich Sterblichkeit und Krankenhausaufnahmen.== Schleifendiuretika lindern die Stauung, verbessern aber nicht die Prognose.",
       { h: "Perioperativ" },
       { ul: [
         "Herzinsuffizienz ist ein wichtiger Risikofaktor für perioperative Komplikationen (z.B. im Revised Cardiac Risk Index).",
@@ -827,9 +828,9 @@
       { falle: "„Bei Tamponade erst intubieren, dann punktieren.“ – Gefährlich: Narkoseeinleitung (Venenerschlaffung, Kardiodepression) und Überdruckbeatmung (Druck im Brustkorb ↑) senken die ohnehin kritische Füllung – Kreislaufstillstand droht. Wenn möglich zuerst in Lokalanästhesie entlasten; sonst Einleitung erst bei steril abgedecktem, OP-bereitem Team, unter Spontanatmung, mit Vorlast und Frequenz erhalten." }
     ],
     merke: [
-      "HFrEF ≤ 40 %, HFmrEF 41–49 %, HFpEF ≥ 50 % (ESC 2021).",
+      "HFrEF < 50 %, HFpEF ≥ 50 % (ESC 2026, nur noch zwei Formen).",
       "Sympathikus, RAAS und ADH stützen kurzfristig, schaden langfristig (Remodeling).",
-      "HFrEF-Säulen: ACE-Hemmer/Sacubitril-Valsartan, β-Blocker, Mineralokortikoid-Antagonist, SGLT2-Hemmer.",
+      "HFrEF-Grundtherapie: ACE-Hemmer/Sacubitril-Valsartan, β-Blocker, Mineralokortikoid-Antagonist, SGLT2-Hemmer; HFpEF: SGLT2-Hemmer und Mineralokortikoid-Antagonist.",
       "Tamponade: akut schon 100–200 ml; Angleichung der diastolischen Drücke, Pulsus paradoxus, Beck-Trias.",
       "Tamponade: wenn möglich vor der Narkose entlasten; Spontanatmung, Vorlast und Frequenz erhalten."
     ],
@@ -843,9 +844,9 @@
       "Nach Herzoperationen: Tamponade auch durch lokale Hämatome möglich – atypische Echobefunde."
     ],
     selbsttest: [
-      { q: "Spezialwissen Herz: Wie wird die Herzinsuffizienz nach ESC 2021 anhand der Ejektionsfraktion eingeteilt?", a: "HFrEF ≤ 40 %, HFmrEF 41–49 %, HFpEF ≥ 50 % mit Nachweis struktureller/funktioneller Veränderungen bzw. erhöhter natriuretischer Peptide." },
+      { q: "Spezialwissen Herz: Wie wird die Herzinsuffizienz nach ESC 2026 anhand der Ejektionsfraktion eingeteilt?", a: "Nur noch zwei Formen: HFrEF mit EF < 50 % und HFpEF mit EF ≥ 50 % plus objektivem Nachweis struktureller bzw. funktioneller Herzveränderungen." },
       { q: "Spezialwissen Herz: Welche neurohumoralen Systeme werden bei Herzinsuffizienz aktiviert und warum schaden sie langfristig?", a: "Sympathikus, Renin-Angiotensin-Aldosteron-System und ADH: Gefäßverengung und Salz-/Wasserrückhalt stützen kurzfristig Druck und Füllung, erhöhen aber langfristig Wandspannung, Sauerstoffbedarf, Umbau, Fibrose und Arrhythmien." },
-      { q: "Spezialwissen Herz: Welche vier Medikamentengruppen bilden die Basistherapie der HFrEF?", a: "ACE-Hemmer bzw. Sacubitril/Valsartan, β-Blocker, Mineralokortikoid-Rezeptor-Antagonisten und SGLT2-Hemmer (ESC 2021)." },
+      { q: "Spezialwissen Herz: Welche vier Medikamentengruppen bilden die Basistherapie der HFrEF?", a: "ACE-Hemmer bzw. Sacubitril/Valsartan, β-Blocker, Mineralokortikoid-Rezeptor-Antagonisten und SGLT2-Hemmer (ESC 2026)." },
       { q: "Spezialwissen Herz: Ab welchen NT-proBNP- bzw. BNP-Werten ist eine Herzinsuffizienz bei nicht akuten Beschwerden unwahrscheinlich?", a: "NT-proBNP < 125 pg/ml bzw. BNP < 35 pg/ml (bei akuter Atemnot: NT-proBNP < 300 pg/ml, BNP < 100 pg/ml)." },
       { q: "Spezialwissen Herz: Welche hämodynamischen Zeichen kennzeichnen eine Herzbeuteltamponade?", a: "Kollaps von rechtem Vorhof/rechter Kammer in der Diastole, Angleichung der diastolischen Drücke, Pulsus paradoxus (> 10 mmHg), Beck-Trias (Hypotonie, gestaute Halsvenen, leise Herztöne), Tachykardie." },
       { q: "Spezialwissen Herz: Worauf ist bei der Narkose eines Patienten mit Herzbeuteltamponade zu achten?", a: "Wenn möglich vorher in Lokalanästhesie entlasten; sonst Einleitung erst bei OP-bereitem Team, Spontanatmung möglichst erhalten, Vorlast, Frequenz und Kontraktilität erhalten – Überdruckbeatmung und Venenerschlaffung können zum Kreislaufstillstand führen." }

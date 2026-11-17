@@ -508,7 +508,7 @@
     klinik: [
       "Hypoxämie in Narkose: FiO₂ erhöhen hilft bei Missverhältnis; bei Shunt (Atelektase, Pneumonie, einseitige Intubation) braucht es Rekrutierung, PEEP oder Ursachenbehebung.",
       "Bei schwerer Hypoxämie auch Herzzeitvolumen, Hämoglobin und Sauerstoffverbrauch (Fieber, Zittern) optimieren.",
-      "Akutes Lungenversagen: Berlin-Definition (2012) mit Horovitz ≤ 300 mmHg unter PEEP ≥ 5 cmH₂O; die neue globale Definition (Matthay et al. 2024) schließt auch Patienten unter High-Flow-Sauerstoff (≥ 30 l/min) ein und erlaubt eine pulsoxymetrische Sättigung/FiO₂ ≤ 315 (bei Sättigung ≤ 97 %)."
+      "Akutes Lungenversagen nach der globalen Definition (2024): Horovitz ≤ 300 mmHg oder pulsoxymetrische Sättigung/FiO₂ ≤ 315 (bei Sättigung ≤ 97 %) unter PEEP ≥ 5 cmH₂O; auch nicht intubierte Patienten unter High-Flow-Sauerstoff (≥ 30 l/min) oder NIV/CPAP zählen, und Lungenultraschall ist als Bildgebung zugelassen."
     ],
     selbsttest: [
       { q: "Spezialwissen Lunge: Wie verteilt sich das Verhältnis von Belüftung zu Durchblutung in der aufrechten Lunge?", a: "Beide nehmen nach unten zu, die Durchblutung stärker: oben ca. 3, unten ca. 0,6, insgesamt ca. 0,8." },
@@ -516,7 +516,7 @@
       { q: "Spezialwissen Lunge: Wie lautet die Shuntgleichung?", a: "Shuntanteil = (Cc′O₂ − CaO₂) / (Cc′O₂ − Cv̄O₂) – Sauerstoffgehalt am Kapillarende, arteriell und gemischtvenös." },
       { q: "Spezialwissen Lunge: Ab welchem Shuntanteil spricht der arterielle Sauerstoff kaum noch auf eine FiO₂-Erhöhung an?", a: "Ab etwa 30 % (Iso-Shunt-Diagramm)." },
       { q: "Spezialwissen Lunge: Was unterscheidet durchblutungs- und diffusionsbegrenzten Gasaustausch? Nenne Beispiele.", a: "Durchblutungsbegrenzt: Ausgleich früh in der Kapillare, Aufnahme nur vom Fluss abhängig (Lachgas, Sauerstoff in Ruhe). Diffusionsbegrenzt: kein Ausgleich während der Passage (Kohlenmonoxid; Sauerstoff bei Belastung, Höhe, Fibrose)." },
-      { q: "Spezialwissen Lunge: Welche Kriterien hat die Berlin-Definition des akuten Lungenversagens (ARDS)?", a: "Beginn innerhalb 1 Woche, beidseitige Verschattungen, nicht vollständig durch Herzinsuffizienz/Überwässerung erklärt, Horovitz ≤ 300 mmHg unter PEEP/CPAP ≥ 5 cmH₂O (mild 200–300, moderat 100–200, schwer ≤ 100)." }
+      { q: "Spezialwissen Lunge: Welche Kriterien hat die globale Definition des akuten Lungenversagens (ARDS, 2024)?", a: "Beginn innerhalb 1 Woche, beidseitige Verschattungen (Röntgen, CT oder Ultraschall), nicht vollständig durch Herzinsuffizienz/Überwässerung erklärt, Horovitz ≤ 300 mmHg oder SpO₂/FiO₂ ≤ 315 unter PEEP/CPAP ≥ 5 cmH₂O bzw. High-Flow ≥ 30 l/min (mild 200–300, moderat 100–200, schwer ≤ 100 mmHg)." }
     ]
   });
 

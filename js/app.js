@@ -93,29 +93,13 @@
       .replace(/==(.+?)==/g, '<mark class="sw-key">$1</mark>');
   }
 
-  // ---------- Prüfstand: Aktualität der Leitlinie ----------
-  // Leitlinien, deren letzte Fassung mehr als 2 Jahre zurückliegt, werden markiert –
-  // als Hinweis, vor der Prüfung nach einer neueren Fassung zu sehen (Daten:
-  // data/leitlinien_stand.js). Bezugsjahr ist das aktuelle Kalenderjahr des Geräts.
+  // ---------- Leitlinienfassung ----------
+  // Zeigt neutral, auf welcher (aktuell gültigen) Fassung eine Karte beruht (Daten: data/leitlinien_stand.js).
   const LEITLINIEN_STAND = window.LEITLINIEN_STAND || {};
-  function standInfo(name) {
-    if (!name) return null;
-    const st = LEITLINIEN_STAND[name];
-    if (!st) return null;
-    const year = new Date().getFullYear();
-    const alt = typeof st.stand === "number" ? year - st.stand : null;
-    return { stand: st.stand, hinweis: st.hinweis || "", veraltet: alt !== null && alt > 2, alter: alt };
-  }
   function standBadge(name) {
-    const st = standInfo(name);
-    if (!st) return "";
-    if (st.stand === null) {
-      return '<div class="stand-badge stand-unklar">Stand: nicht sicher datiert' + (st.hinweis ? " – " + escapeHtml(st.hinweis) : "") + "</div>";
-    }
-    return '<div class="stand-badge ' + (st.veraltet ? "stand-alt" : "stand-ok") + '">' +
-      (st.veraltet ? "⚠ " : "✓ ") + "Leitlinienstand " + st.stand +
-      (st.veraltet ? " – älter als 2 Jahre: vor der Prüfung auf neuere Fassung prüfen" : " – aktuell") +
-      (st.hinweis ? " · " + escapeHtml(st.hinweis) : "") + "</div>";
+    const st = name ? LEITLINIEN_STAND[name] : null;
+    if (!st || typeof st.stand !== "number") return "";
+    return '<div class="stand-badge stand-ok">Leitlinie: Fassung ' + st.stand + (st.hinweis ? " · " + escapeHtml(st.hinweis) : "") + "</div>";
   }
 
   // ---------- Fehler melden (nur lokal) ----------
@@ -3458,7 +3442,7 @@
       '<main class="container">' +
       "<h1>Fälle zur Selbstprüfung</h1>" +
       '<p>Ausführliche Verläufe wie im SOE: Ausgangslage → neue Befunde → Frage. <strong>Antworte zuerst laut oder schriftlich</strong>, dann decke die Kernpunkte auf und hake ab, was du genannt hattest. Am Ende siehst du deinen Anteil, die typischen Fallstricke und Links zum Vertiefen.</p>' +
-      '<p class="muted">Eigene Fälle aus Fachwissen und aktuellen Leitlinien, gegliedert nach den Themen der großen Lehrbücher (u.a. Miller\'s Anesthesia) – kein Lehrbuchtext. Werte und Dosierungen vor der Anwendung gegen aktuelle Leitlinien prüfen.</p>' +
+      '<p class="muted">Eigene Fälle aus Fachwissen und aktuellen Leitlinien, gegliedert nach den Themen der großen Lehrbücher (u.a. Miller\'s Anesthesia) – kein Lehrbuchtext.</p>' +
       gruppen + "</main>";
   }
 
