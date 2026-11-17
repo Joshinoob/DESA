@@ -385,7 +385,7 @@ window.FAELLE = [
         frage: "Wie ordnen Sie die Situation ein?",
         punkte: [
           "Horovitz-Quotient PaO₂/FiO₂ = 64/0,8 = **80 mmHg → schweres ARDS** (≤ 100 mmHg)",
-          "Berlin-Kriterien: Beginn innerhalb 1 Woche, beidseitige Verschattungen, nicht allein kardial erklärt (Echo normal), PEEP ≥ 5",
+          "Kriterien der globalen ARDS-Definition (2024): Beginn innerhalb 1 Woche, beidseitige Verschattungen (Röntgen, CT oder Ultraschall), nicht allein kardial erklärt (Echo normal), beim Beatmeten PEEP ≥ 5 cmH₂O",
           "Aktuelle Beatmung **nicht lungenprotektiv**: Tidalvolumen bezogen auf das Standardkörpergewicht zu hoch, Plateaudruck > 30",
           "Driving Pressure = Plateau − PEEP = **26 cmH₂O** (Ziel ≤ 15)"
         ],

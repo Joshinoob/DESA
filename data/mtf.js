@@ -202,7 +202,7 @@ window.MTF = [
     ["Hydroxyethylstärke wird zur Volumentherapie empfohlen.", false, "Wegen Nierenschäden und höherer Sterblichkeit nicht verwenden."],
     ["Reicht der Mitteldruck unter Noradrenalin nicht aus, wird Vasopressin ergänzt.", true, "Statt Noradrenalin immer weiter zu erhöhen."]
   ] },
-  { id: "mtf-b-09", paper: "B", thema: "Beatmung", stamm: "ARDS (Berlin-Definition) und Beatmung:", aussagen: [
+  { id: "mtf-b-09", paper: "B", thema: "Beatmung", stamm: "ARDS (globale Definition 2024) und Beatmung:", aussagen: [
     ["Für die Diagnose muss ein Herzversagen als Ursache der Lungenödeme nachgewiesen sein.", false, "Umgekehrt: Das Ödem darf nicht allein durch Herzversagen oder Überwässerung erklärt sein; Beginn innerhalb einer Woche nach einem Auslöser."],
     ["Ein PaO₂/FiO₂ ≤ 100 mmHg unter PEEP ≥ 5 cmH₂O entspricht einem schweren ARDS.", true, "Mild 200–300, moderat 100–200, schwer ≤ 100."],
     ["Lungenprotektiv wird mit ca. 6 ml/kg idealem Körpergewicht beatmet.", true, "Bezogen auf das ideale, nicht das tatsächliche Gewicht."],

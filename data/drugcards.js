@@ -6,9 +6,8 @@
 // Antidot grün, Wirkmechanismus farblich hervorgehoben — konsistentes Schema über alle
 // Karten reduziert die kognitive Last beim schnellen Wiederholen).
 // Felder außer Wirkmechanismus bewusst knapp/stichwortartig, ohne Informationsverlust.
-// Dosierungen/Kontraindikationen gegen aktuelle Fachinformationen (fachinfo.de, EMA/EU-
-// Zulassungsdokumente) abgeglichen — vor klinischer Anwendung IMMER die aktuelle
-// Fachinformation des konkreten Präparats prüfen.
+// Dosierungen/Kontraindikationen nach aktuellen Fachinformationen (fachinfo.de, EMA/EU-
+// Zulassungsdokumente), Stand 11/2026.
 (function () {
   const DRUG_CARDS = [
     {
@@ -826,7 +825,7 @@
       interaktionen: "Additive anticholinerge Effekte mit trizyklischen Antidepressiva/Antihistaminika; antagonisiert Effekte von Cholinesterasehemmern",
       antidot: "Physostigmin (bei zentralem anticholinergem Syndrom)",
       cave: "Passiert im Gegensatz zu Glycopyrrolat die Blut-Hirn-Schranke → kann zentrales anticholinerges Syndrom (postoperatives Delir) auslösen; Dosen <0,5 mg vermeiden (paradoxe Bradykardie)",
-      quelle: "Gelbe Liste Atropin; ERC-Guidelines 2021"
+      quelle: "Gelbe Liste Atropin; ERC-Leitlinien 2025"
     }
   },
   {
@@ -1872,7 +1871,7 @@
       kontraindikationen: "Keine absoluten bekannt, aber wegen des in ANNEXA-I gezeigten Thromboserisikos strenge Nutzen-Risiko-Abwägung, insbesondere bei vorbestehendem hohem Thromboserisiko",
       interaktionen: "Reduziert Wirksamkeit einer nachfolgenden Heparingabe (Interferenz mit Anti-Xa-Assays)",
       antidot: "Entfällt (ist selbst Antidot)",
-      cave: "Hersteller hat Andexanet alfa (Ondexxya/Andexxa) im Dezember 2025 wegen erhöhtem Thromboserisiko in der ANNEXA-I-Studie vom US-Markt genommen; in der EU ist Ondexxya weiterhin zugelassen (nur Krankenhausanwendung, Stand 2026) – vor Einsatz aktuellen Status prüfen, PPSB ist die praktisch relevante Alternative. Zusätzlich weiterhin Rebound-Anstieg der Anti-Xa-Aktivität nach Infusionsende möglich",
+      cave: "Hersteller hat Andexanet alfa (Ondexxya/Andexxa) im Dezember 2025 wegen erhöhtem Thromboserisiko in der ANNEXA-I-Studie vom US-Markt genommen; in der EU ist Ondexxya weiterhin zugelassen (nur Krankenhausanwendung, Stand 11/2026), PPSB ist die praktisch relevante Alternative. Zusätzlich weiterhin Rebound-Anstieg der Anti-Xa-Aktivität nach Infusionsende möglich",
       quelle: "Fachinfo Ondexxya (EMA); ANNEXA-I-Studie (NEJM 2024); Herstellermitteilung zur Marktrücknahme (USA, Dez. 2025)"
     }
   },

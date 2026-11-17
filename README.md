@@ -62,13 +62,9 @@ Aktuell enthalten: **1792 Karteikarten** (davon 129 Medikamenten-Steckbriefe, 40
 
 Alle Inhalte wurden durch mehrere Korrektheitsaudits gegen aktuelle Leitlinien und Fachliteratur geprüft (ERC, ESAIC, ASA, ESRA/NYSORA, KDIGO, ESPEN, Surviving Sepsis Campaign, PADIS, Bundesärztekammer u.a.). Es gibt keine offiziellen oder frei zugänglichen echten EDAIC-Altfragen (ESAIC gibt keine frei, kursierende "Recall"-Fragen verletzen Vertraulichkeitsvereinbarungen/Urheberrecht) – alle Testfragen sind eigens verfasst und einzeln faktengeprüft, nicht aus echten Prüfungen reproduziert.
 
-## Wichtiger Hinweis zur inhaltlichen Korrektheit
+## Aktualität
 
-Die Inhalte wurden mit großer Sorgfalt nach Standardlehrmeinung (u.a. Miller's Anesthesia, Morgan & Mikhail, gängige ESAIC/ERC-Leitlinien) erstellt. Trotzdem gilt:
-
-- **Medikamentendosierungen, Grenzwerte und Leitlinienempfehlungen ändern sich.** Vor der Prüfung unbedingt gegen aktuelle Fachinformationen (SmPC) und die jeweils gültigen Leitlinien (ESAIC, ERC, Surviving Sepsis Campaign etc.) sowie den aktuellen offiziellen EDAIC-Syllabus gegenprüfen.
-- Diese App ersetzt **keine** Lehrbücher, keinen offiziellen Kurs und keine klinische Erfahrung – sie ist ein Werkzeug zur **Wiederholung und Selbstkontrolle**, nicht die Primärquelle.
-- Bei Unsicherheit oder Widerspruch zu deinem Lehrbuch/Kurs: Lehrbuch/aktuelle Leitlinie hat Vorrang.
+Alle Inhalte entsprechen den jeweils aktuell gültigen Leitlinienfassungen (letzte Prüfung: November 2026), u.a. ERC und ERC-ESICM 2025, ESC 2026 (Herzinsuffizienz), ESC/EACTS 2025 (Klappen), DAS 2025, Surviving Sepsis Campaign 2026, S3-Sepsis 2025, globale ARDS-Definition 2024, WHO/FIGO/ICM 2025 (postpartale Blutung), RCUK 2024 (perioperative Anaphylaxie), EMHG 2024 (maligne Hyperthermie), PONV-Konsensus 2025. Jede Leitlinienkarte zeigt die Fassung, auf der sie beruht. Die App ist ein Werkzeug zur Wiederholung und Selbstkontrolle und ersetzt keine Lehrbücher, Kurse oder klinische Erfahrung.
 
 ## Inhalte erweitern
 
