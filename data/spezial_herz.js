@@ -312,7 +312,7 @@
       { h: "Elektrische Herzachse" },
       "Die Hauptrichtung der Kammererregung in der Frontalebene liegt normal bei ca. **−30° bis +90°**. Eine Linksabweichung (z.B. linksanteriorer Hemiblock, linksventrikuläre Hypertrophie) oder Rechtsabweichung (z.B. Rechtsherzbelastung, Lungenembolie) gibt Hinweise auf Leitungsstörungen und Belastung.",
       { h: "Ischämie und Infarkt" },
-      "ST-Hebungs-Infarkt nach der 4. universellen Infarktdefinition (2018): neue ST-Hebung am J-Punkt in mindestens zwei benachbarten Ableitungen von **≥ 1 mm** – in V2–V3 gelten höhere Grenzen: **≥ 2 mm** bei Männern ab 40 Jahren, **≥ 2,5 mm** bei Männern unter 40 Jahren, **≥ 1,5 mm** bei Frauen. ST-Senkungen und T-Negativierungen sprechen eher für subendokardiale Ischämie.",
+      "ST-Hebungs-Infarkt nach der ESC-Leitlinie akutes Koronarsyndrom (2023): neue ST-Hebung am J-Punkt in mindestens zwei benachbarten Ableitungen von **≥ 1 mm** – in V2–V3 gelten höhere Grenzen: **≥ 2 mm** bei Männern ab 40 Jahren, **≥ 2,5 mm** bei Männern unter 40 Jahren, **≥ 1,5 mm** bei Frauen. ST-Senkungen und T-Negativierungen sprechen eher für subendokardiale Ischämie.",
       { kette: [
         "Ischämie betrifft zuerst das Subendokard",
         "Verletzungsstrom zwischen ischämischem und gesundem Gewebe",
@@ -355,10 +355,113 @@
       { q: "Spezialwissen Herz: Was bedeutet ein positiver Ausschlag im EKG?", a: "Die Erregungsfront (Summenvektor) bewegt sich auf die messende Elektrode zu; bewegt sie sich weg, entsteht ein negativer Ausschlag." },
       { q: "Spezialwissen Herz: Welche Normalwerte gelten für PQ-Zeit, QRS-Dauer und QTc?", a: "PQ 120–200 ms; QRS < 100–120 ms (≥ 120 ms = kompletter Schenkelblock); QTc < ca. 450 ms (Männer) bzw. < ca. 460–470 ms (Frauen), > 500 ms hohes Risiko." },
       { q: "Spezialwissen Herz: Welche EKG-Ableitungen bilden welche Wandabschnitte ab?", a: "II, III, aVF = inferior (Hinterwand); I, aVL, V5–V6 = lateral; V1–V4 = Septum und Vorderwand." },
-      { q: "Spezialwissen Herz: Welche ST-Hebungs-Kriterien definieren einen ST-Hebungs-Infarkt?", a: "Neue ST-Hebung am J-Punkt in ≥ 2 benachbarten Ableitungen ≥ 1 mm; in V2–V3 ≥ 2 mm (Männer ≥ 40 J.), ≥ 2,5 mm (Männer < 40 J.), ≥ 1,5 mm (Frauen) (4. universelle Infarktdefinition 2018)." },
+      { q: "Spezialwissen Herz: Welche ST-Hebungs-Kriterien definieren einen ST-Hebungs-Infarkt?", a: "Neue ST-Hebung am J-Punkt in ≥ 2 benachbarten Ableitungen ≥ 1 mm; in V2–V3 ≥ 2 mm (Männer ≥ 40 J.), ≥ 2,5 mm (Männer < 40 J.), ≥ 1,5 mm (Frauen) (ESC-Leitlinie akutes Koronarsyndrom 2023)." },
       { q: "Spezialwissen Herz: Wie unterscheiden sich AV-Block II° Typ Wenckebach und Typ Mobitz II?", a: "Wenckebach: zunehmende PQ-Verlängerung bis zum Ausfall, meist im AV-Knoten, eher harmlos. Mobitz II: plötzlicher Ausfall ohne PQ-Verlängerung, meist unterhalb des AV-Knotens, Gefahr des totalen Blocks → Schrittmacherbereitschaft." },
       { q: "Spezialwissen Herz: Welche Ableitungskombination erkennt intraoperativ die meisten Ischämien?", a: "II + V5 ca. 80 %, zusätzlich mit V4 ca. 96 % (London et al. 1988)." },
       { q: "Spezialwissen Herz: Wie wirkt ein Magnet auf Schrittmacher bzw. ICD?", a: "Schrittmacher: meist Umschaltung auf asynchrone Stimulation. ICD: Aussetzen der Schocktherapie bei unveränderter Schrittmacherfunktion (herstellerabhängig)." }
+    ]
+  });
+
+  CH.push({
+    id: "ekg-infarkt",
+    level: "Klinik",
+    title: "EKG-Infarktlokalisation: Ableitung, Wandabschnitt, Gefäß",
+    leitfrage: "Wie schließt man aus den Ableitungen mit ST-Hebung auf den betroffenen Wandabschnitt und das verschlossene Gefäß – und welche Komplikationen folgen aus dieser Anatomie?",
+    einfach: "Jede EKG-Ableitung schaut aus einer bestimmten Richtung auf das Herz. Sieht eine Gruppe benachbarter Ableitungen eine ST-Hebung, liegt der Schaden in dem Wandabschnitt, auf den sie blicken. Weil jedes Koronargefäß einen festen Wandabschnitt versorgt, verrät das EKG auch das Gefäß – und damit, welche Strukturen (Reizleitung, Papillarmuskeln, rechte Kammer) mitbetroffen sein können.",
+    body: [
+      { h: "Die Koronararterien und ihre Versorgungsgebiete" },
+      { ul: [
+        "**Linke Koronararterie (Hauptstamm)** teilt sich in **RIVA** (Ramus interventricularis anterior, englisch LAD) und **R. circumflexus (RCX)**.",
+        "**RIVA:** Septaläste (vordere zwei Drittel des Kammerseptums mit rechtem Tawara-Schenkel und vorderem linken Faszikel), Diagonaläste (Vorder- und Teile der Seitenwand), Herzspitze.",
+        "**RCX:** Marginaläste zur Seitenwand und zur hinteren Seitenwand; bei Linksversorgung auch die Hinterwand.",
+        "**Rechte Koronararterie (RCA):** rechte Kammer, Sinusknotenarterie (ca. 60 %), AV-Knoten-Arterie (bei Rechtsversorgung ca. 80–90 %), über den R. interventricularis posterior die Hinterwand (inferior) und das hintere Septumdrittel.",
+        "**Versorgungstyp:** Rechtsversorgung bei ca. 70–85 % (R. interventricularis posterior aus der RCA), Linksversorgung ca. 5–10 %, ausgeglichen ca. 5–20 % – ==entscheidet, welches Gefäß hinter einem inferioren Infarkt steckt==."
+      ] },
+      { h: "Zuordnung: Ableitungen → Wandabschnitt → Gefäß" },
+      { table: { head: ["ST-Hebung in", "Wandabschnitt", "Typisches Gefäß", "Worauf achten"], rows: [
+        ["V1–V2", "Septum", "RIVA (Septaläste)", "Schenkelblöcke, Ventrikelseptumdefekt"],
+        ["V3–V4", "Vorderwand, Spitze", "RIVA", "Pumpversagen, Spitzenthrombus, Aneurysma"],
+        ["V1–V6 + I, aVL", "ausgedehnte Vorderwand", "proximaler RIVA", "kardiogener Schock, infranodaler AV-Block"],
+        ["I, aVL (± V5–V6)", "hohe Seitenwand", "1. Diagonalast oder Marginalast des RCX", "Hebungen oft klein"],
+        ["V5–V6, I, aVL", "Seitenwand", "RCX", "EKG beim RCX-Verschluss oft wenig auffällig"],
+        ["II, III, aVF", "inferior (im Deutschen meist „Hinterwand“)", "RCA (ca. 80 %), RCX (ca. 20 %)", "Bradykardie, AV-Block, Hypotonie"],
+        ["V7–V9 (Spiegelbild: ST-Senkung V1–V3 mit hohem R)", "posterior (strikt hintere Wand)", "RCX oder RCA (posterolaterale Äste)", "wird leicht übersehen"],
+        ["V3R–V4R (meist mit II, III, aVF)", "rechter Ventrikel", "proximale RCA", "Hypotonie bei klarer Lunge, vorlastabhängig"],
+        ["aVR (± V1) + ST-Senkung in ≥ 8 Ableitungen", "diffuse subendokardiale Ischämie", "Hauptstamm- oder Dreigefäßerkrankung", "hohes Risiko, sofort Katheter"]
+      ] } },
+      "==Gegenüberliegende Ableitungen zeigen das Spiegelbild (reziproke ST-Senkung)== – sie bestätigen die Diagnose und helfen bei der Gefäßzuordnung.",
+      { h: "Feinere Zuordnung" },
+      { ul: [
+        "**Inferior – RCA oder RCX?** ST-Hebung in III > II und ST-Senkung in I (und aVL) sprechen für die **RCA**; ST-Hebung in II ≥ III, keine Senkung in I bzw. zusätzliche Hebung in I, aVL, V5–V6 für den **RCX**.",
+        "**Rechtsventrikuläre Beteiligung:** ST-Hebung ≥ 0,5 mm (Männer < 30 J. ≥ 1 mm) in V4R → Verschluss der RCA **vor** den Ästen zur rechten Kammer. Bei jedem inferioren Infarkt rechtspräkordiale Ableitungen schreiben.",
+        "**Proximaler RIVA:** zusätzliche Hebung in aVL und I mit Spiegelbild-Senkung in II, III, aVF (vor dem 1. Diagonalast); neuer Rechtsschenkelblock oder Hebung in aVR (vor dem 1. Septalast).",
+        "**Posteriorer Infarkt:** ST-Senkung in V1–V3 mit hohem R und aufrechter T-Welle bei Brustschmerz → V7–V9 ableiten (Hebung ≥ 0,5 mm, Männer < 40 J. ≥ 1 mm)."
+      ] },
+      { h: "ST-Hebungs-Kriterien (ESC-Leitlinie akutes Koronarsyndrom 2023)" },
+      { table: { head: ["Ableitungen", "Neue ST-Hebung am J-Punkt in ≥ 2 benachbarten Ableitungen"], rows: [
+        ["alle außer V2–V3", "≥ 1 mm"],
+        ["V2–V3", "Männer ≥ 40 J. ≥ 2 mm · Männer < 40 J. ≥ 2,5 mm · Frauen ≥ 1,5 mm"],
+        ["V7–V9", "≥ 0,5 mm (Männer < 40 J. ≥ 1 mm)"],
+        ["V3R–V4R", "≥ 0,5 mm (Männer < 30 J. ≥ 1 mm)"]
+      ] } },
+      { h: "Verschlussmuster ohne klassische ST-Hebung" },
+      { ul: [
+        "**Linksschenkelblock oder Schrittmacherrhythmus** mit anhaltenden Beschwerden → wie ST-Hebungs-Infarkt behandeln (sofort Herzkatheter).",
+        "**Posteriorer Infarkt** (ST-Senkung V1–V3, siehe oben).",
+        "**De-Winter-Muster:** aufsteigende ST-Senkung ≥ 1 mm am J-Punkt in V1–V6 mit hohen, symmetrischen T-Wellen → akuter Verschluss des proximalen RIVA.",
+        "**Wellens-Muster:** biphasische oder tief negative T-Wellen in V2–V3 im schmerzfreien Intervall → kritische proximale RIVA-Stenose; kein Belastungstest, sondern zügig Herzkatheter.",
+        "**Hyperakute T-Wellen** (breitbasig, hoch) als frühestes Zeichen, noch vor der ST-Hebung."
+      ] },
+      { h: "Was aus der Anatomie folgt" },
+      { kette: [
+        "RCA-Verschluss (inferior) → AV-Knoten-Arterie und Sinusknotenarterie betroffen",
+        "Bradykardie, AV-Block meist im AV-Knoten (Wenckebach), schmaler Ersatzrhythmus, oft vorübergehend und atropinempfindlich",
+        "Zusätzlich Bezold-Jarisch-Reflex aus der Hinterwand: Vagus ↑ → Bradykardie und Hypotonie",
+        "==Bei Beteiligung der rechten Kammer: Füllung des linken Herzens hängt von der Vorlast ab → Nitrate und Diuretika können den Kreislauf zusammenbrechen lassen=="
+      ], titel: "Inferiorer Infarkt" },
+      { kette: [
+        "RIVA-Verschluss (anterior) → Septaläste mit rechtem Schenkel und vorderem linken Faszikel betroffen",
+        "Neuer Rechtsschenkelblock, linksanteriorer Hemiblock; AV-Block unterhalb des AV-Knotens (Mobitz II, III° mit breitem Ersatzrhythmus)",
+        "==Infranodaler Block bei Vorderwandinfarkt = großer Infarkt, schlechte Prognose → Schrittmacher bereithalten=="
+      ], titel: "Vorderwandinfarkt und Reizleitung" },
+      { ul: [
+        "**Papillarmuskeln:** Der **anterolaterale** wird doppelt versorgt (RIVA-Diagonaläste und RCX), der **posteromediale** nur aus dem R. interventricularis posterior → ==Papillarmuskelabriss mit akuter Mitralinsuffizienz typisch beim inferioren Infarkt==.",
+        "**Ventrikelseptumdefekt** nach Vorder- oder Hinterwandinfarkt (neues Systolikum, Sauerstoffsprung im Rechtsherzkatheter).",
+        "**Aneurysma und Thrombus** vor allem an der Spitze (RIVA)."
+      ] },
+      { h: "Perioperatives Monitoring" },
+      "Intraoperativ erkennen **II + V5** etwa 80 % der Ischämie-Episoden, mit V4 zusätzlich etwa 96 %. Die posteriore Wand und der rechte Ventrikel werden mit dem Standard-Monitoring nicht erfasst – ==bei Verdacht immer ein 12-Kanal-EKG (plus V4R und V7–V9) schreiben==. Perioperative Ischämie ist meist eine ST-**Senkung** (subendokardial, Missverhältnis von Angebot und Bedarf) und lässt sich keinem einzelnen Gefäß sicher zuordnen."
+    ],
+    merke: [
+      "V1–V4 RIVA · I, aVL, V5–V6 RCX (bzw. Diagonalast) · II, III, aVF RCA (ca. 80 %) oder RCX.",
+      "Inferior: III > II + Senkung in I → RCA; V4R-Hebung → proximale RCA mit rechter Kammer.",
+      "ST-Senkung V1–V3 mit hohem R → posterior, V7–V9 schreiben.",
+      "aVR-Hebung + Senkung in ≥ 8 Ableitungen → Hauptstamm oder Dreigefäß.",
+      "Inferior → AV-Knoten-Block, Bezold-Jarisch, posteromedialer Papillarmuskel; anterior → infranodaler Block, Pumpversagen."
+    ],
+    warum: [
+      { q: "Warum reißt beim Infarkt fast immer der posteromediale Papillarmuskel?", a: "Er wird meist nur aus einem Gefäß (R. interventricularis posterior) versorgt, der anterolaterale dagegen aus RIVA-Diagonalästen und RCX. Fällt das einzige Gefäß aus, gibt es keine Ausweichversorgung." },
+      { q: "Warum ist ein AV-Block beim inferioren Infarkt meist harmloser als beim Vorderwandinfarkt?", a: "Beim inferioren Infarkt liegt die Störung meist im AV-Knoten (Ischämie der AV-Knoten-Arterie, vagale Reflexe): schmaler Ersatzrhythmus, atropinempfindlich, oft vorübergehend. Beim Vorderwandinfarkt sind die Tawara-Schenkel unterhalb des AV-Knotens zerstört – das spricht für einen großen Infarkt, der Ersatzrhythmus ist langsam und breit." },
+      { q: "Warum können Nitrate beim Rechtsherzinfarkt gefährlich sein?", a: "Die geschädigte rechte Kammer fördert nur ausreichend Blut, wenn die Vorlast hoch ist. Nitrate erweitern die Venen und senken die Vorlast → weniger Füllung rechts → weniger Blut für das linke Herz → schwere Hypotonie." }
+    ],
+    klinik: [
+      "Bei jedem inferioren Infarkt V4R ableiten; bei ST-Senkung V1–V3 an V7–V9 denken.",
+      "Inferiorer Infarkt mit Hypotonie, gestauten Halsvenen und klarer Lunge → rechte Kammer: Volumen vorsichtig, keine Nitrate, Inotropika, Sinusrhythmus bzw. AV-Synchronie erhalten.",
+      "Neue ST-Hebung im OP oder Aufwachraum: 12-Kanal-EKG, Kardiologie, sofortige Koronarangiographie abwägen – Blutungsrisiko der frischen OP gemeinsam mit dem Operateur einschätzen."
+    ],
+    selbsttest: [
+      { q: "Spezialwissen Herz: Welche Ableitungen, welcher Wandabschnitt und welches Gefäß gehören beim Vorderwandinfarkt zusammen?", a: "V1–V4 (V1–V2 Septum, V3–V4 Vorderwand/Spitze) → RIVA; zusätzlich I und aVL (V1–V6, I, aVL) → ausgedehnter Vorderwandinfarkt durch proximalen RIVA-Verschluss." },
+      { q: "Spezialwissen Herz: Welche Ableitungen zeigen einen Seitenwandinfarkt, und welches Gefäß ist meist verschlossen?", a: "I, aVL, V5–V6 → RCX (Marginaläste); isoliert I und aVL (hohe Seitenwand) → 1. Diagonalast des RIVA oder Marginalast des RCX." },
+      { q: "Spezialwissen Herz: Welche Gefäße kommen bei ST-Hebung in II, III, aVF in Frage, und wovon hängt das ab?", a: "Meist die RCA (ca. 80 %), sonst der RCX (ca. 20 %) – abhängig vom Versorgungstyp, also davon, ob der R. interventricularis posterior aus der RCA (Rechtsversorgung, ca. 70–85 %) oder aus dem RCX kommt." },
+      { q: "Spezialwissen Herz: Wie unterscheidet man im EKG beim inferioren Infarkt zwischen RCA und RCX?", a: "RCA: ST-Hebung III > II und ST-Senkung in I (und aVL). RCX: ST-Hebung II ≥ III, keine Senkung in I bzw. zusätzliche Hebung in I, aVL, V5–V6." },
+      { q: "Spezialwissen Herz: Wie weist man einen Rechtsherzinfarkt im EKG nach, und welche Klinik passt dazu?", a: "Rechtspräkordiale Ableitung V4R: ST-Hebung ≥ 0,5 mm (Männer < 30 J. ≥ 1 mm) → proximale RCA. Klinik: Hypotonie, gestaute Halsvenen, klare Lunge; empfindlich gegenüber Vorlastsenkung." },
+      { q: "Spezialwissen Herz: Woran erkennt man einen posterioren Infarkt, obwohl im Standard-EKG keine ST-Hebung zu sehen ist?", a: "Spiegelbild in V1–V3: ST-Senkung mit hohem, breitem R und aufrechter T-Welle. Bestätigung durch ST-Hebung ≥ 0,5 mm in V7–V9 (Männer < 40 J. ≥ 1 mm); Gefäß meist RCX oder RCA." },
+      { q: "Spezialwissen Herz: Was bedeutet eine ST-Hebung in aVR mit ST-Senkungen in vielen Ableitungen?", a: "ST-Hebung in aVR (± V1) mit ST-Senkung ≥ 1 mm in ≥ 8 Ableitungen spricht für eine schwere diffuse subendokardiale Ischämie bei Hauptstamm- oder Dreigefäßerkrankung – hohes Risiko, sofortige Koronarangiographie." },
+      { q: "Spezialwissen Herz: Welche ST-Hebungs-Grenzwerte gelten nach der ESC-Leitlinie akutes Koronarsyndrom 2023?", a: "Neue ST-Hebung am J-Punkt in ≥ 2 benachbarten Ableitungen: ≥ 1 mm in allen Ableitungen außer V2–V3; dort Männer ≥ 40 J. ≥ 2 mm, Männer < 40 J. ≥ 2,5 mm, Frauen ≥ 1,5 mm; V7–V9 und V3R–V4R ≥ 0,5 mm." },
+      { q: "Spezialwissen Herz: Was sind das De-Winter- und das Wellens-Muster?", a: "De Winter: aufsteigende ST-Senkung ≥ 1 mm am J-Punkt in V1–V6 mit hohen, symmetrischen T-Wellen → akuter proximaler RIVA-Verschluss (wie ST-Hebungs-Infarkt behandeln). Wellens: biphasische oder tief negative T-Wellen in V2–V3 im schmerzfreien Intervall → kritische proximale RIVA-Stenose (zügig Herzkatheter, kein Belastungstest)." },
+      { q: "Spezialwissen Herz: Welche Strukturen der Reizleitung werden von welchem Gefäß versorgt?", a: "Sinusknoten: RCA ca. 60 %, RCX ca. 40 %. AV-Knoten: bei Rechtsversorgung ca. 80–90 % aus der RCA. Rechter Tawara-Schenkel und vorderer linker Faszikel: RIVA-Septaläste. Hinterer linker Faszikel: doppelt (RIVA und R. interventricularis posterior)." },
+      { q: "Spezialwissen Herz: Welche typischen Komplikationen gehören zu welchem Infarktort?", a: "Inferior: Bradykardie, AV-Block im AV-Knoten, Bezold-Jarisch-Reflex, Rechtsherzinfarkt, Abriss des posteromedialen Papillarmuskels. Anterior: Pumpversagen und kardiogener Schock, infranodaler AV-Block, Schenkelblöcke, Spitzenaneurysma und -thrombus, Ventrikelseptumdefekt." },
+      { q: "Spezialwissen Herz: Welche Ableitungen werden intraoperativ zur Ischämieerkennung überwacht, und was erfassen sie nicht?", a: "II + V5 erkennen ca. 80 % der Ischämie-Episoden, mit V4 ca. 96 %. Nicht erfasst werden die posteriore Wand und der rechte Ventrikel – bei Verdacht 12-Kanal-EKG mit V4R und V7–V9." }
     ]
   });
 
@@ -692,7 +795,7 @@
         "**Präkonditionierung:** Kurze Ischämien schützen vor späteren längeren. Volatile Anästhetika ahmen das im Experiment nach. ==Klinisch zeigten aber weder volatile Anästhetika gegenüber totaler intravenöser Anästhesie in der Bypasschirurgie (MYRIAD 2019) noch die 'ferne' Präkonditionierung mit Blutdruckmanschette (RIPHeart, ERICCA 2015) einen Überlebensvorteil.=="
       ] },
       { h: "Myokardschädigung nach nicht-kardialen Operationen (MINS)" },
-      "Troponinanstiege nach Operationen sind häufig, meist **ohne Beschwerden** und mit einer erhöhten 30-Tage-Sterblichkeit verbunden (VISION 2017). Häufigster Mechanismus ist ein Missverhältnis zwischen Sauerstoffangebot und -bedarf (Tachykardie, Hypotonie, Anämie, Hypoxämie) – also ein Typ-2-Infarkt. Die ESC-Leitlinie 2022 empfiehlt bei Risikopatienten Troponin vor sowie 24 und 48 Stunden nach dem Eingriff."
+      "Troponinanstiege nach Operationen sind häufig, meist **ohne Beschwerden** und mit einer erhöhten 30-Tage-Sterblichkeit verbunden (VISION 2017). Häufigster Mechanismus ist ein Missverhältnis zwischen Sauerstoffangebot und -bedarf (Tachykardie, Hypotonie, Anämie, Hypoxämie) – also ein sekundärer Infarkt (Einteilung der 5. universellen Infarktdefinition 2026). Die ESC-Leitlinie 2022 empfiehlt bei Risikopatienten Troponin vor sowie 24 und 48 Stunden nach dem Eingriff."
     ],
     merke: [
       "Ausschöpfung schon in Ruhe ca. 70–80 % → Mehrbedarf = mehr Durchblutung.",
