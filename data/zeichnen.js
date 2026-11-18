@@ -268,6 +268,23 @@
       kapitel: ["herz", "ekg"]
     },
     {
+      id: "z-ekg-infarkt", titel: "EKG-Ableitungen und Koronarversorgung", bereich: "SOE 1 – Anatomie",
+      aufgabe: "Zeichnen Sie die Extremitätenableitungen im Kreis (Frontalebene) und die Brustwandableitungen um einen Herzquerschnitt. Ordnen Sie Wandabschnitte und Koronargefäße zu.",
+      checkliste: [
+        "Frontalebene: I 0°, II +60°, III +120°, aVF +90°, aVL −30°, aVR −150°",
+        "Horizontalebene: V1–V2 Septum, V3–V4 Vorderwand, V5–V6 Seitenwand, V7–V9 posterior, V4R rechter Ventrikel",
+        "RIVA: V1–V4 (Septum, Vorderwand, Spitze); RCX: I, aVL, V5–V6",
+        "II, III, aVF: RCA (ca. 80 %, Rechtsversorgung) oder RCX; V4R: proximale RCA",
+        "Spiegelbild: ST-Senkung in den gegenüberliegenden Ableitungen"
+      ],
+      erklaeren: [
+        "Inferior: III > II mit Senkung in I spricht für die RCA; immer V4R schreiben.",
+        "Komplikationen aus der Anatomie: inferior AV-Knoten-Block und posteromedialer Papillarmuskel, anterior infranodaler Block und Pumpversagen."
+      ],
+      modelle: [{ abb: "EKG-Ableitungen in Frontal- und Horizontalebene mit den Versorgungsgebieten der Koronararterien" }],
+      kapitel: ["herz", "ekg-infarkt"]
+    },
+    {
       id: "z-starling", titel: "Frank-Starling-Kurven", bereich: "SOE 1 – Physiologie",
       aufgabe: "Zeichnen Sie Frank-Starling-Kurven für ein normales, ein inotrop stimuliertes und ein insuffizientes Herz. Was bedeutet Volumenreagibilität?",
       checkliste: [

@@ -58,7 +58,7 @@ window.FAELLE = [
         punkte: [
           "**Myokardschaden nach nicht-kardialer OP**: Troponinanstieg über die Norm durch Ischämie, meist ohne Symptome",
           "Mit erhöhter 30-Tage-Sterblichkeit verbunden – **kein harmloser Laborwert**",
-          "Meist **Typ-2-Infarkt** (Missverhältnis Angebot/Bedarf: Hypotonie, Tachykardie, Anämie), seltener Typ 1 (Plaqueruptur)",
+          "Meist **sekundärer Infarkt** (Missverhältnis Angebot/Bedarf: Hypotonie, Tachykardie, Anämie), seltener **primärer Infarkt** (Plaqueruptur mit Thrombus) – Einteilung der 5. universellen Infarktdefinition 2026",
           "Auslöser behandeln: Blutdruck, Frequenz, Hb, Schmerz",
           "Kardiologie einbinden, Echokardiographie, ASS und Statin sicher fortführen, weitere Koronardiagnostik je nach Befund"
         ],
@@ -875,5 +875,77 @@ window.FAELLE = [
     ],
     fallstricke: ["Großzügige Volumengabe bei dilatiertem rechtem Ventrikel", "Zementieren ohne Ankündigung", "Grad-2-Ereignis auf die Normalstation verlegt"],
     links: [["#/fall/fall-aortenstenose-huefte", "Fall: Aortenstenose und Hüftfraktur"], ["#/soe-case/soe-hueftfraktur", "SOE: Hüftfraktur"]]
+  },
+  // ===================================================================== 13
+  {
+    id: "fall-inferiorer-stemi", soe: 3, titel: "Inferiorer Infarkt mit Rechtsherzbeteiligung im Aufwachraum",
+    kurz: "Bradykardie und Hypotonie nach Hüft-TEP, ST-Hebung II, III, aVF, V4R, Gefäßzuordnung, Kreislauftherapie, Komplikationen",
+    themen: ["EKG-Infarktlokalisation", "Koronaranatomie", "Rechtsherzinfarkt", "Perioperatives Akutes Koronarsyndrom"],
+    lernziele: ["Aus dem EKG Wandabschnitt und Gefäß ableiten", "Rechtsherzinfarkt erkennen und richtig behandeln", "Komplikationen aus der Koronaranatomie vorhersagen"],
+    ausgang: "71-jähriger Mann, 84 kg, Hüft-TEP in Spinalanästhesie vor 90 min. Vorerkrankungen: Diabetes Typ 2, Hypertonie, Raucher. Im Aufwachraum Übelkeit, Schweißausbruch, Druck auf der Brust. Blutdruck 78/45 mmHg, Herzfrequenz 42/min, SpO₂ 93 % unter 2 l/min O₂, Lunge klar, Halsvenen gestaut.",
+    schritte: [
+      {
+        info: "12-Kanal-EKG: Sinusbradykardie 42/min, ST-Hebung in II, III und aVF (in III 3 mm, in II 2 mm), ST-Senkung in I und aVL. V1–V6 ohne Hebung.",
+        frage: "Befunden Sie das EKG: welcher Wandabschnitt, welches Gefäß, und warum?",
+        punkte: [
+          "**Inferiorer ST-Hebungs-Infarkt** (II, III, aVF ≥ 1 mm in benachbarten Ableitungen)",
+          "Spiegelbild: ST-Senkung in I und aVL",
+          "**RCA** wahrscheinlich: Hebung III > II plus Senkung in I (beim RCX eher II ≥ III, I/aVL/V5–V6 gehoben)",
+          "Bradykardie passt: Sinusknoten- und AV-Knoten-Arterie meist aus der RCA, dazu **Bezold-Jarisch-Reflex** aus der Hinterwand",
+          "Sofort Kardiologie und Herzkatheterteam alarmieren"
+        ],
+        erklaerung: "==RCA verschlossen → Hinterwand, Sinus- und AV-Knoten minderversorgt + vagaler Reflex aus der Hinterwand → Bradykardie und Hypotonie==. Inferior entscheidet der Versorgungstyp: bei Rechtsversorgung (ca. 70–85 %) stammt der R. interventricularis posterior aus der RCA."
+      },
+      {
+        info: "Gestaute Halsvenen bei klarer Lunge fallen Ihnen auf.",
+        frage: "Woran denken Sie, und wie sichern Sie die Diagnose?",
+        punkte: [
+          "**Rechtsherzinfarkt** durch proximalen RCA-Verschluss (vor den Ästen zur rechten Kammer)",
+          "Trias: Hypotonie, gestaute Halsvenen, klare Lunge",
+          "**V4R** (bzw. V3R–V4R) ableiten: ST-Hebung ≥ 0,5 mm (Männer < 30 J. ≥ 1 mm)",
+          "Echokardiographie: dilatierter, hypokinetischer rechter Ventrikel, Septum nach links verschoben",
+          "Differenzialdiagnosen: Lungenembolie, Perikardtamponade, Hypovolämie nach OP"
+        ],
+        erklaerung: "==Rechter Ventrikel pumpt schwach → weniger Blut erreicht das linke Herz → Herzzeitvolumen ↓ trotz hoher Füllungsdrücke rechts==. Die Lunge bleibt frei, weil sich das Blut vor dem rechten Herzen staut."
+      },
+      {
+        info: "V4R: ST-Hebung 1,5 mm. Blutdruck 74/42 mmHg, Herzfrequenz 40/min, intermittierend AV-Block II° Wenckebach.",
+        frage: "Wie behandeln Sie Kreislauf und Rhythmus?",
+        punkte: [
+          "**Vorlast erhalten**: vorsichtige Volumengabe (z.B. 250–500 ml Kristalloid) unter Kontrolle von Halsvenen, Echo und Oxygenierung",
+          "**Keine Nitrate, keine Diuretika**; Morphin zurückhaltend",
+          "**Atropin** 0,5 mg i.v., wiederholbar bis 3 mg; reicht das nicht: Adrenalin bzw. transkutane Stimulation",
+          "Inotropika (z.B. Dobutamin) bzw. Noradrenalin bei anhaltender Hypotonie; AV-Synchronie erhalten",
+          "**Sofortige Koronarangiographie** – Reperfusion ist die eigentliche Therapie"
+        ],
+        erklaerung: "==Nitrate → Venen weit → Vorlast ↓ → geschädigte rechte Kammer füllt sich nicht → Kreislaufzusammenbruch==. Der AV-Block liegt hier im AV-Knoten: schmaler Ersatzrhythmus, atropinempfindlich, oft vorübergehend."
+      },
+      {
+        info: "Die Kardiologie fragt nach Plättchenhemmung und Heparin – die Hüft-TEP ist 2 h alt.",
+        frage: "Wie wägen Sie Blutungsrisiko und Reperfusion ab?",
+        punkte: [
+          "ST-Hebungs-Infarkt hat Vorrang: **Reperfusion durch Katheterintervention**, nicht Lyse (frische OP = Kontraindikation für Thrombolyse)",
+          "**ASS** als Aufsättigung; Heparin während der Intervention; zweiter Plättchenhemmer nach Rücksprache",
+          "Blutungsrisiko gemeinsam mit dem Operateur einschätzen (Wunde, Drainage, Hb)",
+          "Spinalanästhesie: Zeitpunkt der Punktion und Katheterfreiheit dokumentieren; neurologisch überwachen (spinales Hämatom)",
+          "Interdisziplinäre Entscheidung dokumentieren"
+        ],
+        erklaerung: "==Ohne Reperfusion stirbt Myokard fortlaufend ab → Pumpversagen, Rhythmusstörungen== – die Blutung an einer kontrollierbaren OP-Wunde ist meist das kleinere Risiko, muss aber aktiv überwacht werden."
+      },
+      {
+        info: "Nach erfolgreicher Intervention an der proximalen RCA: Am Tag 3 plötzliche Atemnot, Lungenödem, neues lautes Systolikum.",
+        frage: "Welche Komplikation vermuten Sie, und wie erklären Sie sie anatomisch?",
+        punkte: [
+          "**Abriss des posteromedialen Papillarmuskels** → akute schwere Mitralinsuffizienz",
+          "Grund: posteromedialer Papillarmuskel meist nur aus dem R. interventricularis posterior versorgt, der anterolaterale doppelt (RIVA und RCX)",
+          "Differenzialdiagnose: **Ventrikelseptumdefekt** (Echo, Sauerstoffsprung im rechten Herzen)",
+          "Echokardiographie sofort; Nachlastsenkung, ggf. mechanische Kreislaufunterstützung, Herzchirurgie",
+          "Weitere inferiore Komplikationen: AV-Block III°, Rechtsherzversagen"
+        ],
+        erklaerung: "==Nur ein versorgendes Gefäß → keine Ausweichdurchblutung → Nekrose → Abriss → Mitralklappe schlägt durch → Lungenödem und kardiogener Schock==."
+      }
+    ],
+    fallstricke: ["Nitrate beim Rechtsherzinfarkt", "V4R nicht abgeleitet", "Lyse nach frischer OP", "Neues Systolikum nicht sofort echokardiographisch abgeklärt"],
+    links: [["#/spezial-kapitel/herz/ekg-infarkt", "Spezialwissen: EKG-Infarktlokalisation"], ["#/zeichnen-aufgabe/z-ekg-infarkt", "Ableitungen und Gefäße zeichnen"], ["#/soe-themen/1", "Pflichtfrage Koronaranatomie"]]
   }
 ];
