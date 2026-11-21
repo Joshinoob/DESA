@@ -932,3 +932,10 @@ main { overflow-wrap: break-word; }
 .plan-gesamt summary { cursor: pointer; font-weight: 600; }
 .plan-gesamt ol { padding-left: 22px; line-height: 1.7; }
 .plan-aktuell { font-weight: 700; color: var(--accent); }
+
+/* Ein-Klick-Tagesplan */
+.heute-start { margin: 6px 0 14px; }
+.heute-los { display: block; text-align: center; font-size: 1.05rem; padding: 14px; }
+.heute-fertig { padding: 12px; border-radius: var(--radius); background: rgba(63, 178, 127, 0.15); border: 1px solid var(--green); }
+.tagesleiste { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 12px; background: var(--surface); border-top: 1px solid var(--border); box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.25); font-size: 0.9rem; }
+body:has(.tagesleiste) main { padding-bottom: 70px; }
