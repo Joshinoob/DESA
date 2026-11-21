@@ -923,3 +923,12 @@ main { overflow-wrap: break-word; }
   .heute-stats .stat-value { font-size: 1.5rem; }
   .navlink { padding: 6px 8px; font-size: 0.84rem; }
 }
+
+/* Lernhilfen: Vorlesen, Nicht verstanden, Lernplan */
+.lern-knoepfe { margin: 4px 0 12px; }
+.vorlese-btn.aktiv { background: var(--accent-2); color: #fff; }
+.vorlese-modus figure, .vorlese-modus svg, .vorlese-modus .sw-fig-hint, .vorlese-modus .glossary-line, .vorlese-modus button { display: none !important; }
+.plan-gesamt { margin: 12px 0 20px; }
+.plan-gesamt summary { cursor: pointer; font-weight: 600; }
+.plan-gesamt ol { padding-left: 22px; line-height: 1.7; }
+.plan-aktuell { font-weight: 700; color: var(--accent); }
