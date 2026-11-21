@@ -503,6 +503,7 @@
   function router() {
     try {
       routeTo();
+      tagesleiste();
       // Mobil ist die Navigation eine waagerecht wischbare Leiste: aktiven Eintrag sichtbar machen
       const aktiv = document.querySelector(".navlinks .navlink.active");
       if (aktiv) {
@@ -568,6 +569,7 @@
     else if (route === "zeichnen") renderZeichnenList();
     else if (route === "zeichnen-aufgabe") renderZeichnenAufgabe(arg);
     else if (route === "wissen") renderWissen();
+    else if (route === "heute-weiter") { heuteWeiter(arg); return; }
     else if (route === "ueben") renderUeben();
     else if (route === "rechnen") renderRechnen(arg);
     else if (route === "kurven") renderKurvenStart();
@@ -709,57 +711,151 @@
     const ch = o ? o.chapters.find(function (c) { return c.id === kap; }) : null;
     return ch ? { titel: ch.title, organ: o.title, href: "#/spezial-kapitel/" + organ + "/" + kap, key: organ + "/" + kap } : null;
   }
-  function lernplanHtml(sessionSize, totalDue) {
+  // ---------- Tagesplan: einmal pro Tag festgelegt, mit einem Klick der Reihe nach abarbeiten ----------
+  const TAG_KEY = "desa_tageslog_v1";
+  const TAGESMODUS_KEY = "desa_tagesmodus";
+  function heuteStr(d) {
+    d = d ? new Date(d) : new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function ladeTag() {
+    try { const t = JSON.parse(localStorage.getItem(TAG_KEY) || "null"); if (t && t.datum === heuteStr()) return t; } catch (e) { /* Speicher blockiert */ }
+    return null;
+  }
+  function speichereTag(t) { try { localStorage.setItem(TAG_KEY, JSON.stringify(t)); } catch (e) { /* Speicher blockiert */ } }
+  function planSchritte() {
     const info = lernplanWoche();
-    if (!info) return "";
-    const L = window.LERNPLAN, w = info.w;
+    const w = info ? info.w : { phase: 1, kapitel: [], faelle: [], zeichnen: [], links: [] };
     const gelesen = window.SRS.loadLearnedSpezial();
-    const kap = (w.kapitel || []).map(function (k) { return kapitelInfo(k[0], k[1]); }).filter(Boolean);
-    const offenKap = kap.filter(function (k) { return gelesen.indexOf(k.key) === -1; });
     const zst = loadZeichnen(), fst = loadFaelle();
-    const offenZ = (w.zeichnen || []).filter(function (id) { return !zst[id] || zeichnenStatus(id, zst).faellig; });
-    const offenF = (w.faelle || []).filter(function (id) { return !fst[id]; });
+    const kap = (w.kapitel || []).map(function (k) { return kapitelInfo(k[0], k[1]); }).filter(Boolean)
+      .filter(function (k) { return gelesen.indexOf(k.key) === -1; });
+    let faelle = (w.faelle || []).filter(function (id) { return !fst[id]; });
+    if (!faelle.length && !info) { const v = heuteVorschlagFall(); if (v) faelle = [v.f.id]; }
+    const zeich = (w.zeichnen || []).filter(function (id) { return !zst[id] || zeichnenStatus(id, zst).faellig; });
     const fall = function (id) { return (window.FAELLE || []).find(function (f) { return f.id === id; }); };
-    const zeich = function (id) { return (window.ZEICHNEN || []).find(function (z) { return z.id === id; }); };
-    const tag = new Date().getDay(); // 0 So … 6 Sa
-    const zeile = function (min, titel, text, href, knopf, erledigt) {
-      return '<li class="heute-schritt' + (erledigt ? " heute-erledigt" : "") + '"><span class="heute-nr">' + (erledigt ? "✓" : min) + "</span>" +
-        '<div class="heute-text"><strong>' + titel + "</strong><br><span class=\"muted\">" + text + "</span></div>" +
-        (href ? '<a class="btn ' + (erledigt ? "btn-secondary" : "btn-primary") + ' btn-sm" href="' + href + '">' + knopf + "</a>" : "") + "</li>";
-    };
-    // Block 2: Verstehen (Phase 1) bzw. Anwenden (Phase 2/3)
-    let block2 = "";
-    if (w.phase === 1 && offenKap.length) {
-      const k = offenKap[0];
-      block2 = zeile("20", "Verstehen: " + escapeHtml(k.titel), escapeHtml(k.organ) + " – erst Bild und Ketten, dann laut erklären, dann „Verstanden – abhaken“", k.href, "Kapitel öffnen", false);
-    } else if (offenF.length) {
-      const f = fall(offenF[0]);
-      block2 = zeile("20", "Fall laut durchsprechen", escapeHtml(f.titel), "#/fall/" + f.id, "Fall starten", false);
+    const zObj = function (id) { return (window.ZEICHNEN || []).find(function (z) { return z.id === id; }); };
+    const out = [];
+    if (w.phase === 1 && kap.length) {
+      out.push({ typ: "kapitel", ziel: kap[0].key, href: kap[0].href, min: 20, titel: "Verstehen: " + kap[0].titel, text: kap[0].organ + " – erst Bild und Ketten, dann laut erklären, dann „Verstanden – abhaken“" });
+    } else if (faelle.length) {
+      const f = fall(faelle.shift());
+      out.push({ typ: "fall", ziel: f.id, href: "#/fall/" + f.id, min: 20, titel: "Fall laut durchsprechen", text: f.titel });
     } else if (w.links && w.links.length) {
-      block2 = zeile("20", escapeHtml(w.links[0][1]), "Jede Frage laut in 4–5 min beantworten, dann vergleichen", w.links[0][0], "Öffnen", false);
-    } else if (w.phase === 1 && kap.length) {
-      block2 = zeile("20", "Woche geschafft – Selbsttest", "Alle Kapitel der Woche verstanden. Wiederhole die Selbsttests oder einen früheren Fall.", "#/faelle", "Fälle", true);
+      out.push({ typ: "link", ziel: w.links[0][0], href: w.links[0][0], min: 20, titel: w.links[0][1], text: "Jede Frage laut in 4–5 min beantworten, dann vergleichen" });
     }
-    // Block 3 (optional, wenn du 60 min hast): Zeichnen an Mo/Mi/Fr, sonst Fall
-    let block3 = "";
-    const z = offenZ.length ? zeich(offenZ[0]) : null;
-    const f2 = offenF.length > (block2.indexOf("Fall laut") !== -1 ? 1 : 0) ? fall(offenF[block2.indexOf("Fall laut") !== -1 ? 1 : 0]) : null;
-    if (z && (tag % 2 === 1 || !f2)) block3 = zeile("15", "Wenn Zeit ist: zeichnen", escapeHtml(z.titel) + " – frei zeichnen und dabei erklären", "#/zeichnen-aufgabe/" + z.id, "Zeichnen", false);
-    else if (f2) block3 = zeile("15", "Wenn Zeit ist: Fall", escapeHtml(f2.titel), "#/fall/" + f2.id, "Fall starten", false);
-    const wochenListe = L.wochen.map(function (x, i) {
-      const von = new Date(new Date(L.start + "T00:00:00").getTime() + i * 7 * 86400000);
-      return '<li class="' + (i === info.nr ? "plan-aktuell" : "") + '"><span class="muted">' + von.toLocaleDateString("de-DE", { day: "numeric", month: "numeric" }) + "</span> " + escapeHtml(x.titel) + "</li>";
-    }).join("");
-    return '<h2>Woche ' + (info.nr + 1) + " von " + L.wochen.length + ": " + escapeHtml(w.titel) + "</h2>" +
-      (info.vorStart ? '<p class="muted">Der Plan beginnt am ' + new Date(L.start).toLocaleDateString("de-DE") + " – du kannst schon starten.</p>" : "") +
-      '<p class="muted">' + escapeHtml(w.hinweis || "") + (kap.length ? " Kapitel diese Woche: " + (kap.length - offenKap.length) + " von " + kap.length + " verstanden." : "") + "</p>" +
-      '<h2>Heute (30–60 min)</h2>' +
-      '<ol class="heute-plan">' +
-      zeile("10", "Karten wiederholen", sessionSize ? (totalDue ? totalDue + " fällig" : Math.min(sessionSize, 15) + " neue") + " – hält alles Gelernte frisch" : "Heute nichts fällig", "#/learn-session/all", sessionSize ? "Starten" : "", !sessionSize) +
-      block2 + block3 +
-      "</ol>" +
-      (w.partner ? '<div class="sw-box sw-einfach"><div class="sw-box-title">Diese Woche mit deinem Lernpartner</div><p>' + escapeHtml(w.partner) + ' <a href="#/soe-tag">Prüfungstag</a> · <a href="#/soe">Szenarien</a></p></div>' : "") +
-      '<details class="plan-gesamt"><summary>Gesamtplan bis zur Prüfung</summary><ol>' + wochenListe + "</ol></details>";
+    const tag = new Date().getDay();
+    const z = zeich.length ? zObj(zeich[0]) : null;
+    const f2 = faelle.length ? fall(faelle[0]) : null;
+    if (z && (tag % 2 === 1 || !f2)) out.push({ typ: "zeichnen", ziel: z.id, href: "#/zeichnen-aufgabe/" + z.id, min: 15, optional: true, titel: "Wenn Zeit ist: zeichnen", text: z.titel + " – frei zeichnen und dabei erklären" });
+    else if (f2) out.push({ typ: "fall", ziel: f2.id, href: "#/fall/" + f2.id, min: 15, optional: true, titel: "Wenn Zeit ist: Fall", text: f2.titel });
+    return out;
+  }
+  function tagesplan() {
+    let t = ladeTag();
+    if (!t) { t = { datum: heuteStr(), karten: false, besucht: {}, schritte: planSchritte() }; speichereTag(t); }
+    return t;
+  }
+  function schrittErledigt(t, st) {
+    if (st.typ === "karten") return !!t.karten;
+    if (st.typ === "kapitel") return window.SRS.loadLearnedSpezial().indexOf(st.ziel) !== -1;
+    if (st.typ === "fall") { const e = loadFaelle()[st.ziel]; return !!(e && heuteStr(e.datum) === t.datum); }
+    if (st.typ === "zeichnen") { const e = loadZeichnen()[st.ziel]; return !!(e && e.last && heuteStr(e.last) === t.datum); }
+    if (st.typ === "link") return !!(t.besucht && t.besucht[st.ziel]);
+    return false;
+  }
+  function alleSchritte(t) {
+    const due = window.SRS.getDueCards(FLASHCARDS, progress, "all").length;
+    const neu = Math.min(window.SRS.getNewCards(FLASHCARDS, progress, "all").length, 15);
+    return [{ typ: "karten", href: "#/learn-session/all/tag", min: 10, titel: "Karten wiederholen", text: (due ? due + " fällig" : neu + " neue") + " – höchstens 25 Karten, hält alles Gelernte frisch" }].concat(t.schritte);
+  }
+  function naechsterSchritt() {
+    const t = tagesplan();
+    const liste = alleSchritte(t);
+    return liste.find(function (st) { return !st.optional && !schrittErledigt(t, st); }) ||
+      liste.find(function (st) { return !schrittErledigt(t, st); }) || null;
+  }
+  function pruefermodusPrompt(thema) {
+    return "Prüfe mich im Format der mündlichen EDAIC-Prüfung (Teil 2, SOE) zum Thema: " + thema +
+      ". Gib mir ein kurzes Einstiegsszenario, stelle dann nacheinander 5 Fragen mit Nachfragen und warte jeweils auf meine Antwort. " +
+      "Bewerte am Ende jede Frage mit 0, 1 oder 2 nach der offiziellen Skala, begründe die Bewertung und zeige mir die Musterantwort mit den Kausalketten.";
+  }
+  function lernplanHtml() {
+    const info = lernplanWoche();
+    const t = tagesplan();
+    const liste = alleSchritte(t);
+    const pflicht = liste.filter(function (st) { return !st.optional; });
+    const fertig = pflicht.every(function (st) { return schrittErledigt(t, st); });
+    const zeile = function (st) {
+      const ok = schrittErledigt(t, st);
+      return '<li class="heute-schritt' + (ok ? " heute-erledigt" : "") + '"><span class="heute-nr">' + (ok ? "✓" : st.min) + "</span>" +
+        '<div class="heute-text"><strong>' + escapeHtml(st.titel) + "</strong><br><span class=\"muted\">" + escapeHtml(st.text) + "</span></div>" +
+        '<a class="btn btn-sm ' + (ok ? "btn-secondary" : "btn-secondary") + '" href="#/heute-weiter/' + encodeURIComponent(st.href) + '">' + (ok ? "Nochmal" : "Öffnen") + "</a></li>";
+    };
+    let kopf = "";
+    if (info) {
+      const L = window.LERNPLAN, w = info.w;
+      const gelesen = window.SRS.loadLearnedSpezial();
+      const kap = (w.kapitel || []).map(function (k) { return kapitelInfo(k[0], k[1]); }).filter(Boolean);
+      const ver = kap.filter(function (k) { return gelesen.indexOf(k.key) !== -1; }).length;
+      const wochenListe = L.wochen.map(function (x, i) {
+        const von = new Date(new Date(L.start + "T00:00:00").getTime() + i * 7 * 86400000);
+        return '<li class="' + (i === info.nr ? "plan-aktuell" : "") + '"><span class="muted">' + von.toLocaleDateString("de-DE", { day: "numeric", month: "numeric" }) + "</span> " + escapeHtml(x.titel) + "</li>";
+      }).join("");
+      kopf = '<h2>Woche ' + (info.nr + 1) + " von " + L.wochen.length + ": " + escapeHtml(w.titel) + "</h2>" +
+        '<p class="muted">' + escapeHtml(w.hinweis || "") + (kap.length ? " Kapitel diese Woche: " + ver + " von " + kap.length + " verstanden." : "") + "</p>";
+      kopf += '<div class="sw-box sw-einfach"><div class="sw-box-title">Diese Woche zusätzlich</div><p>' +
+        (w.partner ? "<strong>Mit deinem Lernpartner:</strong> " + escapeHtml(w.partner) + "<br>" : "") +
+        "<strong>Im Chat mit Claude:</strong> eine Prüfer-Runde (25 min) zum Wochenthema.</p>" +
+        '<div class="cta-row"><button type="button" class="btn btn-sm btn-secondary" id="prompt-kopieren">Prüfer-Auftrag kopieren</button><a class="btn btn-sm btn-secondary" href="https://claude.ai/new" target="_blank" rel="noopener">Claude öffnen</a></div>' +
+        '<textarea class="hidden" id="prompt-text">' + escapeHtml(pruefermodusPrompt(w.titel)) + "</textarea></div>";
+      kopf += '<details class="plan-gesamt"><summary>Gesamtplan bis zur Prüfung</summary><ol>' + wochenListe + "</ol></details>";
+    }
+    return '<div class="heute-start">' +
+      (fertig
+        ? '<div class="heute-fertig">✓ Für heute geschafft. Wenn du noch Lust hast: den optionalen Schritt oder eine Prüfer-Runde im Chat.</div>'
+        : '<a class="btn btn-primary heute-los" href="#/heute-weiter">▶ Heute lernen (ca. ' + pflicht.reduce(function (a, st) { return a + st.min; }, 0) + " min)</a>") +
+      "</div>" +
+      '<ol class="heute-plan">' + liste.map(zeile).join("") + "</ol>" + kopf;
+  }
+
+  // Ein Klick: zum nächsten offenen Schritt; danach führt eine Leiste von Schritt zu Schritt
+  function heuteWeiter(ziel) {
+    try { sessionStorage.setItem(TAGESMODUS_KEY, "1"); } catch (e) { /* ohne Sitzungsspeicher */ }
+    if (ziel) {
+      const t = tagesplan();
+      const href = decodeURIComponent(ziel);
+      if (t.besucht) { t.besucht[href] = true; speichereTag(t); }
+      location.replace(href);
+      return;
+    }
+    const st = naechsterSchritt();
+    if (!st) {
+      try { sessionStorage.removeItem(TAGESMODUS_KEY); } catch (e) { /* egal */ }
+      app.innerHTML = nav("dashboard") + '<main class="container narrow"><h1>Für heute geschafft ✓</h1>' +
+        '<p>Alle Schritte des Tagesplans sind erledigt. Das Gelernte festigt sich am besten mit Pausen – morgen geht es weiter.</p>' +
+        '<p class="muted">Lust auf mehr? Eine Prüfer-Runde im Chat mit Claude zum Wochenthema (Auftrag auf der Startseite kopieren).</p>' +
+        '<div class="cta-row"><a class="btn btn-primary" href="#/dashboard">Zur Startseite</a></div></main>';
+      return;
+    }
+    if (st.typ === "link") { const t = tagesplan(); t.besucht[st.href] = true; speichereTag(t); }
+    location.replace(st.href);
+  }
+  function tagesleiste() {
+    let aktiv = false;
+    try { aktiv = sessionStorage.getItem(TAGESMODUS_KEY) === "1"; } catch (e) { aktiv = false; }
+    const alt = document.querySelector(".tagesleiste");
+    if (alt) alt.remove();
+    const route = (location.hash || "").replace(/^#\//, "").split("/")[0];
+    if (!aktiv || !route || route === "dashboard" || route === "heute-weiter" || route === "learn-session") return;
+    const t = tagesplan();
+    const liste = alleSchritte(t).filter(function (st) { return !st.optional; });
+    const n = liste.filter(function (st) { return schrittErledigt(t, st); }).length;
+    const el = document.createElement("div");
+    el.className = "tagesleiste";
+    el.innerHTML = '<span>Tagesplan: ' + n + " von " + liste.length + ' erledigt</span><a class="btn btn-sm btn-primary" href="#/heute-weiter">Weiter →</a><button type="button" class="btn btn-sm btn-secondary" aria-label="Tagesplan-Leiste schließen">×</button>';
+    el.querySelector("button").addEventListener("click", function () { try { sessionStorage.removeItem(TAGESMODUS_KEY); } catch (e) { /* egal */ } el.remove(); });
+    document.body.appendChild(el);
   }
 
   function renderDashboard() {
@@ -803,7 +899,7 @@
         : "Wann ist deine mündliche Prüfung? ") +
       '<span id="datum-form" class="' + (tageBis !== null ? "hidden" : "") + '"><input type="date" id="datum-input" value="' + (datum || "") + '"> <button type="button" class="btn btn-sm btn-primary" id="datum-speichern">Speichern</button></span>' +
       "</div>" +
-      (lernplanHtml(sessionSize, totalDue) ||
+      (lernplanHtml() ||
       '<h2>Dein Plan für heute</h2>' +
       '<ol class="heute-plan">' +
       schritt(1, "Wiederholen", sessionSize ? (totalDue ? totalDue + " fällige Karten" + (totalNew ? " + bis zu 15 neue" : "") : Math.min(totalNew, 15) + " neue Karten") + " – Wissen frisch halten" : "Alles wiederholt – heute nichts fällig", "#/learn-session/all", sessionSize ? "Starten (" + sessionSize + ")" : "Freies Lernen", !sessionSize) +
@@ -821,6 +917,12 @@
       "</main>";
     const by = function (id, fn) { const el = document.getElementById(id); if (el) el.addEventListener("click", fn); };
     by("datum-aendern", function () { document.getElementById("datum-form").classList.remove("hidden"); });
+    by("prompt-kopieren", function () {
+      const txt = document.getElementById("prompt-text").value;
+      const fertig = function () { showToast("Auftrag kopiert – in Claude einfügen und loslegen."); };
+      if (navigator.clipboard) navigator.clipboard.writeText(txt).then(fertig, function () { showToast(txt); });
+      else showToast(txt);
+    });
     by("datum-speichern", function () {
       const v = document.getElementById("datum-input").value;
       try { if (v) localStorage.setItem(PRUEFUNGSDATUM_KEY, v); else localStorage.removeItem(PRUEFUNGSDATUM_KEY); } catch (e) { /* Speicher blockiert */ }
@@ -957,7 +1059,7 @@
       due = window.SRS.getDueCards(FLASHCARDS, progress, moduleId);
       fresh = window.SRS.getNewCards(FLASHCARDS, progress, moduleId);
     }
-    if (moduleId !== "spezial" && subtopicId && subtopicId !== "all") {
+    if (moduleId !== "spezial" && subtopicId && subtopicId !== "all" && subtopicId !== "tag") {
       due = due.filter(function (c) { return c.subtopic === subtopicId; });
       fresh = fresh.filter(function (c) { return c.subtopic === subtopicId; });
     }
@@ -966,6 +1068,12 @@
     // gemischte statt geblockte Praxis verbessert nachweislich Transfer und
     // langfristiges Behalten, auch wenn es sich beim Lernen schwerer anfühlt.
     learnQueue = shuffle(due.concat(fresh));
+    if (subtopicId === "tag") learnQueue = shuffle(due).concat(shuffle(fresh)).slice(0, 25);
+    if (learnQueue.length === 0 && subtopicId === "tag") {
+      const t = tagesplan(); t.karten = true; speichereTag(t);
+      location.replace("#/heute-weiter");
+      return;
+    }
     if (learnQueue.length === 0) {
       app.innerHTML =
         nav("learn") +
@@ -980,12 +1088,15 @@
   function renderLearnCard() {
     lastCardAdvanceAt = Date.now();
     if (learnQueue.length === 0) {
+      const ausPlan = learnSessionKey === "all|tag";
+      if (ausPlan) { const t = tagesplan(); t.karten = true; speichereTag(t); }
       app.innerHTML =
         nav("learn") +
         '<main class="container narrow"><h1>Session abgeschlossen 🎉</h1>' +
         '<p>Karten wiederholt: <strong>' + learnStats.reviewed + '</strong></p>' +
         '<p>Nochmal: ' + learnStats.again + " · Schwer: " + learnStats.hard + " · Gut: " + learnStats.good + " · Leicht: " + learnStats.easy + '</p>' +
-        '<div class="cta-row"><a class="btn btn-primary" href="#/dashboard">Zum Dashboard</a> <a class="btn btn-secondary" href="#/learn">Weiter lernen</a></div>' +
+        (ausPlan ? '<div class="cta-row"><a class="btn btn-primary" href="#/heute-weiter">Weiter im Tagesplan →</a> <a class="btn btn-secondary" href="#/dashboard">Zur Startseite</a></div>'
+          : '<div class="cta-row"><a class="btn btn-primary" href="#/dashboard">Zur Startseite</a> <a class="btn btn-secondary" href="#/learn">Weiter lernen</a></div>') +
         "</main>";
       return;
     }
