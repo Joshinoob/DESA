@@ -115,15 +115,19 @@
   function reportButton(id, kontext) {
     return '<button class="btn btn-sm btn-secondary report-btn" data-report-id="' + escapeHtml(id) + '" data-report-kontext="' + escapeHtml((kontext || "").slice(0, 160)) + '">⚑ Fehler melden</button>';
   }
-  function showReportModal(id, kontext) {
+  function unklarKnopf(id, kontext) {
+    return '<button type="button" class="btn btn-sm btn-secondary unklar-btn" data-unklar-id="' + escapeHtml(id) + '" data-report-kontext="' + escapeHtml((kontext || "").slice(0, 160)) + '">? Nicht verstanden</button>';
+  }
+  function showReportModal(id, kontext, typ) {
+    const unklar = typ === "unklar";
     const backdrop = document.createElement("div");
     backdrop.className = "lookup-modal-backdrop";
     backdrop.innerHTML =
       '<div class="lookup-modal">' +
       '<button class="lookup-modal-close" aria-label="Schließen">×</button>' +
-      '<div class="lookup-modal-front">Fehler melden</div>' +
-      '<p class="muted">' + escapeHtml(id) + (kontext ? " – " + escapeHtml(kontext) : "") + "</p>" +
-      '<label for="report-text">Was ist falsch oder unklar? (gern mit Quelle)</label>' +
+      '<div class="lookup-modal-front">' + (unklar ? "Nicht verstanden" : "Fehler melden") + "</div>" +
+      '<p class="muted">' + escapeHtml(kontext || id) + "</p>" +
+      '<label for="report-text">' + (unklar ? "Was genau ist unklar? (welcher Schritt, welches Wort, welche Lücke in der Kette)" : "Was ist falsch oder unklar? (gern mit Quelle)") + "</label>" +
       '<textarea id="report-text" rows="5" class="report-textarea"></textarea>' +
       '<div class="cta-row"><button class="btn btn-primary" id="report-save">Speichern</button></div>' +
       '<p class="muted lookup-modal-hint">Die Meldung bleibt auf diesem Gerät. Unter „Fortschritt → Meldungen“ kannst du alle Meldungen kopieren oder exportieren.</p>' +
@@ -138,19 +142,112 @@
       const text = ta.value.trim();
       if (!text) { ta.focus(); return; }
       const list = loadReports();
-      list.push({ id: id, kontext: kontext || "", text: text, datum: new Date().toISOString() });
+      list.push({ id: id, typ: unklar ? "unklar" : "fehler", kontext: kontext || "", text: text, datum: new Date().toISOString() });
       const ok = saveReports(list);
       close();
       showToast(ok ? "Meldung gespeichert (" + list.length + " insgesamt) – siehe Fortschritt → Meldungen." : "Speichern nicht möglich (Browserspeicher blockiert).");
     });
   }
   document.addEventListener("click", function (e) {
-    const b = e.target.closest && e.target.closest("[data-report-id]");
+    const b = e.target.closest && e.target.closest("[data-report-id], [data-unklar-id]");
     if (!b) return;
     e.preventDefault();
     e.stopPropagation();
-    showReportModal(b.getAttribute("data-report-id"), b.getAttribute("data-report-kontext"));
+    const unklar = b.hasAttribute("data-unklar-id");
+    showReportModal(b.getAttribute(unklar ? "data-unklar-id" : "data-report-id"), b.getAttribute("data-report-kontext"), unklar ? "unklar" : "fehler");
   });
+
+  // ---------- Vorlesen: Sprachausgabe des Browsers mit der natürlichsten verfügbaren deutschen Stimme ----------
+  // Neuronale Stimmen (z.B. „… Online (Natural)“ in Edge, „Premium/Enhanced“ bei Apple) werden bevorzugt.
+  const VORLESEN_OK = typeof window.speechSynthesis !== "undefined" && typeof window.SpeechSynthesisUtterance !== "undefined";
+  let vorleseStimme = null;
+  function besteStimme() {
+    if (!VORLESEN_OK) return null;
+    const v = window.speechSynthesis.getVoices().filter(function (x) { return /^de/i.test(x.lang); });
+    if (!v.length) return null;
+    const punkte = function (x) {
+      const n = x.name;
+      let p = 0;
+      if (/natural|neural|online/i.test(n)) p += 10;
+      if (/premium|enhanced|verbessert|erweitert/i.test(n)) p += 8;
+      if (/siri/i.test(n)) p += 6;
+      if (/google/i.test(n)) p += 4;
+      if (/de-DE/i.test(x.lang)) p += 1;
+      if (/compact|espeak/i.test(n)) p -= 5;
+      return p;
+    };
+    return v.slice().sort(function (a, b) { return punkte(b) - punkte(a); })[0];
+  }
+  if (VORLESEN_OK) {
+    vorleseStimme = besteStimme();
+    window.speechSynthesis.onvoiceschanged = function () { vorleseStimme = besteStimme(); };
+  }
+  function sprechText(t) {
+    return String(t)
+      .replace(/[₀-₉]/g, function (ch) { return String(ch.charCodeAt(0) - 0x2080); })
+      .replace(/⁻/g, "").replace(/⁺/g, " plus")
+      .replace(/\t/g, ", ").replace(/\n+/g, ". ")
+      .replace(/(\d)\s*[–-]\s*(\d)/g, "$1 bis $2")
+      .replace(/→/g, ", dadurch ").replace(/↑/g, " steigt").replace(/↓/g, " sinkt")
+      .replace(/≥/g, " mindestens ").replace(/≤/g, " höchstens ").replace(/≈/g, " etwa ").replace(/±/g, " plus minus ")
+      .replace(/×/g, " mal ").replace(/°C/g, " Grad Celsius").replace(/°/g, " Grad")
+      .replace(/\bz\. ?B\./g, "zum Beispiel").replace(/\bca\./g, "circa").replace(/\bbzw\./g, "beziehungsweise")
+      .replace(/\bu\. ?a\./g, "unter anderem").replace(/\bd\. ?h\./g, "das heißt").replace(/\bggf\./g, "gegebenenfalls").replace(/\bv\. ?a\./g, "vor allem")
+      .replace(/µg\/kg/g, "Mikrogramm pro Kilogramm").replace(/mg\/kg/g, "Milligramm pro Kilogramm")
+      .replace(/ml\/kg\/h/g, "Milliliter pro Kilogramm und Stunde").replace(/ml\/kg/g, "Milliliter pro Kilogramm")
+      .replace(/l\/min/g, "Liter pro Minute").replace(/mmol\/l/g, "Millimol pro Liter")
+      .replace(/mmHg/g, "Millimeter Quecksilber").replace(/cmH2O/g, "Zentimeter Wassersäule")
+      .replace(/\s*[–—]\s*/g, ", ").replace(/[•·]/g, ", ").replace(/[*=]{2}/g, "")
+      .replace(/\s+([.,;:])/g, "$1").replace(/([.,]){2,}/g, "$1").replace(/\s+/g, " ").trim();
+  }
+  function vorleseStueckeln(t) {
+    const saetze = t.split(/(?<=[.!?:;])\s+/);
+    const out = [];
+    let cur = "";
+    saetze.forEach(function (x) {
+      if ((cur + " " + x).length > 220 && cur) { out.push(cur); cur = x; } else cur = cur ? cur + " " + x : x;
+    });
+    if (cur) out.push(cur);
+    return out;
+  }
+  function vorleseStopp() {
+    if (!VORLESEN_OK) return;
+    window.speechSynthesis.cancel();
+    document.querySelectorAll(".vorlese-btn.aktiv").forEach(function (b) { b.classList.remove("aktiv"); b.textContent = "🔊 Vorlesen"; });
+  }
+  function vorleseKnopf(ziel) {
+    return VORLESEN_OK ? '<button type="button" class="btn btn-sm btn-secondary vorlese-btn" data-vorlesen="' + ziel + '">🔊 Vorlesen</button>' : "";
+  }
+  function vorleseTextAus(ziel) {
+    // Abbildungen, Hinweise und Knöpfe beim Auslesen ausblenden (synchron, ohne sichtbares Flackern)
+    document.body.classList.add("vorlese-modus");
+    const t = Array.prototype.map.call(document.querySelectorAll(ziel), function (el) { return el.innerText; }).join(". ");
+    document.body.classList.remove("vorlese-modus");
+    return t;
+  }
+  document.addEventListener("click", function (e) {
+    const b = e.target.closest && e.target.closest("[data-vorlesen]");
+    if (!b) return;
+    e.preventDefault();
+    if (b.classList.contains("aktiv")) { vorleseStopp(); return; }
+    vorleseStopp();
+    const stuecke = vorleseStueckeln(sprechText(vorleseTextAus(b.getAttribute("data-vorlesen"))));
+    if (!stuecke.length) return;
+    if (!vorleseStimme) vorleseStimme = besteStimme();
+    if (!vorleseStimme) { showToast("Auf diesem Gerät ist keine deutsche Stimme installiert."); return; }
+    let rate = 1;
+    try { rate = parseFloat(localStorage.getItem("desa_vorlese_tempo_v1")) || 1; } catch (err) { rate = 1; }
+    b.classList.add("aktiv"); b.textContent = "■ Stopp";
+    stuecke.forEach(function (st, i) {
+      const u = new SpeechSynthesisUtterance(st);
+      u.lang = vorleseStimme.lang || "de-DE";
+      u.voice = vorleseStimme;
+      u.rate = rate;
+      if (i === stuecke.length - 1) u.onend = function () { b.classList.remove("aktiv"); b.textContent = "🔊 Vorlesen"; };
+      window.speechSynthesis.speak(u);
+    });
+  });
+  window.addEventListener("hashchange", vorleseStopp);
 
   // ---------- Fehlertraining: zuletzt falsch beantwortete Testfragen ----------
   const WRONG_KEY = "desa_falsche_fragen_v1";
@@ -596,6 +693,75 @@
     return { f: schwach, text: st[schwach.id].prozent + " % zuletzt" };
   }
 
+  // ---------- Persönlicher Lernplan (data/lernplan.js): 30–60 min pro Tag ----------
+  function lernplanWoche() {
+    const L = window.LERNPLAN;
+    if (!L) return null;
+    const start = new Date(L.start + "T00:00:00").getTime();
+    const ende = new Date(L.pruefung + "T23:59:59").getTime();
+    const jetzt = Date.now();
+    if (jetzt > ende) return null;
+    const nr = Math.max(0, Math.min(L.wochen.length - 1, Math.floor((jetzt - start) / (7 * 86400000))));
+    return { nr: nr, w: L.wochen[nr], vorStart: jetzt < start };
+  }
+  function kapitelInfo(organ, kap) {
+    const o = SPEZIAL.find(function (x) { return x.id === organ; });
+    const ch = o ? o.chapters.find(function (c) { return c.id === kap; }) : null;
+    return ch ? { titel: ch.title, organ: o.title, href: "#/spezial-kapitel/" + organ + "/" + kap, key: organ + "/" + kap } : null;
+  }
+  function lernplanHtml(sessionSize, totalDue) {
+    const info = lernplanWoche();
+    if (!info) return "";
+    const L = window.LERNPLAN, w = info.w;
+    const gelesen = window.SRS.loadLearnedSpezial();
+    const kap = (w.kapitel || []).map(function (k) { return kapitelInfo(k[0], k[1]); }).filter(Boolean);
+    const offenKap = kap.filter(function (k) { return gelesen.indexOf(k.key) === -1; });
+    const zst = loadZeichnen(), fst = loadFaelle();
+    const offenZ = (w.zeichnen || []).filter(function (id) { return !zst[id] || zeichnenStatus(id, zst).faellig; });
+    const offenF = (w.faelle || []).filter(function (id) { return !fst[id]; });
+    const fall = function (id) { return (window.FAELLE || []).find(function (f) { return f.id === id; }); };
+    const zeich = function (id) { return (window.ZEICHNEN || []).find(function (z) { return z.id === id; }); };
+    const tag = new Date().getDay(); // 0 So … 6 Sa
+    const zeile = function (min, titel, text, href, knopf, erledigt) {
+      return '<li class="heute-schritt' + (erledigt ? " heute-erledigt" : "") + '"><span class="heute-nr">' + (erledigt ? "✓" : min) + "</span>" +
+        '<div class="heute-text"><strong>' + titel + "</strong><br><span class=\"muted\">" + text + "</span></div>" +
+        (href ? '<a class="btn ' + (erledigt ? "btn-secondary" : "btn-primary") + ' btn-sm" href="' + href + '">' + knopf + "</a>" : "") + "</li>";
+    };
+    // Block 2: Verstehen (Phase 1) bzw. Anwenden (Phase 2/3)
+    let block2 = "";
+    if (w.phase === 1 && offenKap.length) {
+      const k = offenKap[0];
+      block2 = zeile("20", "Verstehen: " + escapeHtml(k.titel), escapeHtml(k.organ) + " – erst Bild und Ketten, dann laut erklären, dann „Verstanden – abhaken“", k.href, "Kapitel öffnen", false);
+    } else if (offenF.length) {
+      const f = fall(offenF[0]);
+      block2 = zeile("20", "Fall laut durchsprechen", escapeHtml(f.titel), "#/fall/" + f.id, "Fall starten", false);
+    } else if (w.links && w.links.length) {
+      block2 = zeile("20", escapeHtml(w.links[0][1]), "Jede Frage laut in 4–5 min beantworten, dann vergleichen", w.links[0][0], "Öffnen", false);
+    } else if (w.phase === 1 && kap.length) {
+      block2 = zeile("20", "Woche geschafft – Selbsttest", "Alle Kapitel der Woche verstanden. Wiederhole die Selbsttests oder einen früheren Fall.", "#/faelle", "Fälle", true);
+    }
+    // Block 3 (optional, wenn du 60 min hast): Zeichnen an Mo/Mi/Fr, sonst Fall
+    let block3 = "";
+    const z = offenZ.length ? zeich(offenZ[0]) : null;
+    const f2 = offenF.length > (block2.indexOf("Fall laut") !== -1 ? 1 : 0) ? fall(offenF[block2.indexOf("Fall laut") !== -1 ? 1 : 0]) : null;
+    if (z && (tag % 2 === 1 || !f2)) block3 = zeile("15", "Wenn Zeit ist: zeichnen", escapeHtml(z.titel) + " – frei zeichnen und dabei erklären", "#/zeichnen-aufgabe/" + z.id, "Zeichnen", false);
+    else if (f2) block3 = zeile("15", "Wenn Zeit ist: Fall", escapeHtml(f2.titel), "#/fall/" + f2.id, "Fall starten", false);
+    const wochenListe = L.wochen.map(function (x, i) {
+      const von = new Date(new Date(L.start + "T00:00:00").getTime() + i * 7 * 86400000);
+      return '<li class="' + (i === info.nr ? "plan-aktuell" : "") + '"><span class="muted">' + von.toLocaleDateString("de-DE", { day: "numeric", month: "numeric" }) + "</span> " + escapeHtml(x.titel) + "</li>";
+    }).join("");
+    return '<h2>Woche ' + (info.nr + 1) + " von " + L.wochen.length + ": " + escapeHtml(w.titel) + "</h2>" +
+      (info.vorStart ? '<p class="muted">Der Plan beginnt am ' + new Date(L.start).toLocaleDateString("de-DE") + " – du kannst schon starten.</p>" : "") +
+      '<p class="muted">' + escapeHtml(w.hinweis || "") + (kap.length ? " Kapitel diese Woche: " + (kap.length - offenKap.length) + " von " + kap.length + " verstanden." : "") + "</p>" +
+      '<h2>Heute (30–60 min)</h2>' +
+      '<ol class="heute-plan">' +
+      zeile("10", "Karten wiederholen", sessionSize ? (totalDue ? totalDue + " fällig" : Math.min(sessionSize, 15) + " neue") + " – hält alles Gelernte frisch" : "Heute nichts fällig", "#/learn-session/all", sessionSize ? "Starten" : "", !sessionSize) +
+      block2 + block3 +
+      "</ol>" +
+      (w.partner ? '<div class="sw-box sw-einfach"><div class="sw-box-title">Diese Woche mit deinem Lernpartner</div><p>' + escapeHtml(w.partner) + ' <a href="#/soe-tag">Prüfungstag</a> · <a href="#/soe">Szenarien</a></p></div>' : "") +
+      '<details class="plan-gesamt"><summary>Gesamtplan bis zur Prüfung</summary><ol>' + wochenListe + "</ol></details>";
+  }
+
   function renderDashboard() {
     const totalDue = window.SRS.getDueCards(FLASHCARDS, progress, "all").length;
     const totalNew = window.SRS.getNewCards(FLASHCARDS, progress, "all").length;
@@ -617,6 +783,7 @@
     const tageSeitSim = letzteSim ? Math.floor((Date.now() - new Date(letzteSim).getTime()) / 86400000) : null;
     let datum = null;
     try { datum = localStorage.getItem(PRUEFUNGSDATUM_KEY); } catch (e) { datum = null; }
+    if (!datum && window.LERNPLAN) datum = window.LERNPLAN.pruefung;
     const tageBis = datum ? Math.ceil((new Date(datum + "T09:00:00").getTime() - Date.now()) / 86400000) : null;
     const vorschlag = heuteVorschlagFall();
 
@@ -636,13 +803,14 @@
         : "Wann ist deine mündliche Prüfung? ") +
       '<span id="datum-form" class="' + (tageBis !== null ? "hidden" : "") + '"><input type="date" id="datum-input" value="' + (datum || "") + '"> <button type="button" class="btn btn-sm btn-primary" id="datum-speichern">Speichern</button></span>' +
       "</div>" +
+      (lernplanHtml(sessionSize, totalDue) ||
       '<h2>Dein Plan für heute</h2>' +
       '<ol class="heute-plan">' +
       schritt(1, "Wiederholen", sessionSize ? (totalDue ? totalDue + " fällige Karten" + (totalNew ? " + bis zu 15 neue" : "") : Math.min(totalNew, 15) + " neue Karten") + " – Wissen frisch halten" : "Alles wiederholt – heute nichts fällig", "#/learn-session/all", sessionSize ? "Starten (" + sessionSize + ")" : "Freies Lernen", !sessionSize) +
       (vorschlag ? schritt(2, "Ein Fall laut durchsprechen", escapeHtml(vorschlag.f.titel) + " (" + vorschlag.text + ")", "#/fall/" + vorschlag.f.id, "Fall starten", false) : "") +
       schritt(3, "Zeichnen", zFaellig ? zFaellig + " Zeichnungen zur Wiederholung fällig – zeichnen und dabei erklären" : zNeu ? "Eine neue Zeichnung üben (" + zNeu + " noch offen) – zeichnen und dabei erklären" : "Alle Zeichnungen sicher – nichts fällig", "#/zeichnen", zFaellig ? "Zeichnen (" + zFaellig + ")" : "Zeichnen", !zFaellig && !zNeu) +
       schritt(4, "Prüfungstag simulieren", tageSeitSim === null ? "Noch nie gemacht – 4 SOEs wie am echten Tag" : "Zuletzt vor " + tageSeitSim + " Tagen – ideal etwa einmal pro Woche", "#/soe-tag", "Simulieren", tageSeitSim !== null && tageSeitSim < 7) +
-      "</ol>" +
+      "</ol>") +
       '<div class="stat-cards heute-stats">' +
       '<div class="stat-card"><div class="stat-value">' + (streak > 0 ? "🔥 " + streak : streak) + '</div><div class="stat-label">Tage am Stück</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + Math.round(100 * gemeistert / Math.max(1, FLASHCARDS.length)) + ' %</div><div class="stat-label">Karten gemeistert</div></div>' +
@@ -1350,22 +1518,22 @@
   function renderMeldungen() {
     const list = loadReports();
     const text = list.map(function (r, i) {
-      return (i + 1) + ". [" + r.id + "] " + new Date(r.datum).toLocaleString("de-DE") + "\n   Bezug: " + r.kontext + "\n   Meldung: " + r.text;
+      return (i + 1) + ". " + (r.typ === "unklar" ? "NICHT VERSTANDEN" : "FEHLER") + " [" + r.id + "] " + new Date(r.datum).toLocaleString("de-DE") + "\n   Bezug: " + r.kontext + "\n   Meldung: " + r.text;
     }).join("\n\n");
     app.innerHTML =
       nav("progress") +
       '<main class="container narrow">' +
       '<a class="back-link" href="#/progress">← Fortschritt</a>' +
-      "<h1>Fehlermeldungen (" + list.length + ")</h1>" +
-      '<p class="muted">Meldungen bleiben nur auf diesem Gerät. Kopiere den Text oder exportiere eine Datei und schicke sie an die Person, die die Inhalte pflegt (z.B. als GitHub-Issue).</p>' +
+      "<h1>Meldungen (" + list.length + ")</h1>" +
+      '<p class="muted">„Nicht verstanden“ und „Fehler melden“ landen hier, nur auf diesem Gerät. Kopiere den Text und schick ihn an Claude – die Stellen werden dann vollständig und verständlich neu geschrieben.</p>' +
       (list.length ?
         '<ul class="gap-list">' + list.map(function (r, i) {
-          return '<li class="gap-item"><span><strong>' + escapeHtml(r.id) + "</strong> – " + escapeHtml(r.text) + '<span class="gap-source"> — ' + escapeHtml(r.kontext) + "</span></span>" +
+          return '<li class="gap-item"><span><strong>' + (r.typ === "unklar" ? "Nicht verstanden: " : "Fehler: ") + escapeHtml(r.kontext || r.id) + "</strong> – " + escapeHtml(r.text) + '<span class="gap-source"> — ' + escapeHtml(r.kontext) + "</span></span>" +
             '<button class="btn btn-sm btn-secondary" data-del-report="' + i + '">Löschen</button></li>';
         }).join("") + "</ul>" +
         '<div class="cta-row"><button class="btn btn-primary" id="report-copy">Als Text kopieren</button><button class="btn btn-secondary" id="report-export">Als Datei exportieren</button></div>' +
         '<textarea class="report-textarea" id="report-all" rows="8" readonly>' + escapeHtml(text) + "</textarea>"
-        : '<p class="muted">Noch keine Meldungen. Unter jeder Karte, Testfrage und Kurve gibt es den Knopf „⚑ Fehler melden“.</p>') +
+        : '<p class="muted">Noch keine Meldungen. In jedem Kapitel und Fall gibt es „? Nicht verstanden“, unter Karten, Testfragen und Kurven „⚑ Fehler melden“.</p>') +
       "</main>";
     document.querySelectorAll("[data-del-report]").forEach(function (b) {
       b.addEventListener("click", function () {
@@ -2526,17 +2694,19 @@
       '<div class="session-progress">' + escapeHtml(o.title) + " · Kapitel " + (idx + 1) + " / " + o.chapters.length +
       ' · <span class="sw-level sw-level-' + escapeHtml(ch.level.toLowerCase()) + '">' + escapeHtml(ch.level) + "</span></div>" +
       "<h1>" + escapeHtml(ch.title) + "</h1>" +
-      '<div class="sw-box sw-leitfrage"><div class="sw-box-title">Leitfrage – kurz selbst beantworten, dann lesen</div><p>' + spezialInline(ch.leitfrage) + "</p></div>" +
-      (ch.einfach ? '<div class="sw-box sw-einfach"><div class="sw-box-title">In einfachen Worten</div><p>' + spezialInline(ch.einfach) + "</p></div>" : "") +
-      '<div class="sw-body">' + spezialBodyHtml(ch) + "</div>" +
-      '<div class="sw-box sw-merke"><div class="sw-box-title">Merke</div><ul class="sw-list">' + ch.merke.map(function (m) { return "<li>" + spezialInline(m) + "</li>"; }).join("") + "</ul></div>" +
+      '<div class="cta-row lern-knoepfe">' + vorleseKnopf("main .vorlese-teil") + unklarKnopf("kapitel:" + key, o.title + " – " + ch.title) + "</div>" +
+      '<div class="sw-box sw-leitfrage vorlese-teil"><div class="sw-box-title">Leitfrage – kurz selbst beantworten, dann lesen</div><p>' + spezialInline(ch.leitfrage) + "</p></div>" +
+      (ch.einfach ? '<div class="sw-box sw-einfach vorlese-teil"><div class="sw-box-title">In einfachen Worten</div><p>' + spezialInline(ch.einfach) + "</p></div>" : "") +
+      '<div class="sw-body vorlese-teil">' + spezialBodyHtml(ch) + "</div>" +
+      '<div class="sw-box sw-merke vorlese-teil"><div class="sw-box-title">Merke</div><ul class="sw-list">' + ch.merke.map(function (m) { return "<li>" + spezialInline(m) + "</li>"; }).join("") + "</ul></div>" +
       (warumHtml ? '<h2 class="sw-h2">Warum? – Selbsterklären</h2>' + warumHtml : "") +
       ((ch.klinik || []).length ? '<div class="sw-box sw-klinik"><div class="sw-box-title">Klinik &amp; Anästhesie</div><ul class="sw-list">' + ch.klinik.map(function (k) { return "<li>" + spezialInline(k) + "</li>"; }).join("") + "</ul></div>" : "") +
       (testHtml ? '<h2 class="sw-h2">Selbsttest – erst im Kopf antworten</h2>' + testHtml : "") +
       glossaryHtml(JSON.stringify([ch.leitfrage, ch.einfach || "", ch.body, ch.merke, ch.warum || [], ch.klinik || [], ch.selbsttest || [],
         (ch.figure ? [ch.figure] : []).concat(ch.figures || []).map(function (f) { return (f.caption || "") + " " + String(f.svg || "").replace(/<[^>]+>/g, " "); })]), "sw-glossary") +
       '<div class="cta-row sw-actions">' +
-      '<button class="btn ' + (isRead ? "btn-primary" : "btn-secondary") + '" id="sw-mark-read">' + (isRead ? "✓ Gelesen" : "Als gelesen markieren") + "</button>" +
+      '<button class="btn ' + (isRead ? "btn-primary" : "btn-secondary") + '" id="sw-mark-read">' + (isRead ? "✓ Verstanden" : "Verstanden – abhaken") + "</button>" +
+      unklarKnopf("kapitel:" + key, o.title + " – " + ch.title) +
       (chapterCards.length ? '<a class="btn btn-secondary" href="#/learn-session/spezial/' + o.id + ":" + ch.id + '">Kapitelkarten ins Langzeitgedächtnis (' + chapterCards.length + ")</a>" : "") +
       "</div>" +
       '<div class="cta-row sw-nav">' +
@@ -2555,7 +2725,7 @@
       window.SRS.toggleLearnedSpezial(key);
       const nowRead = window.SRS.loadLearnedSpezial().indexOf(key) !== -1;
       const btn = document.getElementById("sw-mark-read");
-      btn.textContent = nowRead ? "✓ Gelesen" : "Als gelesen markieren";
+      btn.textContent = nowRead ? "✓ Verstanden" : "Verstanden – abhaken";
       btn.className = "btn " + (nowRead ? "btn-primary" : "btn-secondary");
     });
   }
@@ -3338,7 +3508,8 @@
     let inhalt = "";
     if (S.schritt === -1) {
       inhalt =
-        '<div class="sw-box sw-leitfrage"><div class="sw-box-title">Ausgangslage</div><p>' + escapeHtml(f.ausgang) + "</p></div>" +
+        '<div class="cta-row lern-knoepfe">' + vorleseKnopf("main .fall-start") + "</div>" +
+        '<div class="sw-box sw-leitfrage fall-start"><div class="sw-box-title">Ausgangslage</div><p>' + escapeHtml(f.ausgang) + "</p></div>" +
         "<h2>Lernziele</h2><ul class=\"sw-list\">" + f.lernziele.map(function (z) { return "<li>" + escapeHtml(z) + "</li>"; }).join("") + "</ul>" +
         '<p class="muted">Themen: ' + escapeHtml(f.themen.join(" · ")) + " · " + f.schritte.length + " Schritte</p>" +
         '<div class="cta-row"><button class="btn btn-primary" id="fall-weiter">Fall beginnen</button></div>';
@@ -3347,17 +3518,18 @@
       inhalt =
         '<details><summary>Ausgangslage</summary><p>' + escapeHtml(f.ausgang) + "</p></details>" +
         (S.schritt > 0 ? '<details><summary>Bisheriger Verlauf</summary><ol>' + f.schritte.slice(0, S.schritt).map(function (x) { return "<li>" + escapeHtml(x.info) + "</li>"; }).join("") + "</ol></details>" : "") +
-        '<div class="sw-box sw-einfach"><div class="sw-box-title">Verlauf</div><p>' + escapeHtml(sch.info) + "</p></div>" +
-        '<div class="sw-box sw-leitfrage"><div class="sw-box-title">Frage</div><p><strong>' + escapeHtml(sch.frage) + "</strong></p></div>" +
+        '<div class="cta-row lern-knoepfe">' + vorleseKnopf(S.offen ? "main .fall-erkl" : "main .fall-frage") + unklarKnopf("fall:" + f.id + ":" + (S.schritt + 1), f.titel + " – Schritt " + (S.schritt + 1)) + "</div>" +
+        '<div class="sw-box sw-einfach fall-frage"><div class="sw-box-title">Verlauf</div><p>' + escapeHtml(sch.info) + "</p></div>" +
+        '<div class="sw-box sw-leitfrage fall-frage"><div class="sw-box-title">Frage</div><p><strong>' + escapeHtml(sch.frage) + "</strong></p></div>" +
         (!S.offen
           ? '<textarea class="soe-notizen" id="fall-notiz" rows="5" placeholder="Deine Antwort in Stichpunkten (optional, wird nicht gespeichert)">' + escapeHtml(S.notiz) + "</textarea>" +
             '<div class="cta-row"><button class="btn btn-primary" id="fall-aufdecken">Kernpunkte aufdecken</button></div>'
           : (S.notiz ? '<details open><summary>Deine Antwort</summary><p class="muted" style="white-space:pre-wrap">' + escapeHtml(S.notiz) + "</p></details>" : "") +
             "<h2>Erwartete Kernpunkte – abhaken, was du genannt hast</h2>" +
-            '<ul class="z-check">' + sch.punkte.map(function (pt, i) {
+            '<ul class="z-check fall-erkl">' + sch.punkte.map(function (pt, i) {
               return '<li><label><input type="checkbox" data-haken="' + i + '"' + (S.haken[S.schritt][i] ? " checked" : "") + "> " + richText(pt) + "</label></li>";
             }).join("") + "</ul>" +
-            '<div class="sw-box sw-einfach"><div class="sw-box-title">Erklärung</div><p>' + richText(sch.erklaerung) + "</p></div>" +
+            '<div class="sw-box sw-einfach fall-erkl"><div class="sw-box-title">Erklärung</div><p>' + richText(sch.erklaerung) + "</p></div>" +
             '<div class="cta-row"><button class="btn btn-primary" id="fall-weiter">' + (S.schritt < f.schritte.length - 1 ? "Weiter im Verlauf →" : "Fall auswerten") + "</button></div>");
     } else {
       let ges = 0, max = 0;
