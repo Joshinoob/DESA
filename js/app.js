@@ -79,6 +79,104 @@
       e.map(function (x) { return "<span><strong>" + escapeHtml(x[0]) + "</strong> = " + escapeHtml(x[1]) + "</span>"; }).join(" · ") + "</div>";
   }
 
+  // ---------- Abkürzungen im Fließtext ausschreiben ----------
+  // Bei der ersten Nennung pro Absatz/Listenpunkt/Kartenseite folgt der Abkürzung die Langform
+  // in Klammern: „ZVK (zentraler Venenkatheter)“. Diese Reihenfolge bleibt grammatisch richtig,
+  // egal welcher Artikel davorsteht. Läuft automatisch für alles, was in #app gezeichnet wird.
+  // Nicht ausgeschrieben: Alltagskürzel, Organisationen/Skalen-Namen und Formeln (Text mit = × ÷).
+  const ABK_NICHT = ["EKG", "EEG", "OP", "MRT", "BMI", "CO", "IE", "NaCl", "Hb", "ICU", "IMC",
+    "AABB", "AAGBI", "ASA", "ASE", "ASRA", "AWMF", "BGH", "BTF", "CPOC", "DAS", "DGAI", "DGVS", "EMA",
+    "ESAIC", "ESC", "ESICM", "ESRA", "ERC", "FDA", "KDIGO", "WHO", "NYHA", "MELD", "SOE", "ABCDE",
+    "STOP-BANG", "AMPA", "A5", "ATLS", "APLS", "PLS", "NLS", "ERAS", "CAM", "CFS"];
+  const ABK_KURZ = {}, ABK_VARIANTEN = {};
+  GLOSSAR_KEYS.forEach(function (k) {
+    if (ABK_NICHT.indexOf(k) !== -1) return;
+    const kurz = GLOSSAR[k].replace(/\s*\([^)]*\)/g, "").split(" – ")[0].trim();
+    if (!kurz || kurz.toLowerCase().indexOf(k.toLowerCase()) !== -1) return;
+    ABK_KURZ[k] = kurz;
+    // steht eine dieser Formen schon im Absatz, ist die Abkürzung dort bereits erklärt
+    ABK_VARIANTEN[k] = [kurz].concat((GLOSSAR[k].match(/\(([^)]*)\)/g) || []).map(function (x) { return x.slice(1, -1); }))
+      .map(function (x) { return x.toLowerCase(); }).filter(function (x) { return x.length > 3; });
+  });
+  // Lateinische Anatomie-Kürzel werden direkt ersetzt: „N. phrenicus“ → „Nervus phrenicus“
+  const LATEIN = { N: "Nervus", Nn: "Nervi", M: "Musculus", Mm: "Musculi", A: "Arteria", Aa: "Arteriae", V: "Vena", Vv: "Venae", R: "Ramus", Rr: "Rami", Lig: "Ligamentum", Ligg: "Ligamenta" };
+  const LATEIN_RE = /(^|[\s(\/„–])(Ligg|Lig|Nn|Mm|Aa|Vv|Rr|N|M|A|V|R)\.([ -])([a-z]{3,})/g;
+  const WIRBEL_RE = /(^|[^A-Za-zÄÖÜäöüß])(LWK|BWK|HWK)( ?)(?=\d)/g;
+  const WIRBEL = { LWK: "Lendenwirbelkörper", BWK: "Brustwirbelkörper", HWK: "Halswirbelkörper" };
+  function lateinAus(text) {
+    return text.replace(LATEIN_RE, function (m, vor, abk, trenn, wort) {
+      // A./V./R. nur vor lateinischen Wörtern (schließt z.B. „i. d. R. bis“ oder „Typ A. und“ aus)
+      if (/^[AVR]$/.test(abk) && !/(us|is|ae|a|um|i|os|es|ns|ex|ix)$/.test(wort)) return m;
+      return vor + LATEIN[abk] + trenn + wort;
+    }).replace(WIRBEL_RE, function (m, vor, abk) { return vor + WIRBEL[abk] + " "; });
+  }
+  const ABK_SKIP = "h1,h2,h3,h4,h5,svg,figure,button,.btn,nav,input,textarea,select,option,code,.glossary-line,.abk-lang,.tagesleiste,.sw-fig,.badge,.chip,.no-abk";
+  const ABK_BLOCK = "p,li,td,th,dd,dt,summary,blockquote,figcaption,label,.flashcard-front,.flashcard-back,.sw-kette-step,div";
+  const abkBloecke = new WeakMap();
+  function abkSchreibenIn(textNode) {
+    const el = textNode.parentElement;
+    if (!el || el.closest(ABK_SKIP)) return;
+    const roh = textNode.nodeValue;
+    const text = lateinAus(roh);
+    if (text !== roh) textNode.nodeValue = text;
+    if (!GLOSSAR_RE || /[=×÷]/.test(text)) return;
+    const block = el.closest(ABK_BLOCK) || el;
+    let schon = abkBloecke.get(block);
+    if (!schon) { schon = {}; abkBloecke.set(block, schon); }
+    const blockText = (block.textContent || "").toLowerCase();
+    const stellen = [];
+    GLOSSAR_RE.lastIndex = 0;
+    let m;
+    while ((m = GLOSSAR_RE.exec(text))) {
+      const abk = m[2], kurz = ABK_KURZ[abk];
+      const start = m.index + m[1].length;
+      let ende = start + abk.length;
+      GLOSSAR_RE.lastIndex = ende;
+      if (!kurz || schon[abk] || schon[kurz]) continue;
+      if (ABK_VARIANTEN[abk].some(function (v) { return blockText.indexOf(v) !== -1; })) { schon[abk] = 1; continue; } // steht schon ausgeschrieben da
+      // zusammengesetzte Wörter (ZVK-Anlage): Erklärung nach dem ganzen Wort
+      const rest = text.slice(ende).match(/^[-‑/][^\s,.;:!?)\]]*/);
+      if (rest) { ende += rest[0].length; GLOSSAR_RE.lastIndex = ende; }
+      if (/^\s*\(/.test(text.slice(ende)) || /\(\s*$/.test(text.slice(0, start))) { schon[abk] = 1; continue; } // schon erklärt bzw. selbst die Klammer-Abkürzung
+      schon[abk] = schon[kurz] = 1;
+      stellen.push([ende, kurz]);
+    }
+    if (!stellen.length) return;
+    const frag = document.createDocumentFragment();
+    let pos = 0;
+    stellen.forEach(function (st) {
+      frag.appendChild(document.createTextNode(text.slice(pos, st[0])));
+      const span = document.createElement("span");
+      span.className = "abk-lang";
+      span.textContent = " (" + st[1] + ")";
+      frag.appendChild(span);
+      pos = st[0];
+    });
+    if (pos < text.length) frag.appendChild(document.createTextNode(text.slice(pos)));
+    textNode.parentNode.replaceChild(frag, textNode);
+  }
+  function abkAusschreiben(root) {
+    if (!root || !Object.keys(ABK_KURZ).length) return;
+    if (root.nodeType === 3) { abkSchreibenIn(root); return; }
+    if (root.nodeType !== 1 || (root.closest && root.closest(ABK_SKIP))) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    const nodes = [];
+    let n;
+    while ((n = walker.nextNode())) if (/[A-ZÄÖÜ]/.test(n.nodeValue)) nodes.push(n);
+    nodes.forEach(abkSchreibenIn);
+  }
+  if (app && window.MutationObserver) {
+    const abkObs = new MutationObserver(function (muts) {
+      abkObs.disconnect();
+      muts.forEach(function (mu) {
+        if (mu.type === "characterData") abkAusschreiben(mu.target);
+        else Array.prototype.forEach.call(mu.addedNodes, function (x) { if (x.isConnected) abkAusschreiben(x); });
+      });
+      abkObs.observe(app, { childList: true, subtree: true, characterData: true });
+    });
+    abkObs.observe(app, { childList: true, subtree: true, characterData: true });
+  }
+
   function escapeHtml(str) {
     const div = document.createElement("div");
     div.textContent = str;
@@ -403,7 +501,7 @@
     const textNodes = [];
     let node;
     while ((node = walker.nextNode())) {
-      if (node.nodeValue.trim()) textNodes.push(node);
+      if (node.nodeValue.trim() && !(node.parentElement && node.parentElement.closest(".abk-lang"))) textNodes.push(node);
     }
     textNodes.forEach(function (textNode) {
       const parts = textNode.nodeValue.split(/(\s+)/);
@@ -424,7 +522,8 @@
   }
 
   function wrapAllLookupSources() {
-    document.querySelectorAll(".lookup-source").forEach(wrapLookupWords);
+    // erst ausschreiben (braucht ganze Sätze, z.B. „N. phrenicus“), dann in Einzelwörter zerlegen
+    document.querySelectorAll(".lookup-source").forEach(function (el) { abkAusschreiben(el); wrapLookupWords(el); });
     removeLookupConfirm();
   }
 
@@ -465,7 +564,7 @@
     if (span) {
       const sourceEl = span.closest(".lookup-source");
       if (!sourceEl) return;
-      const word = span.textContent.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
+      const word = Array.prototype.filter.call(span.childNodes, function (x) { return x.nodeType === 3; }).map(function (x) { return x.nodeValue; }).join("").replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
       if (word.length < 2) return;
       span.classList.add("lookup-word-active");
       setTimeout(function () { span.classList.remove("lookup-word-active"); }, 400);

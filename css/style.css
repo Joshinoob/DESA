@@ -939,3 +939,6 @@ main { overflow-wrap: break-word; }
 .heute-fertig { padding: 12px; border-radius: var(--radius); background: rgba(63, 178, 127, 0.15); border: 1px solid var(--green); }
 .tagesleiste { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 12px; background: var(--surface); border-top: 1px solid var(--border); box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.25); font-size: 0.9rem; }
 body:has(.tagesleiste) main { padding-bottom: 70px; }
+
+/* Ausgeschriebene Abkürzung direkt im Text: gut lesbar, aber leiser als der Haupttext */
+.abk-lang{color:var(--text-muted);font-size:.95em}
