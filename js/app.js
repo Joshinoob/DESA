@@ -84,7 +84,7 @@
   // in Klammern: „ZVK (zentraler Venenkatheter)“. Diese Reihenfolge bleibt grammatisch richtig,
   // egal welcher Artikel davorsteht. Läuft automatisch für alles, was in #app gezeichnet wird.
   // Nicht ausgeschrieben: Alltagskürzel, Organisationen/Skalen-Namen und Formeln (Text mit = × ÷).
-  const ABK_NICHT = ["EKG", "EEG", "OP", "MRT", "BMI", "CO", "IE", "NaCl", "Hb", "ICU", "IMC",
+  const ABK_NICHT = ["EKG", "EEG", "OP", "MRT", "BMI", "CO", "IE", "NaCl", "Hb", "ICU", "IMC", "ITS", "ZVK", "HNO", "TEP", "SSW", "HWS", "BZ", "ATA",
     "AABB", "AAGBI", "ASA", "ASE", "ASRA", "AWMF", "BGH", "BTF", "CPOC", "DAS", "DGAI", "DGVS", "EMA",
     "ESAIC", "ESC", "ESICM", "ESRA", "ERC", "FDA", "KDIGO", "WHO", "NYHA", "MELD", "SOE", "ABCDE",
     "STOP-BANG", "AMPA", "A5", "ATLS", "APLS", "PLS", "NLS", "ERAS", "CAM", "CFS"];
@@ -101,21 +101,37 @@
   // Lateinische Anatomie-Kürzel werden direkt ersetzt: „N. phrenicus“ → „Nervus phrenicus“
   const LATEIN = { N: "Nervus", Nn: "Nervi", M: "Musculus", Mm: "Musculi", A: "Arteria", Aa: "Arteriae", V: "Vena", Vv: "Venae", R: "Ramus", Rr: "Rami", Lig: "Ligamentum", Ligg: "Ligamenta" };
   const LATEIN_RE = /(^|[\s(\/„–])(Ligg|Lig|Nn|Mm|Aa|Vv|Rr|N|M|A|V|R)\.([ -])([a-z]{3,})/g;
-  const WIRBEL_RE = /(^|[^A-Za-zÄÖÜäöüß])(LWK|BWK|HWK)( ?)(?=\d)/g;
-  const WIRBEL = { LWK: "Lendenwirbelkörper", BWK: "Brustwirbelkörper", HWK: "Halswirbelkörper" };
   function lateinAus(text) {
     return text.replace(LATEIN_RE, function (m, vor, abk, trenn, wort) {
       // A./V./R. nur vor lateinischen Wörtern (schließt z.B. „i. d. R. bis“ oder „Typ A. und“ aus)
       if (/^[AVR]$/.test(abk) && !/(us|is|ae|a|um|i|os|es|ns|ex|ix)$/.test(wort)) return m;
       return vor + LATEIN[abk] + trenn + wort;
-    }).replace(WIRBEL_RE, function (m, vor, abk) { return vor + WIRBEL[abk] + " "; });
+    });
   }
   const ABK_SKIP = "h1,h2,h3,h4,h5,svg,figure,button,.btn,nav,input,textarea,select,option,code,.glossary-line,.abk-lang,.tagesleiste,.sw-fig,.badge,.chip,.no-abk";
   const ABK_BLOCK = "p,li,td,th,dd,dt,summary,blockquote,figcaption,label,.flashcard-front,.flashcard-back,.sw-kette-step,div";
   const abkBloecke = new WeakMap();
+  // Ausgeschrieben wird dort, wo es ums Verstehen geht: Physiologie, Spezialwissen, Pharmakologie
+  // und Medikamente. Klinische Alltagskürzel in Fällen, Szenarien usw. bleiben kurz.
+  const ABK_MODULE = ["physiologie", "pharmakologie"];
+  const ABK_ROUTEN = ["physiologie", "spezial", "spezial-organ", "spezial-kapitel", "drugs", "drug", "drug-quiz", "kurven", "kurven-quiz", "rechnen"];
+  let abkKarten = null;
+  function abkImBereich(el) {
+    const k = el.closest("[data-card-id]");
+    if (k) {
+      if (!abkKarten) {
+        abkKarten = {};
+        (window.FLASHCARDS || []).concat(window.MCQ || []).forEach(function (c) { abkKarten[c.id] = !!c.spezialwissen || ABK_MODULE.indexOf(c.module) !== -1; });
+      }
+      const id = k.getAttribute("data-card-id");
+      if (Object.prototype.hasOwnProperty.call(abkKarten, id)) return abkKarten[id];
+    }
+    const route = (location.hash || "").replace(/^#\//, "").split("/")[0];
+    return ABK_ROUTEN.indexOf(route) !== -1;
+  }
   function abkSchreibenIn(textNode) {
     const el = textNode.parentElement;
-    if (!el || el.closest(ABK_SKIP)) return;
+    if (!el || el.closest(ABK_SKIP) || !abkImBereich(el)) return;
     const roh = textNode.nodeValue;
     const text = lateinAus(roh);
     if (text !== roh) textNode.nodeValue = text;
@@ -669,6 +685,7 @@
     else if (route === "zeichnen-aufgabe") renderZeichnenAufgabe(arg);
     else if (route === "wissen") renderWissen();
     else if (route === "heute-weiter") { heuteWeiter(arg); return; }
+    else if (route === "mehr") renderMehr();
     else if (route === "ueben") renderUeben();
     else if (route === "rechnen") renderRechnen(arg);
     else if (route === "kurven") renderKurvenStart();
@@ -693,7 +710,7 @@
       fokus: "ueben", learn: "ueben", test: "ueben",
       algorithms: "wissen", physiologie: "wissen", spezial: "wissen", tables: "wissen", drugs: "wissen",
       leitlinien: "wissen", literatur: "wissen", rechnen: "wissen", kurven: "wissen",
-      pruefung: "soe", faelle: "soe", zeichnen: "soe"
+      pruefung: "soe", faelle: "soe", zeichnen: "soe", mehr: "dashboard"
     };
     activeRoute = BEREICH[activeRoute] || activeRoute;
     // STORAGE_OK deckt nur einen von Anfang an blockierten Speicher ab (z.B. Inkognito-Modus);
@@ -912,10 +929,111 @@
     }
     return '<div class="heute-start">' +
       (fertig
-        ? '<div class="heute-fertig">✓ Für heute geschafft. Wenn du noch Lust hast: den optionalen Schritt oder eine Prüfer-Runde im Chat.</div>'
+        ? '<div class="heute-fertig">✓ Für heute geschafft.</div><a class="btn btn-primary heute-los" href="#/mehr">+ Noch Zeit? Mehr lernen</a>'
         : '<a class="btn btn-primary heute-los" href="#/heute-weiter">▶ Heute lernen (ca. ' + pflicht.reduce(function (a, st) { return a + st.min; }, 0) + " min)</a>") +
       "</div>" +
-      '<ol class="heute-plan">' + liste.map(zeile).join("") + "</ol>" + kopf;
+      '<ol class="heute-plan">' + liste.map(zeile).join("") + "</ol>" +
+      (fertig ? "" : '<p class="mehr-link"><a href="#/mehr">Mehr Zeit heute? Zusätzliche Runden zum Festigen oder Vorarbeiten →</a></p>') + kopf;
+  }
+
+  // ---------- „Mehr lernen“: wenn nach dem Tagesplan noch Zeit ist ----------
+  // Konzept: erst festigen, was wackelt (erneutes Abrufen schwieriger Karten, schwächster Fall,
+  // fällige Zeichnung) – sonst nach Plan vorarbeiten (nächstes Kapitel, neue Karten zuerst aus schon
+  // verstandenen Kapiteln, nächster Fall). Jede Runde dauert etwa 15–20 min und kann wiederholt werden.
+  function mehrKartenWdh() {
+    const schwer = window.SRS.getDifficultCards(FLASHCARDS, progress);
+    const bald = FLASHCARDS.filter(function (c) {
+      const st = progress[c.id];
+      return st && st.due && schwer.indexOf(c) === -1 && new Date(st.due).getTime() - Date.now() < 2 * 86400000;
+    }).sort(function (a, b) { return new Date(progress[a.id].due) - new Date(progress[b.id].due); });
+    return schwer.concat(bald).slice(0, 15);
+  }
+  function mehrKartenNeu() {
+    const gelesen = window.SRS.loadLearnedSpezial();
+    const neu = window.SRS.getNewCards(FLASHCARDS, progress, "all");
+    const info = lernplanWoche();
+    const organe = info ? (info.w.kapitel || []).map(function (k) { return k[0]; }) : [];
+    const rang = function (c) {
+      if (c.spezialwissen && gelesen.indexOf(c.spezialwissen + "/" + c.kapitel) !== -1) return 0; // schon verstanden → jetzt festigen
+      if (c.spezialwissen && organe.indexOf(c.spezialwissen) !== -1) return 1; // Thema dieser Woche
+      return 2;
+    };
+    return neu.map(function (c, i) { return [rang(c), i, c]; })
+      .sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; })
+      .slice(0, 10).map(function (x) { return x[2]; });
+  }
+  function mehrVorschlaege() {
+    const t = tagesplan();
+    const heute = t.schritte.map(function (st) { return st.ziel; });
+    const gelesen = window.SRS.loadLearnedSpezial();
+    const L = window.LERNPLAN;
+    const info = lernplanWoche();
+    // Kapitel in Plan-Reihenfolge (Rückstand zuerst), danach alle übrigen Kapitel
+    const kapListe = [];
+    if (L) L.wochen.forEach(function (w, i) { (w.kapitel || []).forEach(function (k) { kapListe.push([k[0] + "/" + k[1], i]); }); });
+    SPEZIAL.forEach(function (o) { o.chapters.forEach(function (c) { kapListe.push([o.id + "/" + c.id, null]); }); });
+    const kapNaechst = kapListe.find(function (k) { return gelesen.indexOf(k[0]) === -1 && heute.indexOf(k[0]) === -1; });
+    let kapitel = null;
+    if (kapNaechst) {
+      kapitel = kapitelInfo(kapNaechst[0].split("/")[0], kapNaechst[0].split("/")[1]);
+      if (kapitel) kapitel.hinweis = kapNaechst[1] === null ? "über den Plan hinaus" : info && kapNaechst[1] < info.nr ? "aus Woche " + (kapNaechst[1] + 1) + " nachholen" : info && kapNaechst[1] > info.nr ? "vorarbeiten aus Woche " + (kapNaechst[1] + 1) : "aus dieser Woche";
+    }
+    const fst = loadFaelle();
+    const F = window.FAELLE || [];
+    const fallIds = [];
+    if (L) L.wochen.forEach(function (w) { (w.faelle || []).forEach(function (id) { if (fallIds.indexOf(id) === -1) fallIds.push(id); }); });
+    F.forEach(function (f) { if (fallIds.indexOf(f.id) === -1) fallIds.push(f.id); });
+    const fallNeuId = fallIds.find(function (id) { return !fst[id] && heute.indexOf(id) === -1 && F.some(function (f) { return f.id === id; }); });
+    const fallSchwach = F.filter(function (f) { const e = fst[f.id]; return e && e.prozent < 80 && heuteStr(e.datum) !== t.datum; })
+      .sort(function (a, b) { return fst[a.id].prozent - fst[b.id].prozent; })[0] || null;
+    const zst = loadZeichnen();
+    const zeichnung = (window.ZEICHNEN || []).find(function (z) { return zst[z.id] && zeichnenStatus(z.id, zst).faellig && heute.indexOf(z.id) === -1; }) || null;
+    const wdh = mehrKartenWdh();
+    const schwer = window.SRS.getDifficultCards(FLASHCARDS, progress).length;
+    return {
+      kapitel: kapitel, wdh: wdh.length, schwer: schwer, neu: mehrKartenNeu().length,
+      fallNeu: fallNeuId ? F.find(function (f) { return f.id === fallNeuId; }) : null,
+      fallSchwach: fallSchwach, fallSchwachProzent: fallSchwach ? fst[fallSchwach.id].prozent : null,
+      zeichnung: zeichnung,
+      // Festigen zuerst, wenn deutlich etwas wackelt
+      festigenZuerst: schwer >= 5 || (fallSchwach && fst[fallSchwach.id].prozent < 60) || !!zeichnung
+    };
+  }
+  function renderMehr() {
+    const t = tagesplan();
+    const pflicht = alleSchritte(t).filter(function (st) { return !st.optional; });
+    const fertig = pflicht.every(function (st) { return schrittErledigt(t, st); });
+    // Zusatzrunden laufen frei, ohne die Tagesplan-Leiste
+    if (fertig) { try { sessionStorage.removeItem(TAGESMODUS_KEY); } catch (e) { /* egal */ } }
+    const v = mehrVorschlaege();
+    const zeile = function (min, titel, text, href, knopf) {
+      return '<li class="heute-schritt"><span class="heute-nr">' + min + "</span>" +
+        '<div class="heute-text"><strong>' + escapeHtml(titel) + '</strong><br><span class="muted">' + escapeHtml(text) + "</span></div>" +
+        (href ? '<a class="btn btn-sm btn-primary" href="' + href + '">' + knopf + "</a>" : "") + "</li>";
+    };
+    const festigen = [];
+    if (v.wdh) festigen.push(zeile(10, "Wackelige Karten", v.wdh + " Karten: zuerst die mit „Nochmal“ oder „Schwer“ bewerteten (" + v.schwer + "), dann die bald fälligen", "#/learn-session/all/mehr-wdh", "Starten"));
+    if (v.fallSchwach) festigen.push(zeile(20, "Fall wiederholen: " + v.fallSchwach.titel, "Beim letzten Mal " + v.fallSchwachProzent + " % – laut durchsprechen", "#/fall/" + v.fallSchwach.id, "Fall starten"));
+    if (v.zeichnung) festigen.push(zeile(15, "Zeichnung wiederholen: " + v.zeichnung.titel, "Fällig – frei zeichnen und dabei erklären", "#/zeichnen-aufgabe/" + v.zeichnung.id, "Zeichnen"));
+    const neues = [];
+    if (v.kapitel) neues.push(zeile(20, "Verstehen: " + v.kapitel.titel, v.kapitel.organ + " – " + v.kapitel.hinweis, v.kapitel.href, "Kapitel öffnen"));
+    if (v.neu) neues.push(zeile(10, v.neu + " neue Karten", "Zuerst aus Kapiteln, die du schon verstanden hast – so wird Verstandenes abrufbar", "#/learn-session/all/mehr-neu", "Starten"));
+    if (v.fallNeu) neues.push(zeile(20, "Neuer Fall: " + v.fallNeu.titel, "Laut durchsprechen wie in der Prüfung", "#/fall/" + v.fallNeu.id, "Fall starten"));
+    const block = function (titel, text, items, empfohlen, leer) {
+      return '<section class="mehr-block' + (empfohlen ? " mehr-empfohlen" : "") + '"><h2>' + titel + (empfohlen ? ' <span class="mehr-tag">Empfohlen</span>' : "") + "</h2>" +
+        '<p class="muted">' + text + "</p>" + (items.length ? '<ol class="heute-plan">' + items.join("") + "</ol>" : '<p>' + leer + "</p>") + "</section>";
+    };
+    const festigenZuerst = v.festigenZuerst && festigen.length;
+    const bF = block("Festigen", "Was wackelt, verankert sich am stärksten, wenn du es erneut aus dem Gedächtnis abrufst.", festigen, festigenZuerst, "Gerade wackelt nichts – nimm dir etwas Neues vor.");
+    const bN = block("Vorarbeiten", "Nach Plan weiter: Was du heute vorarbeitest, ist Puffer für Tage mit wenig Zeit.", neues, !festigenZuerst && neues.length, "Alles Neue ist erledigt – festige oder simuliere eine Prüfung.");
+    app.innerHTML = nav("dashboard") + '<main class="container narrow"><h1>Mehr lernen</h1>' +
+      (fertig ? '<p>Tagesplan erledigt – und noch Zeit. Wähle eine Runde (je 10–20 min); danach kannst du jederzeit noch eine anhängen.</p>'
+        : '<div class="sw-box sw-einfach"><p>Dein Tagesplan ist noch offen. Am meisten bringt es, ihn zuerst abzuschließen – dann hier weiter.</p><div class="cta-row"><a class="btn btn-sm btn-primary" href="#/heute-weiter">Tagesplan fortsetzen</a></div></div>') +
+      (festigenZuerst ? bF + bN : bN + bF) +
+      '<section class="mehr-block"><h2>Prüfungsform</h2><p class="muted">Ab und zu frei sprechen statt lesen: mit deinem Lernpartner oder im Chat mit Claude (Prüfer-Auftrag auf der Startseite kopieren).</p>' +
+      '<div class="cta-row"><a class="btn btn-sm btn-secondary" href="#/soe">Szenario üben</a><a class="btn btn-sm btn-secondary" href="#/dashboard">Prüfer-Auftrag</a></div></section>' +
+      '<p class="muted">Tipp: Mehr als 60–90 min am Tag bringen meist weniger als Schlaf und eine Pause – Lernen festigt sich zwischen den Einheiten.</p>' +
+      "</main>";
   }
 
   // Ein Klick: zum nächsten offenen Schritt; danach führt eine Leiste von Schritt zu Schritt
@@ -933,8 +1051,8 @@
       try { sessionStorage.removeItem(TAGESMODUS_KEY); } catch (e) { /* egal */ }
       app.innerHTML = nav("dashboard") + '<main class="container narrow"><h1>Für heute geschafft ✓</h1>' +
         '<p>Alle Schritte des Tagesplans sind erledigt. Das Gelernte festigt sich am besten mit Pausen – morgen geht es weiter.</p>' +
-        '<p class="muted">Lust auf mehr? Eine Prüfer-Runde im Chat mit Claude zum Wochenthema (Auftrag auf der Startseite kopieren).</p>' +
-        '<div class="cta-row"><a class="btn btn-primary" href="#/dashboard">Zur Startseite</a></div></main>';
+        '<p class="muted">Noch Zeit? Dann eine Zusatzrunde: festigen, was wackelt, oder nach Plan vorarbeiten.</p>' +
+        '<div class="cta-row"><a class="btn btn-primary" href="#/mehr">+ Mehr lernen</a><a class="btn btn-secondary" href="#/dashboard">Zur Startseite</a></div></main>';
       return;
     }
     if (st.typ === "link") { const t = tagesplan(); t.besucht[st.href] = true; speichereTag(t); }
@@ -946,7 +1064,7 @@
     const alt = document.querySelector(".tagesleiste");
     if (alt) alt.remove();
     const route = (location.hash || "").replace(/^#\//, "").split("/")[0];
-    if (!aktiv || !route || route === "dashboard" || route === "heute-weiter" || route === "learn-session") return;
+    if (!aktiv || !route || route === "dashboard" || route === "heute-weiter" || route === "learn-session" || route === "mehr") return;
     const t = tagesplan();
     const liste = alleSchritte(t).filter(function (st) { return !st.optional; });
     const n = liste.filter(function (st) { return schrittErledigt(t, st); }).length;
@@ -1158,7 +1276,7 @@
       due = window.SRS.getDueCards(FLASHCARDS, progress, moduleId);
       fresh = window.SRS.getNewCards(FLASHCARDS, progress, moduleId);
     }
-    if (moduleId !== "spezial" && subtopicId && subtopicId !== "all" && subtopicId !== "tag") {
+    if (moduleId !== "spezial" && subtopicId && subtopicId !== "all" && subtopicId !== "tag" && !/^mehr-/.test(subtopicId)) {
       due = due.filter(function (c) { return c.subtopic === subtopicId; });
       fresh = fresh.filter(function (c) { return c.subtopic === subtopicId; });
     }
@@ -1168,6 +1286,9 @@
     // langfristiges Behalten, auch wenn es sich beim Lernen schwerer anfühlt.
     learnQueue = shuffle(due.concat(fresh));
     if (subtopicId === "tag") learnQueue = shuffle(due).concat(shuffle(fresh)).slice(0, 25);
+    if (subtopicId === "mehr-wdh") learnQueue = shuffle(mehrKartenWdh());
+    if (subtopicId === "mehr-neu") learnQueue = mehrKartenNeu();
+    if (learnQueue.length === 0 && /^mehr-/.test(subtopicId || "")) { location.replace("#/mehr"); return; }
     if (learnQueue.length === 0 && subtopicId === "tag") {
       const t = tagesplan(); t.karten = true; speichereTag(t);
       location.replace("#/heute-weiter");
@@ -1188,13 +1309,15 @@
     lastCardAdvanceAt = Date.now();
     if (learnQueue.length === 0) {
       const ausPlan = learnSessionKey === "all|tag";
+      const ausMehr = /^all\|mehr-/.test(learnSessionKey || "");
       if (ausPlan) { const t = tagesplan(); t.karten = true; speichereTag(t); }
       app.innerHTML =
         nav("learn") +
         '<main class="container narrow"><h1>Session abgeschlossen 🎉</h1>' +
         '<p>Karten wiederholt: <strong>' + learnStats.reviewed + '</strong></p>' +
         '<p>Nochmal: ' + learnStats.again + " · Schwer: " + learnStats.hard + " · Gut: " + learnStats.good + " · Leicht: " + learnStats.easy + '</p>' +
-        (ausPlan ? '<div class="cta-row"><a class="btn btn-primary" href="#/heute-weiter">Weiter im Tagesplan →</a> <a class="btn btn-secondary" href="#/dashboard">Zur Startseite</a></div>'
+        (ausMehr ? '<div class="cta-row"><a class="btn btn-primary" href="#/mehr">+ Noch eine Runde</a> <a class="btn btn-secondary" href="#/dashboard">Zur Startseite</a></div>'
+          : ausPlan ? '<div class="cta-row"><a class="btn btn-primary" href="#/heute-weiter">Weiter im Tagesplan →</a> <a class="btn btn-secondary" href="#/dashboard">Zur Startseite</a></div>'
           : '<div class="cta-row"><a class="btn btn-primary" href="#/dashboard">Zur Startseite</a> <a class="btn btn-secondary" href="#/learn">Weiter lernen</a></div>') +
         "</main>";
       return;
