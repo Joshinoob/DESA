@@ -115,13 +115,13 @@
       ] },
       { kette: [
         "GFR zu hoch → viel Kochsalz erreicht die Macula densa (gemessen über den Na-K-2Cl-Cotransporter NKCC2)",
-        "Freisetzung von ATP bzw. Adenosin → A1-Rezeptoren am Vas afferens",
+        "Freisetzung von ATP bzw. Adenosin → Adenosin-A1-Rezeptoren am Vas afferens (A1 = Subtyp 1 des Adenosinrezeptors, NICHT der adrenerge Alpha-1-Rezeptor)",
         "Vas afferens verengt sich",
         "==GFR sinkt wieder – das Nephron schützt sich vor Überfiltration=="
       ], titel: "Tubuloglomerulärer Feedback" },
       { h: "Die Stellschrauben an den Arteriolen" },
       { table: { head: ["Ort", "Verengung durch", "Erweiterung durch"], rows: [
-        ["Vas afferens (zuführend)", "Sympathikus (α1), Adenosin (A1), Endothelin, Angiotensin II", "Prostaglandine (PGE₂, PGI₂), Stickstoffmonoxid, Dopamin"],
+        ["Vas afferens (zuführend)", "Sympathikus (adrenerger α1-Rezeptor), Adenosin (Adenosin-A1-Rezeptor), Endothelin, Angiotensin II", "Prostaglandine (PGE₂, PGI₂), Stickstoffmonoxid, Dopamin"],
         ["Vas efferens (abführend)", "Angiotensin II (empfindlicher als afferent)", "Wegfall von Angiotensin II (ACE-Hemmer, Angiotensin-Rezeptorblocker)"]
       ] } },
       { kette: [
@@ -156,7 +156,7 @@
       { q: "Spezialwissen Niere: Wie verteilt sich die Nierendurchblutung zwischen Rinde und Mark und wie hoch ist die Sauerstoffausschöpfung?", a: "Ca. 90 % Rinde, ca. 10 % Mark; die Sauerstoffausschöpfung ist gering (ca. 10 %), weil der Fluss vor allem der Filtration dient." },
       { q: "Spezialwissen Niere: Warum steigt der Sauerstoffbedarf der Niere mit der GFR?", a: "Der Verbrauch dient überwiegend dem aktiven Natriumtransport; mehr Filtration bedeutet mehr Natrium, das zurückgeholt werden muss." },
       { q: "Spezialwissen Niere: Welche Nephronabschnitte sind bei Minderdurchblutung besonders gefährdet und warum?", a: "Der dicke aufsteigende Teil der Henle-Schleife im Mark und das S3-Segment des proximalen Tubulus – hoher Sauerstoffverbrauch bei niedrigem Mark-Sauerstoff (ca. 10–20 mmHg)." },
-      { q: "Spezialwissen Niere: Wie funktioniert der tubuloglomeruläre Feedback?", a: "Die Macula densa misst über NKCC2 die Kochsalzkonzentration; bei Anstieg wird ATP/Adenosin frei, A1-Rezeptoren verengen das Vas afferens, die GFR sinkt; bei wenig Kochsalz Erweiterung und Reninfreisetzung." },
+      { q: "Spezialwissen Niere: Wie funktioniert der tubuloglomeruläre Feedback?", a: "Die Macula densa misst über NKCC2 die Kochsalzkonzentration; bei Anstieg wird ATP/Adenosin frei, Adenosin-A1-Rezeptoren (Subtyp 1 des Adenosinrezeptors, nicht der adrenerge Alpha-1-Rezeptor) verengen das Vas afferens, die GFR sinkt; bei wenig Kochsalz Erweiterung und Reninfreisetzung." },
       { q: "Spezialwissen Niere: Wie erhalten Prostaglandine und Angiotensin II die GFR bei Minderdurchblutung, und welche Medikamente stören das?", a: "Prostaglandine weiten das Vas afferens (gestört durch NSAR), Angiotensin II verengt das Vas efferens (gestört durch ACE-Hemmer/Angiotensin-Rezeptorblocker); mit Diuretikum = 'Triple Whammy'." },
       { q: "Spezialwissen Niere: Wie berechnet sich der effektive Nierenperfusionsdruck?", a: "Ca. MAP − zentraler Venendruck bzw. − intraabdomineller Druck, wenn dieser höher ist; Stauung und erhöhter Bauchdruck mindern die Nierendurchblutung." },
       { q: "Spezialwissen Niere: Wie erklären SGLT2-Hemmer ihren anfänglichen GFR-Abfall und ihren Nierenschutz?", a: "Mehr Kochsalz erreicht die Macula densa → tubuloglomerulärer Feedback → Vas afferens enger → niedrigerer Druck im Glomerulus (weniger Überfiltration)." }
