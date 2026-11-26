@@ -961,8 +961,24 @@
     level: "System",
     title: "Kreislaufregulation und ihre Beeinflussung durch die Narkose",
     leitfrage: "Welche Regelkreise halten den Blutdruck in Sekunden, Minuten und Tagen konstant – und welche davon schaltet eine Narkose aus?",
-    einfach: "Der Körper hat für den Blutdruck mehrere 'Thermostate' mit unterschiedlicher Geschwindigkeit: Druckfühler in Halsschlagader und Aorta reagieren in Sekunden über die Nerven, Hormone in Minuten bis Stunden, die Niere über Tage, indem sie mehr oder weniger Salz und Wasser ausscheidet. Narkosemittel drehen vor allem am schnellen Thermostat – deshalb fällt der Blutdruck bei der Einleitung, ohne dass der Puls gegensteuert.",
+    einfach: "Der Blutdruck ist kein eigener Wert, sondern ergibt sich aus zwei Dingen: wie viel Blut das Herz pro Minute auswirft und wie eng die Gefäße gestellt sind. Dazu kommt die Füllung des Systems – ohne genug Blut im Kreislauf fehlt der Druck von vornherein. Der Körper hält ihn mit mehreren 'Thermostaten' unterschiedlicher Geschwindigkeit konstant: Druckfühler in Halsschlagader und Aorta reagieren in Sekunden über die Nerven, Hormone in Minuten bis Stunden, die Niere über Tage. Narkosemittel drehen vor allem am schnellen Thermostat – deshalb fällt der Blutdruck bei der Einleitung, ohne dass der Puls gegensteuert.",
     body: [
+      { h: "Wie der Blutdruck überhaupt entsteht" },
+      "Der arterielle Mitteldruck ist kein Messwert aus einer einzelnen Quelle, sondern ein **Produkt zweier Größen** – wie der Druck in einem Gartenschlauch aus Pumpenleistung und Düsenweite entsteht.",
+      { formel: "Mittlerer arterieller Druck (MAP) ≈ Herzzeitvolumen (HZV) × systemischer Gefäßwiderstand (SVR) + zentraler Venendruck", erkl: "Analog zu 'Spannung = Strom × Widerstand'. Der zentrale Venendruck ist der Gegendruck, auf dem alles aufsetzt; er ist meist klein, steigt aber z.B. bei Rechtsherzversagen." },
+      "Beide Faktoren zerfallen weiter – so sieht man, an welcher Stellschraube ein Medikament oder eine Störung ansetzt:",
+      { ul: [
+        "**Herzzeitvolumen = Herzfrequenz × Schlagvolumen.** Das Schlagvolumen hängt von **Vorlast** (Füllung), **Kontraktilität** (Kraft) und **Nachlast** ab (Kapitel 'Vorlast, Nachlast').",
+        "**Gefäßwiderstand:** vor allem der Tonus der kleinen Arterien (Arteriolen) – gesteuert durch Sympathikus (α1), Angiotensin II, Vasopressin, lokale Stoffe (Stickstoffmonoxid, CO₂). Nach Hagen-Poiseuille geht der **Gefäßradius in der 4. Potenz** ein: ==halber Radius = 16-facher Widerstand==.",
+        "**Füllung des Systems ('stressed volume'):** Nur das Blut, das die Gefäße tatsächlich auf Spannung bringt, erzeugt Druck. Etwa 70 % des Blutes liegen 'ungespannt' in den Venen – Venen­konstriktion (Sympathikus) verschiebt davon etwas ins gespannte Volumen und hebt Rückstrom und Druck."
+      ] },
+      { kette: [
+        "Pumpe (HZV) × Widerstand (SVR) ergibt den Mitteldruck",
+        "Jeder Blutdruckabfall hat genau eine von drei Ursachen: zu wenig Volumen/Rückstrom, zu schwache oder zu langsame Pumpe, oder zu weite Gefäße",
+        "==Die Therapie richtet sich nach der Ursache: Volumen, Inotropikum/Frequenz oder Vasopressor== – nicht nach dem Zahlenwert allein"
+      ], titel: "Der Blutdruck als Produkt – und was man daraus ableitet" },
+      "Der **systolische und diastolische** Wert (die 'Blutdruckamplitude', z.B. 120/80) entsteht zusätzlich aus dem **Schlagvolumen** und der **Steifigkeit der großen Arterien**: Ein starrer Aortenbaum (Alter, Arteriosklerose) kann das ausgeworfene Volumen schlechter abfedern → ==hoher systolischer Wert, niedriger diastolischer, große Amplitude==. Ein kleines Schlagvolumen (Blutung, Tamponade) macht die Amplitude eng.",
+      { falle: "„Ein normaler Mitteldruck bedeutet eine ausreichende Durchblutung.“ – Nicht unbedingt: Bei hohem Gefäßwiderstand kann der Druck normal sein, während das Herzzeitvolumen und damit die Organdurchblutung zu niedrig sind. Druck ist nicht gleich Fluss." },
       { h: "In Sekunden: der Barorezeptorreflex" },
       { kette: [
         "Blutdruck steigt → Dehnungsfühler (Barorezeptoren) im Karotissinus (Nerv: Glossopharyngeus) und im Aortenbogen (Nerv: Vagus) feuern mehr",
@@ -1014,11 +1030,94 @@
       "Hohe Spinal- oder Epiduralanästhesie: Bradykardie und Hypotonie früh mit Vasopressor (und ggf. Atropin) behandeln."
     ],
     selbsttest: [
+      { q: "Spezialwissen Herz: Aus welchen Größen ergibt sich der mittlere arterielle Druck?", a: "MAP ≈ Herzzeitvolumen × systemischer Gefäßwiderstand (+ zentraler Venendruck). Das Herzzeitvolumen = Herzfrequenz × Schlagvolumen (Vorlast, Kontraktilität, Nachlast); der Gefäßwiderstand hängt v.a. vom Arteriolentonus ab (Radius in 4. Potenz)." },
+      { q: "Spezialwissen Herz: Welche drei grundsätzlichen Ursachen hat ein Blutdruckabfall, und wie behandelt man sie jeweils?", a: "Zu wenig Vorlast/Rückstrom (→ Volumen, Beine hoch, Venentonus), zu schwache oder zu langsame Pumpe (→ Inotropikum, Frequenz anheben) oder zu weite Gefäße (→ Vasopressor). Die Therapie richtet sich nach der Ursache, nicht nach dem Zahlenwert." },
+      { q: "Spezialwissen Herz: Warum bedeutet ein normaler Mitteldruck nicht automatisch eine ausreichende Organdurchblutung?", a: "Druck = Fluss × Widerstand. Bei hohem Gefäßwiderstand kann der Druck normal sein, während Herzzeitvolumen und Gewebedurchblutung zu niedrig sind – Druck ist nicht gleich Fluss." },
+      { q: "Spezialwissen Herz: Wodurch entsteht eine große Blutdruckamplitude (hoher systolischer, niedriger diastolischer Wert)?", a: "Durch ein großes Schlagvolumen und/oder steife große Arterien (Alter, Arteriosklerose), die das ausgeworfene Volumen schlechter abfedern. Ein kleines Schlagvolumen (Blutung, Tamponade) macht die Amplitude eng." },
       { q: "Spezialwissen Herz: Beschreibe die Reflexbahn des arteriellen Barorezeptorreflexes.", a: "Dehnungsfühler in Karotissinus (N. glossopharyngeus) und Aortenbogen (N. vagus) → Nucleus tractus solitarii → Hemmung der sympathischen Zentren (rostrale ventrolaterale Medulla) und Aktivierung des Vagus bei Druckanstieg; umgekehrt bei Druckabfall." },
       { q: "Spezialwissen Herz: Welcher Mechanismus regelt den Blutdruck nach Guyton langfristig?", a: "Die renale Druck-Natriurese: Steigender Druck erhöht die Salz- und Wasserausscheidung, bis Volumen und Druck wieder im Gleichgewicht sind; RAAS, ADH und natriuretische Peptide modulieren sie." },
       { q: "Spezialwissen Herz: Wie wirkt Vasopressin in niedriger und in hoher Konzentration?", a: "Niedrig: Wasserrückhalt über V2-Rezeptoren (Aquaporin-2 im Sammelrohr). Hoch (z.B. Schock): Gefäßverengung über V1a-Rezeptoren." },
       { q: "Spezialwissen Herz: Warum kommt es bei hoher Spinalanästhesie zu Bradykardie?", a: "Ausfall der herzbeschleunigenden Sympathikusfasern (Th1–Th4) bei erhaltenem Vagus, verminderter venöser Rückstrom mit weniger Vorhofdehnung und ggf. Bezold-Jarisch-Reflex." },
       { q: "Spezialwissen Herz: Ab welchem MAP ist intraoperative Hypotonie mit Organschäden verbunden und was zeigte INPRESS?", a: "Ab MAP unter ca. 65 mmHg (bzw. relevantem Abfall vom Ausgangswert) ist sie mit Nieren- und Myokardschädigung assoziiert. In INPRESS senkte eine individualisierte Steuerung (systolisch innerhalb von 10 % des Ausgangswerts) postoperative Organdysfunktionen." }
+    ]
+  });
+
+  CH.push({
+    id: "narkose",
+    level: "System",
+    title: "Narkose bei Herz- und Klappenerkrankungen",
+    leitfrage: "Wie leite ich aus jeder Herz- oder Klappenpathologie die richtigen hämodynamischen Ziele ab – und welche Folgen hat die Narkose jeweils?",
+    einfach: "Eine Narkose greift immer an denselben vier Stellschrauben an: Puls (Frequenz), Füllung (Vorlast), Gefäßweite (Nachlast) und Pumpkraft (Kontraktilität). Fast jedes Narkosemittel senkt eine oder mehrere davon – deshalb fällt bei kranken Herzen der Blutdruck leicht ab. Wenn du verstehst, was eine Erkrankung braucht, musst du nichts auswendig lernen: Du drehst die vier Regler bewusst in die richtige Richtung und hältst sie dort.",
+    body: [
+      { h: "Die vier Stellschrauben" },
+      "Jede Entscheidung in der Herznarkose lässt sich auf vier Größen zurückführen – sie sind dieselben, die das Schlagvolumen und den Blutdruck bestimmen (Kapitel 'Vorlast, Nachlast' und 'Kreislaufregulation'):",
+      { ul: [
+        "**Frequenz:** langsam füllt und durchblutet besser (Stenosen, koronare Herzkrankheit); schnell verkürzt Rückfluss­zeiten (Insuffizienzen).",
+        "**Vorlast (Füllung):** fast alle kranken Herzen brauchen eine **erhaltene** Vorlast – Ausnahme: das akut überladene, versagende Herz.",
+        "**Nachlast (Gefäßweite):** hoch halten, wenn ein fixer Auswurf vom Perfusionsdruck lebt (Aortenstenose, pulmonale Hypertonie, koronare Herzkrankheit); senken, wenn Rückfluss oder eine schwache Kammer entlastet werden müssen (Insuffizienzen, Herzinsuffizienz).",
+        "**Kontraktilität:** nur selten gezielt steigern (Herzinsuffizienz, Rechtsherzversagen); bei der hypertroph-obstruktiven Kardiomyopathie sogar bewusst **nicht**."
+      ] },
+      { h: "Warum die Einleitung so oft Blutdruck kostet" },
+      { kette: [
+        "Hypnotika (Propofol) und volatile Anästhetika erweitern Gefäße, dämpfen den Barorezeptorreflex und senken die Kontraktilität",
+        "Die Überdruckbeatmung senkt zusätzlich den venösen Rückstrom (Vorlast)",
+        "==Ein krankes Herz kann den Abfall nicht durch mehr Auswurf ausgleichen → steiler Blutdruckabfall==",
+        "Deshalb: langsam titrieren, Vorlast sichern, Vasopressor bereit, Blutdruck am Ausgangswert orientieren"
+      ], titel: "Hypotonie bei der Narkoseeinleitung" },
+      { h: "Die wichtigsten Pathologien und ihre Ziele" },
+      { table: { head: ["Erkrankung", "Kernproblem", "Ziele (Frequenz · Vorlast · Nachlast · Kontraktilität)", "Besonders gefährlich"], rows: [
+        ["Aortenstenose", "fixer Auswurf, hypertropher Ventrikel lebt vom Perfusionsdruck", "langsam-normal · hoch · hoch halten · erhalten", "Blutdruckabfall (Spinalanästhesie!), Tachykardie, Vorhofflimmern"],
+        ["Mitralstenose", "Füllung des linken Ventrikels behindert, Lungenstauung", "langsam · nicht überladen · halten · erhalten", "Tachykardie, Volumenüberladung, Anstieg des Lungengefäßwiderstands"],
+        ["Aorteninsuffizienz", "Rückfluss aus der Aorta in der Diastole", "schnell-normal · hoch · niedrig · erhalten", "Bradykardie, hohe Nachlast"],
+        ["Mitralinsuffizienz", "Rückfluss in den Vorhof", "schnell-normal · hoch · niedrig · erhalten", "Bradykardie, hohe Nachlast, Lungenstauung"],
+        ["Hypertrophe obstruktive Kardiomyopathie", "dynamische Verengung der Ausflussbahn", "langsam · hoch · hoch · nicht steigern", "Hypovolämie, Tachykardie, Inotropika, Vasodilatatoren"],
+        ["Koronare Herzkrankheit", "Missverhältnis von Sauerstoffangebot und -bedarf", "langsam · normal · diastolischen Druck halten · erhalten", "Tachykardie, Hypotonie, Anämie, Hypoxämie"],
+        ["Herzinsuffizienz (EF reduziert)", "schwache Pumpe, Stauung", "normal · nicht überladen · senken · ggf. stützen", "Nachlastanstieg, Volumenüberladung, negativ inotrope Medikamente"],
+        ["Pulmonale Hypertonie / Rechtsherz", "rechte Kammer nachlastempfindlich und druckabhängig durchblutet", "normal · erhalten · Lungenwiderstand senken, Systemdruck halten · stützen", "Hypoxie, Hyperkapnie, Azidose, hohe Beatmungsdrücke"],
+        ["Perikardtamponade", "Füllung von außen behindert", "schnell · hoch · hoch · erhalten", "jede Vorlastsenkung; Einleitung erst bei OP-Bereitschaft"]
+      ] } },
+      { h: "Merkregeln ableiten statt auswendig lernen" },
+      { ul: [
+        "**Stenose: 'langsam, voll, eng.'** Enge Öffnung braucht Zeit (langsam) und ausreichende Füllung (voll); der Perfusionsdruck des belasteten Ventrikels muss hoch bleiben (eng).",
+        "**Insuffizienz: 'schnell, voll, weit.'** Kurze Rückflusszeit (schnell) und niedriger Gegendruck (weit) fördern den Vorwärtsfluss; Vorlast bleibt erhalten (voll).",
+        "**Aortenstenose:** Hypotonie **sofort** mit einem reinen Vasopressor (Phenylephrin, Noradrenalin) behandeln – nicht abwarten, die Abwärtsspirale ist schnell.",
+        "**Hypertrophe obstruktive Kardiomyopathie:** wie eine 'dynamische Aortenstenose' – Volumen und reiner Vasopressor bessern, Inotropika und Vasodilatatoren verschlechtern."
+      ] },
+      { falle: "„Bei schlechter Pumpe hilft immer ein Inotropikum.“ – Oft steht die **Nachlastsenkung** an erster Stelle: Ein insuffizienter Ventrikel wirft gegen weniger Widerstand mehr aus, ohne zusätzlichen Sauerstoff zu verbrauchen. Inotropika steigern den Verbrauch und können Rhythmusstörungen auslösen – gezielt und zurückhaltend einsetzen." },
+      { h: "Allgemeine Grundsätze" },
+      { ul: [
+        "Dauermedikation meist weiterführen: **β-Blocker** (nicht abrupt absetzen), die meisten Antihypertensiva; **ACE-Hemmer/Angiotensin-Rezeptorblocker** bei Patienten ohne Herzinsuffizienz am OP-Tag zu pausieren erwägen (Hypotonie, ESC 2022).",
+        "**Antikoagulation** bei mechanischen Klappen und Vorhofflimmern perioperativ nach Thromboserisiko planen (Überbrückung).",
+        "**Endokarditisprophylaxe** nur bei Hochrisikopatienten (Klappenprothese, frühere Endokarditis, bestimmte angeborene Vitien) und Risikoeingriffen.",
+        "**Monitoring** an die Schwere anpassen: invasive Druckmessung vor Einleitung bei schwerer Aortenstenose, erweiterte Überwachung (Echokardiographie, Herzzeitvolumen) bei schlechter Funktion.",
+        "Ein schwerer, symptomatischer Klappenfehler sollte vor **elektiven** Eingriffen kardiologisch abgeklärt und ggf. zuerst behandelt werden."
+      ] }
+    ],
+    merke: [
+      "Vier Stellschrauben: Frequenz, Vorlast, Nachlast, Kontraktilität – jede Pathologie gibt die Richtung vor.",
+      "Stenose: langsam, voll, eng. Insuffizienz: schnell, voll, weit.",
+      "Aortenstenose und hypertrophe obstruktive Kardiomyopathie: Hypotonie sofort mit reinem Vasopressor; keine Vasodilatation, bei der Kardiomyopathie auch keine Inotropika.",
+      "Schwache Pumpe: zuerst Nachlast senken, Inotropika zurückhaltend.",
+      "Pulmonale Hypertonie: Lungenwiderstand senken (Oxygenierung, Normokapnie), Systemdruck halten.",
+      "Einleitung bei krankem Herzen: titrieren, Vorlast sichern, Vasopressor bereit, Druck am Ausgangswert orientieren."
+    ],
+    warum: [
+      { q: "Warum leitet man eine schwere Aortenstenose nicht mit einer Spinalanästhesie ein?", a: "Die Spinalanästhesie senkt schlagartig Gefäßwiderstand und Vorlast. Bei fixem Schlagvolumen kann das Herz den Druckabfall nicht durch mehr Auswurf ausgleichen; der koronare Perfusionsdruck des hypertrophen, ischämiegefährdeten Ventrikels bricht ein – Ischämie und Abwärtsspirale drohen." },
+      { q: "Warum bessert ein reiner Vasopressor die hypertrophe obstruktive Kardiomyopathie, ein Inotropikum aber verschlechtert sie?", a: "Die Obstruktion ist dynamisch: Ein kräftigerer, leererer Ventrikel engt die Ausflussbahn stärker ein. Ein Inotropikum verstärkt genau das. Ein reiner Vasopressor (Phenylephrin) erhöht Nachlast und Füllung, hält die Ausflussbahn offen und steigert die Kontraktilität nicht." },
+      { q: "Warum kann bei einer schwachen linken Kammer eine Nachlastsenkung mehr bringen als ein Inotropikum?", a: "Das kranke Herz arbeitet auf dem steilen Teil der Nachlast-Schlagvolumen-Kurve: Schon eine mäßige Senkung des Gefäßwiderstands erhöht den Vorwärtsauswurf deutlich – ohne mehr Sauerstoff zu verbrauchen oder Rhythmusstörungen zu provozieren, wie es Inotropika tun." }
+    ],
+    klinik: [
+      "Vor jeder Einleitung bei krankem Herzen: Zielwerte am Ausgangsblutdruck festlegen, Vasopressor aufgezogen bereithalten.",
+      "Schwere Aortenstenose: arterielle Druckmessung vor Einleitung, Hypotonie sofort behandeln.",
+      "Rechtsherzbelastung/pulmonale Hypertonie: Hypoxie, Hyperkapnie, Azidose und hohe Beatmungsdrücke vermeiden; Systemdruck mit Noradrenalin/Vasopressin stützen."
+    ],
+    selbsttest: [
+      { q: "Spezialwissen Herz: An welchen vier Stellschrauben greift jede Narkose beim Herzkranken an?", a: "Herzfrequenz, Vorlast (Füllung), Nachlast (Gefäßweite) und Kontraktilität (Pumpkraft) – aus der Pathologie leitet sich ab, in welche Richtung jede gedreht werden soll." },
+      { q: "Spezialwissen Herz: Welche hämodynamischen Ziele gelten bei schwerer Aortenstenose, und wie behandelt man eine Hypotonie?", a: "Frequenz langsam-normal, Sinusrhythmus, Vorlast hoch, Nachlast/Perfusionsdruck hoch halten, Kontraktilität erhalten. Hypotonie sofort mit reinem Vasopressor (Phenylephrin, Noradrenalin), da das Schlagvolumen fixiert ist." },
+      { q: "Spezialwissen Herz: Warum ist bei Herzinsuffizienz mit reduzierter EF die Nachlastsenkung oft wichtiger als ein Inotropikum?", a: "Der insuffiziente Ventrikel ist nachlastempfindlich: Eine Senkung des Gefäßwiderstands steigert das Vorwärts-Schlagvolumen, ohne den Sauerstoffverbrauch zu erhöhen oder Arrhythmien zu fördern – anders als Inotropika." },
+      { q: "Spezialwissen Herz: Welche Faktoren erhöhen akut den Lungengefäßwiderstand und gefährden die rechte Kammer?", a: "Hypoxie, Hyperkapnie, Azidose, Schmerz/Stress, Hypothermie und hohe Beatmungsdrücke/Überblähung. Gegenmaßnahmen: Oxygenierung, Normokapnie, Azidoseausgleich, lungenschonende Beatmung; Systemdruck halten." },
+      { q: "Spezialwissen Herz: Wie unterscheiden sich die Narkoseziele bei Mitralstenose und Mitralinsuffizienz?", a: "Mitralstenose: langsam (lange Diastole zur Füllung), Volumen nicht überladen, Lungengefäßwiderstand niedrig halten. Mitralinsuffizienz: Frequenz normal-hoch, Nachlast senken (fördert Vorwärtsfluss), Vorlast erhalten, Bradykardie vermeiden." },
+      { q: "Spezialwissen Herz: Welche Dauermedikamente führt man perioperativ weiter, welche pausiert man eher?", a: "Weiter: β-Blocker (nicht abrupt absetzen), meist Statine und die meisten Antihypertensiva. Eher pausieren am OP-Tag: ACE-Hemmer/Angiotensin-Rezeptorblocker bei Patienten ohne Herzinsuffizienz (Hypotoniegefahr)." }
     ]
   });
 

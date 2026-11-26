@@ -226,6 +226,29 @@
   function saveReports(list) {
     try { localStorage.setItem(REPORT_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
   }
+  // Zu einer Meldung die betroffenen Karteikarten finden: direkte Karten-ID, ein Kapitel
+  // ("kapitel:herz/determinanten" → alle Selbsttest-Karten des Kapitels) oder ein Fall.
+  function meldungKarten(id) {
+    if (!id) return [];
+    const s = String(id);
+    const direct = FLASHCARDS.filter(function (c) { return c.id === s; });
+    if (direct.length) return direct;
+    const mKap = s.match(/^kapitel:([a-z0-9-]+)\/([a-z0-9-]+)$/);
+    if (mKap) return FLASHCARDS.filter(function (c) { return c.spezialwissen === mKap[1] && c.kapitel === mKap[2]; });
+    return [];
+  }
+  // Gemeldete Karten bald wieder vorschlagen (ohne erarbeiteten Fortschritt zu löschen).
+  function meldungKartenSoon(id) {
+    meldungKarten(id).forEach(function (c) { window.SRS.scheduleSoon(progress, c.id); });
+  }
+  // Alle noch offenen Meldungen mit ihren Karten (für die „Mehr lernen“-Runde).
+  function gemeldeteKarten() {
+    const seen = {}, out = [];
+    loadReports().forEach(function (r) {
+      meldungKarten(r.id).forEach(function (c) { if (!seen[c.id]) { seen[c.id] = 1; out.push(c); } });
+    });
+    return out;
+  }
   function reportButton(id, kontext) {
     return '<button class="btn btn-sm btn-secondary report-btn" data-report-id="' + escapeHtml(id) + '" data-report-kontext="' + escapeHtml((kontext || "").slice(0, 160)) + '">⚑ Fehler melden</button>';
   }
@@ -258,8 +281,10 @@
       const list = loadReports();
       list.push({ id: id, typ: unklar ? "unklar" : "fehler", kontext: kontext || "", text: text, datum: new Date().toISOString() });
       const ok = saveReports(list);
+      // Meldungs-Kreislauf: Was du gemeldet hast, wird dir bald wieder vorgeschlagen
+      meldungKartenSoon(id);
       close();
-      showToast(ok ? "Meldung gespeichert (" + list.length + " insgesamt) – siehe Fortschritt → Meldungen." : "Speichern nicht möglich (Browserspeicher blockiert).");
+      showToast(ok ? "Gespeichert – diese Stelle schlage ich dir bald wieder vor (Fortschritt → Meldungen)." : "Speichern nicht möglich (Browserspeicher blockiert).");
     });
   }
   document.addEventListener("click", function (e) {
@@ -1012,6 +1037,8 @@
         (href ? '<a class="btn btn-sm btn-primary" href="' + href + '">' + knopf + "</a>" : "") + "</li>";
     };
     const festigen = [];
+    const gemeldet = gemeldeteKarten().length;
+    if (gemeldet) festigen.push(zeile(10, "Deine gemeldeten Stellen", gemeldet + " Karte(n) zu Themen, die du als unklar oder fehlerhaft gemeldet hast – oft schon überarbeitet", "#/learn-session/all/mehr-meldung", "Starten"));
     if (v.wdh) festigen.push(zeile(10, "Wackelige Karten", v.wdh + " Karten: zuerst die mit „Nochmal“ oder „Schwer“ bewerteten (" + v.schwer + "), dann die bald fälligen", "#/learn-session/all/mehr-wdh", "Starten"));
     if (v.fallSchwach) festigen.push(zeile(20, "Fall wiederholen: " + v.fallSchwach.titel, "Beim letzten Mal " + v.fallSchwachProzent + " % – laut durchsprechen", "#/fall/" + v.fallSchwach.id, "Fall starten"));
     if (v.zeichnung) festigen.push(zeile(15, "Zeichnung wiederholen: " + v.zeichnung.titel, "Fällig – frei zeichnen und dabei erklären", "#/zeichnen-aufgabe/" + v.zeichnung.id, "Zeichnen"));
@@ -1023,7 +1050,7 @@
       return '<section class="mehr-block' + (empfohlen ? " mehr-empfohlen" : "") + '"><h2>' + titel + (empfohlen ? ' <span class="mehr-tag">Empfohlen</span>' : "") + "</h2>" +
         '<p class="muted">' + text + "</p>" + (items.length ? '<ol class="heute-plan">' + items.join("") + "</ol>" : '<p>' + leer + "</p>") + "</section>";
     };
-    const festigenZuerst = v.festigenZuerst && festigen.length;
+    const festigenZuerst = (v.festigenZuerst || gemeldet > 0) && festigen.length;
     const bF = block("Festigen", "Was wackelt, verankert sich am stärksten, wenn du es erneut aus dem Gedächtnis abrufst.", festigen, festigenZuerst, "Gerade wackelt nichts – nimm dir etwas Neues vor.");
     const bN = block("Vorarbeiten", "Nach Plan weiter: Was du heute vorarbeitest, ist Puffer für Tage mit wenig Zeit.", neues, !festigenZuerst && neues.length, "Alles Neue ist erledigt – festige oder simuliere eine Prüfung.");
     app.innerHTML = nav("dashboard") + '<main class="container narrow"><h1>Mehr lernen</h1>' +
@@ -1288,6 +1315,7 @@
     if (subtopicId === "tag") learnQueue = shuffle(due).concat(shuffle(fresh)).slice(0, 25);
     if (subtopicId === "mehr-wdh") learnQueue = shuffle(mehrKartenWdh());
     if (subtopicId === "mehr-neu") learnQueue = mehrKartenNeu();
+    if (subtopicId === "mehr-meldung") learnQueue = shuffle(gemeldeteKarten());
     if (learnQueue.length === 0 && /^mehr-/.test(subtopicId || "")) { location.replace("#/mehr"); return; }
     if (learnQueue.length === 0 && subtopicId === "tag") {
       const t = tagesplan(); t.karten = true; speichereTag(t);
@@ -1858,7 +1886,8 @@
       '<main class="container narrow">' +
       '<a class="back-link" href="#/progress">← Fortschritt</a>' +
       "<h1>Meldungen (" + list.length + ")</h1>" +
-      '<p class="muted">„Nicht verstanden“ und „Fehler melden“ landen hier, nur auf diesem Gerät. Kopiere den Text und schick ihn an Claude – die Stellen werden dann vollständig und verständlich neu geschrieben.</p>' +
+      (meldungKarten && gemeldeteKarten().length ? '<div class="cta-row"><a class="btn btn-primary btn-sm" href="#/learn-session/all/mehr-meldung">Gemeldete Stellen jetzt üben (' + gemeldeteKarten().length + ")</a></div>" : "") +
+      '<p class="muted">„Nicht verstanden“ und „Fehler melden“ landen hier, nur auf diesem Gerät. Die betroffenen Karten schlage ich dir von selbst bald wieder vor (auch unter „Heute → Mehr lernen → Festigen“). Kopiere den Text zusätzlich und schick ihn an Claude – die Stellen werden dann vollständig und verständlich neu geschrieben.</p>' +
       (list.length ?
         '<ul class="gap-list">' + list.map(function (r, i) {
           return '<li class="gap-item"><span><strong>' + (r.typ === "unklar" ? "Nicht verstanden: " : "Fehler: ") + escapeHtml(r.kontext || r.id) + "</strong> – " + escapeHtml(r.text) + '<span class="gap-source"> — ' + escapeHtml(r.kontext) + "</span></span>" +
