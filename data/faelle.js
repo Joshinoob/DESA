@@ -947,5 +947,150 @@ window.FAELLE = [
     ],
     fallstricke: ["Nitrate beim Rechtsherzinfarkt", "V4R nicht abgeleitet", "Lyse nach frischer OP", "Neues Systolikum nicht sofort echokardiographisch abgeklärt"],
     links: [["#/spezial-kapitel/herz/ekg-infarkt", "Spezialwissen: EKG-Infarktlokalisation"], ["#/zeichnen-aufgabe/z-ekg-infarkt", "Ableitungen und Gefäße zeichnen"], ["#/soe-themen/1", "Pflichtfrage Koronaranatomie"]]
+  },
+  // ===================================================================== 14 (Thoraxchirurgie)
+  {
+    id: "fall-thorax-olv", soe: 3, titel: "Lungenlappenresektion mit Ein-Lungen-Ventilation",
+    kurz: "Lobektomie bei Bronchialkarzinom, Doppellumentubus, Hypoxämie unter Ein-Lungen-Ventilation, Rhythmusstörung",
+    themen: ["Thoraxanästhesie", "Ein-Lungen-Ventilation", "Hypoxische pulmonale Vasokonstriktion", "Lungenisolation"],
+    lernziele: ["Indikation und Prinzip der Lungenisolation erklären", "Hypoxämie unter Ein-Lungen-Ventilation strukturiert behandeln", "Postoperative Risiken der Lungenresektion kennen"],
+    ausgang: "71-jährige Frau, 64 kg, 168 cm, geplante Oberlappenresektion rechts bei nicht-kleinzelligem Bronchialkarzinom. Vorerkrankungen: COPD (FEV₁ 68 % des Solls), 40 Packungsjahre, arterielle Hypertonie. Belastbarkeit: 3 Etagen langsam. Geplant: Allgemeinanästhesie mit linksläufigem Doppellumentubus, thorakaler Periduralkatheter, Seitenlage links (operierte Lunge oben).",
+    schritte: [
+      {
+        info: "Prämedikationsvisite. Die Patientin fragt, warum sie einen 'besonderen Schlauch' bekommt und ob die Operation für ihre Lunge gefährlich ist.",
+        frage: "Warum ist eine Lungenisolation nötig, und wie schätzen Sie die funktionelle Operabilität ein?",
+        punkte: [
+          "**Lungenisolation (Ein-Lungen-Ventilation)**: ermöglicht das Kollabieren der operierten Lunge → ==ruhiges Operationsfeld, Schutz der gesunden Seite vor Blut/Sekret==",
+          "Umsetzung: **linksläufiger Doppellumentubus** (sicherster Zugang, lagestabil) oder Bronchusblocker",
+          "Funktionelle Operabilität: **vorhergesagte postoperative FEV₁** und Diffusionskapazität (DLCO) abschätzen (> 40 % des Solls meist akzeptabel), sonst Belastungstest/Spiroergometrie",
+          "Risiko erhöht: niedriges FEV₁, niedrige DLCO, pulmonale Hypertonie, schlechte Belastbarkeit",
+          "Thorakaler Periduralkatheter zur Analgesie (weniger pulmonale Komplikationen bei guter Schmerztherapie)"
+        ],
+        erklaerung: "==Wird ein Lungenlappen entfernt, sinkt die Lungenfunktion dauerhaft== – deshalb muss vorher berechnet werden, was danach übrig bleibt. Die vorhergesagte postoperative FEV₁ = aktuelle FEV₁ × (Anteil der verbleibenden funktionstüchtigen Segmente)."
+      },
+      {
+        info: "Intraoperativ, Seitenlage, Beginn der Ein-Lungen-Ventilation (nur die unten liegende linke Lunge wird beatmet). Nach 15 min: SpO₂ 86 %, FiO₂ 1,0, Beatmungsdruck leicht erhöht, Blutdruck und Herzfrequenz stabil.",
+        frage: "Wie gehen Sie bei dieser Hypoxämie strukturiert vor?",
+        punkte: [
+          "**Lage des Doppellumentubus bronchoskopisch prüfen** (häufigste Ursache: Verrutschen, Verlegung) – immer zuerst",
+          "FiO₂ 1,0 bereits gegeben; **Beatmung der unten liegenden Lunge optimieren**: PEEP auf die beatmete Seite, Recruitment",
+          "**CPAP oder O₂-Insufflation auf die oben liegende (operierte) Lunge** nach Rücksprache mit dem Operateur",
+          "Herzzeitvolumen sichern (Shunt-Fraktion steigt bei niedrigem HZV)",
+          "Wenn es nicht reicht: **intermittierend beide Lungen beatmen**, Operateur informieren",
+          "Hypoxische pulmonale Vasokonstriktion (HPV) nicht unnötig hemmen (hohe Dosen volatiler Anästhetika, Vasodilatatoren)"
+        ],
+        erklaerung: "Unter Ein-Lungen-Ventilation wird die obere Lunge zwar durchblutet, aber nicht beatmet → **Rechts-links-Shunt** → Hypoxämie. Die ==hypoxische pulmonale Vasokonstriktion drosselt die Durchblutung der nicht beatmeten Lunge== und begrenzt den Shunt. Deshalb: Tubuslage zuerst, dann beatmete Lunge optimieren, dann die operierte Seite unterstützen."
+      },
+      {
+        info: "Resektion beendet, zurück in Rückenlage, beide Lungen beatmet. Beim Ausleiten plötzlich Vorhofflimmern mit Herzfrequenz 140/min, Blutdruck 95/60 mmHg, die Patientin ist noch intubiert und sediert.",
+        frage: "Wie bewerten und behandeln Sie das neu aufgetretene Vorhofflimmern?",
+        punkte: [
+          "**Postoperatives Vorhofflimmern** ist nach Lungenresektion häufig (Vorhofdehnung, Entzündung, Sympathikus)",
+          "Hämodynamisch (noch) stabil → **Frequenzkontrolle** (Betablocker, z.B. Esmolol; Amiodaron als Alternative) und auslösende Faktoren beheben",
+          "Auslöser suchen und beheben: **Hypoxie, Elektrolyte (Kalium, Magnesium), Schmerz, Hypovolämie, Perikard/Mediastinum**",
+          "Instabil (Hypotonie, Ischämie, Lungenödem) → **elektrische Kardioversion**",
+          "Magnesium ausgleichen; an Antikoagulation denken, wenn das Vorhofflimmern anhält"
+        ],
+        erklaerung: "==Chirurgie nahe Vorhof und Lungenvenen + Entzündung + hoher Sympathikotonus → Vorhofflimmern==. Solange der Kreislauf trägt, ist Frequenzkontrolle plus Ursachensuche richtig; erst bei Instabilität wird kardiovertiert."
+      }
+    ],
+    fallstricke: ["Hypoxämie behandelt, ohne die Tubuslage zu prüfen", "Hypoxische pulmonale Vasokonstriktion durch hohe Volatiladosis/Vasodilatatoren gehemmt", "Vorhergesagte postoperative Lungenfunktion nicht berechnet", "Zu großes Tidalvolumen auf die einzelne beatmete Lunge (Lungenschaden)"],
+    links: [["#/spezial-kapitel/lunge/vq", "Spezialwissen: Ventilation-Perfusion und Shunt"], ["#/spezial-kapitel/lunge/kreislauf", "Spezialwissen: Lungenkreislauf und HPV"], ["#/drugs", "Medikamente: Antiarrhythmika"]]
+  },
+  // ===================================================================== 15 (Leberchirurgie + Gerinnung)
+  {
+    id: "fall-leberresektion", soe: 4, titel: "Leberteilresektion mit Blutung und Gerinnungsmanagement",
+    kurz: "Hemihepatektomie rechts bei Metastasen, niedriger ZVD, Pringle-Manöver, Massenblutung, viskoelastische Gerinnungssteuerung",
+    themen: ["Leberchirurgie", "Gerinnung und Transfusion", "Volumen- und Blutungsmanagement", "Viskoelastische Tests"],
+    lernziele: ["Konzept des niedrigen zentralen Venendrucks bei Leberresektion erklären", "Massenblutung strukturiert und viskoelastisch gesteuert behandeln", "Besonderheiten der Gerinnung bei Lebereingriffen verstehen"],
+    ausgang: "59-jähriger Mann, 90 kg, geplante rechtsseitige Hemihepatektomie bei kolorektalen Lebermetastasen. Vorerkrankungen: arterielle Hypertonie, kompensierte Leberfunktion (keine Zirrhose). Labor: Quick/INR normal, Thrombozyten 180.000/µl, Hb 13,5 g/dl. Geplant: Allgemeinanästhesie, großlumige Zugänge, invasive Druckmessung, Blutprodukte bereitgestellt.",
+    schritte: [
+      {
+        info: "Der Operateur bittet darum, den zentralen Venendruck während der Parenchymdurchtrennung niedrig zu halten.",
+        frage: "Warum ein niedriger zentraler Venendruck, und welche Risiken hat dieses Vorgehen?",
+        punkte: [
+          "**Niedriger zentraler Venendruck (ca. < 5 mmHg)** → geringerer Druck in den Lebervenen → ==weniger venöse Blutung aus der Schnittfläche==",
+          "Umsetzung: zurückhaltende Volumengabe, ggf. leichte Oberkörperhochlagerung, Vasopressor statt Volumen für den Blutdruck; erst nach Resektion auffüllen",
+          "Risiken: **Hypotonie, Minderperfusion der Organe, Gefahr der Luftembolie** (offene Lebervenen bei niedrigem Druck)",
+          "Nierenfunktion und Perfusionsdruck im Auge behalten (Vasopressor titrieren)",
+          "Guter venöser Zugang und Bereitschaft zur schnellen Volumengabe bei plötzlicher Blutung"
+        ],
+        erklaerung: "==Die Blutung aus der Leberschnittfläche kommt vor allem aus den niederdruckigen Lebervenen – je niedriger der zentrale Venendruck, desto weniger blutet es==. Der Preis ist ein schmaler hämodynamischer Spielraum und das Luftembolierisiko über offene Venen."
+      },
+      {
+        info: "Während der Durchtrennung kommt es zu einer stärkeren Blutung. Der Operateur führt ein Pringle-Manöver durch. Blutdruck 90/50 mmHg, Herzfrequenz 115/min.",
+        frage: "Was bewirkt das Pringle-Manöver, und was erwarten Sie hämodynamisch?",
+        punkte: [
+          "**Pringle-Manöver**: Abklemmen des Leberhilus (Pfortader + Leberarterie) → ==unterbricht den Zufluss → weniger Blutung==",
+          "Es stoppt NICHT die Blutung aus den Lebervenen (Rückfluss aus der unteren Hohlvene)",
+          "Hämodynamik: Vorlast kann fallen (weniger Rückstrom aus dem Splanchnikusgebiet ist möglich), Blutdruck stützen",
+          "Zeitlich begrenzt, oft intermittierend (ischämische Präkonditionierung der Leber)",
+          "Nach Freigabe: Reperfusion → Säure, Kalium, Vasodilatation → erneut Blutdruck kontrollieren"
+        ],
+        erklaerung: "==Pringle = Zuflussklemme (Pfortader und Leberarterie)== – es reduziert die arterielle und portalvenöse Blutung, lässt aber die Lebervenenblutung bestehen. Deshalb bleibt der niedrige zentrale Venendruck wichtig."
+      },
+      {
+        info: "Es werden rasch mehrere Liter Blut verloren, bereits 4 Erythrozytenkonzentrate gegeben. ROTEM: EXTEM CT verlängert, FIBTEM A5 niedrig (5 mm), Fibrinogen im Labor 1,2 g/l, Temperatur 35,2 °C, pH 7,22, ionisiertes Calcium 0,8 mmol/l.",
+        frage: "Wie steuern Sie die Gerinnung, und welche Rahmenbedingungen müssen stimmen?",
+        punkte: [
+          "**Fibrinogen zuerst**: niedriges FIBTEM A5 und Fibrinogen 1,2 g/l → Fibrinogenkonzentrat (oder Kryopräzipitat), Ziel ca. > 1,5–2 g/l bei Blutung",
+          "Verlängerte EXTEM-Gerinnungszeit → **gefrorenes Frischplasma oder Prothrombinkomplex** nach Klinik/ROTEM",
+          "**Rahmenbedingungen korrigieren – sonst wirkt kein Gerinnungsprodukt**: Temperatur (aktiv wärmen), Azidose, ionisiertes **Calcium** (hier 0,8 → substituieren)",
+          "Tranexamsäure geben (Antifibrinolyse), Thrombozyten bei < 50.000/µl und Blutung",
+          "**Letale Trias vermeiden**: Hypothermie, Azidose, Koagulopathie; strukturierte Massivtransfusion"
+        ],
+        erklaerung: "==Kälte, Säure und Calciummangel lähmen die Gerinnungsenzyme – ohne diese Basis verpuffen Faktoren und Fibrinogen==. Viskoelastische Tests (ROTEM) zeigen gezielt, was fehlt: FIBTEM niedrig → Fibrinogen, Gerinnungszeit lang → Faktoren. So wird nicht blind, sondern gesteuert substituiert."
+      }
+    ],
+    fallstricke: ["Gerinnungsprodukte gegeben, aber Calcium/Temperatur/Azidose ignoriert", "Zentraler Venendruck hoch gehalten (mehr Blutung)", "Luftembolie bei niedrigem Druck nicht bedacht", "Fibrinogen zu spät ersetzt"],
+    links: [["#/spezial-kapitel/blut/haemostase", "Spezialwissen: Hämostase"], ["#/spezial-kapitel/blut/gerinnungstests", "Spezialwissen: ROTEM und Gerinnungstests"], ["#/spezial-kapitel/leber/synthese", "Spezialwissen: Lebersynthese und Gerinnung"], ["#/spezial-kapitel/blut/transfusion", "Spezialwissen: Transfusion"]]
+  },
+  // ===================================================================== 16 (Endokrine Chirurgie)
+  {
+    id: "fall-phaeochromozytom", soe: 3, titel: "Narkose bei Phäochromozytom",
+    kurz: "Nebennierentumor, hypertensive Krise bei Tumormanipulation, schwere Hypotonie nach Entfernung",
+    themen: ["Endokrine Chirurgie", "Katecholaminexzess", "Hämodynamische Steuerung", "Perioperative Vorbereitung"],
+    lernziele: ["Vorbereitung und Blockade vor Phäochromozytom-OP erklären", "Hypertensive Krise bei Tumormanipulation beherrschen", "Hypotonie nach Tumorentfernung verstehen und behandeln"],
+    ausgang: "48-jährige Frau, 70 kg, laparoskopische Adrenalektomie links bei Phäochromozytom. Anamnese: anfallsartige Kopfschmerzen, Schwitzen, Herzrasen, Blutdruckspitzen bis 220/120 mmHg. Vorbereitung seit 2 Wochen mit einem Alpha-Rezeptorblocker (Phenoxybenzamin), zuletzt zusätzlich niedrig dosierter Betablocker; Blutdruck jetzt besser eingestellt.",
+    schritte: [
+      {
+        info: "Sie sehen die Patientin zur Prämedikation. Sie fragt, warum sie schon zwei Wochen Medikamente nimmt und nun ausreichend trinken soll.",
+        frage: "Warum die Vorbehandlung, und in welcher Reihenfolge werden die Medikamente gegeben?",
+        punkte: [
+          "Phäochromozytom = **Katecholamin produzierender Tumor** → chronische Vasokonstriktion und reduziertes Plasmavolumen",
+          "**Zuerst Alpha-Blockade** (z.B. Phenoxybenzamin) über 1–2 Wochen → Gefäße weiten, Volumen füllt sich auf (reichlich trinken, Salz)",
+          "**Betablocker erst danach und nur bei Bedarf** (Tachykardie/Arrhythmie)",
+          "==Niemals Betablocker zuerst==: ohne Alpha-Blockade bleibt die α-vermittelte Vasokonstriktion ungebremst (unwidersprochene α-Wirkung) → hypertensive Krise, Herzinsuffizienz",
+          "Ziele vor OP: Blutdruck normnah, keine Blutdruckspitzen, orthostatische Toleranz, Hämatokrit gesenkt (Volumenzunahme)"
+        ],
+        erklaerung: "==Erst die Gefäße weit stellen (Alpha), dann bei Bedarf den Puls bremsen (Beta)== – die umgekehrte Reihenfolge lässt die Gefäße eng und kann eine Krise auslösen. Die Vorbereitung füllt das geschrumpfte Gefäßbett wieder auf und verhindert den tiefen Blutdruckabfall nach Tumorentfernung."
+      },
+      {
+        info: "Intraoperativ, bei der Manipulation des Tumors: Blutdruck steigt schlagartig auf 230/130 mmHg, Herzfrequenz 130/min.",
+        frage: "Wie behandeln Sie diese hypertensive Krise?",
+        punkte: [
+          "**Operateur informieren** (Manipulation kurz stoppen lassen)",
+          "**Kurz wirksame, gut steuerbare Vasodilatatoren**: Nitroprussid, Nitroglycerin, Urapidil oder Phentolamin; Magnesium hilfreich",
+          "**Tachykardie/Arrhythmie**: kurz wirksamer Betablocker (Esmolol) – erst nach begonnener Vasodilatation",
+          "Narkose vertiefen, kurz wirksame Substanzen bevorzugen (schnelle Titration)",
+          "Arterielle Druckmessung engmaschig, auf plötzlichen Umschwung nach Gefäßligatur vorbereitet sein"
+        ],
+        erklaerung: "==Tumormanipulation presst Katecholamine ins Blut → schlagartige Vasokonstriktion und Tachykardie==. Antwort: gut steuerbare, kurz wirksame Mittel, damit man beim plötzlichen Abfall (nach Abklemmen der Tumorvene) sofort gegensteuern kann."
+      },
+      {
+        info: "Unmittelbar nach dem Abklemmen der Nebennierenvene und Entfernung des Tumors fällt der Blutdruck auf 70/40 mmHg.",
+        frage: "Warum diese Hypotonie, und wie gehen Sie vor?",
+        punkte: [
+          "**Katecholaminquelle plötzlich weg** + fortbestehende Alpha-Blockade + Vasodilatatoren noch wirksam → **Vasoplegie und relative Hypovolämie**",
+          "**Volumen** zügig geben (das vorbereitete, aufgefüllte Bett hilft jetzt)",
+          "**Vasopressor** (Noradrenalin), bei Vasoplegie ggf. Vasopressin",
+          "Kurz wirksame Vasodilatatoren stoppen",
+          "An Hypoglykämie denken (nach Wegfall der Katecholamine kann der Blutzucker fallen) → messen"
+        ],
+        erklaerung: "==Der Körper war an einen Dauer-Katecholaminspiegel gewöhnt; fällt dieser mit dem Tumor weg, sind die Gefäße plötzlich weit und das Volumen relativ zu klein==. Deshalb ist die präoperative Volumenauffüllung so wichtig – und jetzt Volumen plus Vasopressor."
+      }
+    ],
+    fallstricke: ["Betablocker vor Alpha-Blocker (unwidersprochene Alpha-Wirkung)", "Volumen präoperativ nicht aufgefüllt → schwere Hypotonie nach Entfernung", "Lang wirksame Antihypertensiva in der Krise (nicht steuerbar)", "Hypoglykämie nach Tumorentfernung übersehen"],
+    links: [["#/spezial-kapitel/hormone/nebenniere", "Spezialwissen: Nebenniere und Katecholamine"], ["#/spezial-kapitel/herz/regulation", "Spezialwissen: Kreislaufregulation"], ["#/drugs", "Medikamente: Vasoaktiva"]]
   }
 ];
