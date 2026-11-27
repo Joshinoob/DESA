@@ -836,7 +836,7 @@
     return { f: schwach, text: st[schwach.id].prozent + " % zuletzt" };
   }
 
-  // ---------- Persönlicher Lernplan (data/lernplan.js): 30–60 min pro Tag ----------
+  // ---------- Persönlicher Lernplan (data/lernplan.js): ca. 1 Stunde pro Tag ----------
   function lernplanWoche() {
     const L = window.LERNPLAN;
     if (!L) return null;
@@ -879,6 +879,9 @@
     const out = [];
     if (w.phase === 1 && kap.length) {
       out.push({ typ: "kapitel", ziel: kap[0].key, href: kap[0].href, min: 20, titel: "Verstehen: " + kap[0].titel, text: kap[0].organ + " – erst Bild und Ketten, dann laut erklären, dann „Verstanden – abhaken“" });
+      // 1 Stunde pro Tag → in der Verstehen-Phase ein zweites Kapitel fest einplanen,
+      // damit alle Themen bis zur Facharztprüfung durchgearbeitet sind (ca. 2 Kapitel/Tag).
+      if (kap.length > 1) out.push({ typ: "kapitel", ziel: kap[1].key, href: kap[1].href, min: 20, titel: "Verstehen: " + kap[1].titel, text: kap[1].organ + " – zweites Kapitel heute (1-Stunden-Plan)" });
     } else if (faelle.length) {
       const f = fall(faelle.shift());
       out.push({ typ: "fall", ziel: f.id, href: "#/fall/" + f.id, min: 20, titel: "Fall laut durchsprechen", text: f.titel });
@@ -939,18 +942,26 @@
       const gelesen = window.SRS.loadLearnedSpezial();
       const kap = (w.kapitel || []).map(function (k) { return kapitelInfo(k[0], k[1]); }).filter(Boolean);
       const ver = kap.filter(function (k) { return gelesen.indexOf(k.key) !== -1; }).length;
+      const phaseName = { 1: "Verstehen", 2: "Anwenden", 3: "Simulation/Puffer" };
       const wochenListe = L.wochen.map(function (x, i) {
         const von = new Date(new Date(L.start + "T00:00:00").getTime() + i * 7 * 86400000);
-        return '<li class="' + (i === info.nr ? "plan-aktuell" : "") + '"><span class="muted">' + von.toLocaleDateString("de-DE", { day: "numeric", month: "numeric" }) + "</span> " + escapeHtml(x.titel) + "</li>";
+        return '<li class="' + (i === info.nr ? "plan-aktuell" : "") + '"><span class="muted">' + von.toLocaleDateString("de-DE", { day: "numeric", month: "numeric" }) + "</span> " + escapeHtml(x.titel) +
+          ' <span class="plan-phase">' + (phaseName[x.phase] || "") + "</span>" +
+          (x.meilenstein === "facharzt" ? ' <span class="plan-meilenstein">🎯 Facharzt</span>' : "") + "</li>";
       }).join("");
-      kopf = '<h2>Woche ' + (info.nr + 1) + " von " + L.wochen.length + ": " + escapeHtml(w.titel) + "</h2>" +
-        '<p class="muted">' + escapeHtml(w.hinweis || "") + (kap.length ? " Kapitel diese Woche: " + ver + " von " + kap.length + " verstanden." : "") + "</p>";
+      // Fortschritt über alle Phase-1-Kapitel (alle Themen bis zur Facharztprüfung)
+      let p1Total = 0, p1Done = 0;
+      L.wochen.forEach(function (x) { if (x.phase === 1) (x.kapitel || []).forEach(function (k) { p1Total++; if (gelesen.indexOf(k[0] + "/" + k[1]) !== -1) p1Done++; }); });
+      kopf = '<h2>Woche ' + (info.nr + 1) + " von " + L.wochen.length + ": " + escapeHtml(w.titel) +
+        ' <span class="plan-phase">' + ({ 1: "Verstehen", 2: "Anwenden", 3: "Simulation/Puffer" }[w.phase] || "") + "</span></h2>" +
+        '<p class="muted">' + escapeHtml(w.hinweis || "") + (kap.length ? " Kapitel diese Woche: " + ver + " von " + kap.length + " verstanden." : "") +
+        (p1Total ? ' Alle Themen gesamt: <strong>' + p1Done + " von " + p1Total + "</strong> verstanden." : "") + "</p>";
       kopf += '<div class="sw-box sw-einfach"><div class="sw-box-title">Diese Woche zusätzlich</div><p>' +
         (w.partner ? "<strong>Mit deinem Lernpartner:</strong> " + escapeHtml(w.partner) + "<br>" : "") +
         "<strong>Im Chat mit Claude:</strong> eine Prüfer-Runde (25 min) zum Wochenthema.</p>" +
         '<div class="cta-row"><button type="button" class="btn btn-sm btn-secondary" id="prompt-kopieren">Prüfer-Auftrag kopieren</button><a class="btn btn-sm btn-secondary" href="https://claude.ai/new" target="_blank" rel="noopener">Claude öffnen</a></div>' +
         '<textarea class="hidden" id="prompt-text">' + escapeHtml(pruefermodusPrompt(w.titel)) + "</textarea></div>";
-      kopf += '<details class="plan-gesamt"><summary>Gesamtplan bis zur Prüfung</summary><ol>' + wochenListe + "</ol></details>";
+      kopf += '<details class="plan-gesamt"><summary>Gesamtplan: Facharzt (20.01.) und DESA (09.04.)</summary><ol>' + wochenListe + "</ol></details>";
     }
     return '<div class="heute-start">' +
       (fertig
@@ -1125,6 +1136,9 @@
     try { datum = localStorage.getItem(PRUEFUNGSDATUM_KEY); } catch (e) { datum = null; }
     if (!datum && window.LERNPLAN) datum = window.LERNPLAN.pruefung;
     const tageBis = datum ? Math.ceil((new Date(datum + "T09:00:00").getTime() - Date.now()) / 86400000) : null;
+    // Zweiter Meilenstein: Facharztprüfung – bis dahin sollen alle Themen durchgearbeitet sein.
+    const facharzt = (window.LERNPLAN && window.LERNPLAN.facharzt) || null;
+    const tageBisFA = facharzt ? Math.ceil((new Date(facharzt + "T09:00:00").getTime() - Date.now()) / 86400000) : null;
     const vorschlag = heuteVorschlagFall();
 
     const schritt = function (nr, titel, text, href, knopf, erledigt) {
@@ -1142,6 +1156,7 @@
           ' <button type="button" class="btn btn-sm btn-secondary" id="datum-aendern">ändern</button>'
         : "Wann ist deine mündliche Prüfung? ") +
       '<span id="datum-form" class="' + (tageBis !== null ? "hidden" : "") + '"><input type="date" id="datum-input" value="' + (datum || "") + '"> <button type="button" class="btn btn-sm btn-primary" id="datum-speichern">Speichern</button></span>' +
+      (tageBisFA !== null && tageBisFA >= 0 ? '<div class="facharzt-datum muted">Facharztprüfung in <strong>' + tageBisFA + ' Tagen</strong> (' + new Date(facharzt).toLocaleDateString("de-DE") + ") – bis dahin alle Themen einmal durcharbeiten.</div>" : "") +
       "</div>" +
       (lernplanHtml() ||
       '<h2>Dein Plan für heute</h2>' +
