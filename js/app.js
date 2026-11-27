@@ -852,6 +852,46 @@
     const ch = o ? o.chapters.find(function (c) { return c.id === kap; }) : null;
     return ch ? { titel: ch.title, organ: o.title, href: "#/spezial-kapitel/" + organ + "/" + kap, key: organ + "/" + kap } : null;
   }
+  // Klinisches Karten-Teilgebiet (z.B. Geburtshilfe): Titel, Link zum Kartenstapel, Kartenzahl.
+  function themaInfo(mod, sub) {
+    const count = FLASHCARDS.filter(function (c) { return c.module === mod && c.subtopic === sub; }).length;
+    const m = moduleById(mod);
+    return { titel: subtopicTitle(mod, sub), modTitel: m ? m.title : mod, href: "#/learn-session/" + mod + "/" + sub, key: mod + "/" + sub, count: count, mod: mod, sub: sub };
+  }
+  // Ein Thema gilt als „inhaltlich bearbeitet“, sobald mindestens eine seiner Karten schon gelernt wurde.
+  function themaBearbeitet(mod, sub) {
+    return FLASHCARDS.some(function (c) { return c.module === mod && c.subtopic === sub && progress[c.id]; });
+  }
+  // Alle Themen (Spezialwissen-Kapitel und klinische Teilgebiete), die der Plan bis zur laufenden Woche
+  // eingeführt hat – damit neue Karten bevorzugt aus schon eingeplanten/bearbeiteten Themen kommen.
+  function geplantBisHeute() {
+    const info = lernplanWoche();
+    const kap = {}, thema = {};
+    if (window.LERNPLAN) window.LERNPLAN.wochen.forEach(function (w, i) {
+      if (info && i > info.nr) return;
+      (w.kapitel || []).forEach(function (k) { kap[k[0] + "/" + k[1]] = 1; });
+      (w.themen || []).forEach(function (t) { thema[t[0] + "/" + t[1]] = 1; });
+    });
+    return { kap: kap, thema: thema };
+  }
+  // Rang einer neuen Karte: 0 = Thema schon bearbeitet, 1 = Thema im Plan bis heute, 2 = noch nicht dran.
+  function neuKartenRang(c, gelesen, plan) {
+    if (c.spezialwissen) {
+      if (gelesen.indexOf(c.spezialwissen + "/" + c.kapitel) !== -1) return 0;
+      if (plan.kap[c.spezialwissen + "/" + c.kapitel]) return 1;
+      return 2;
+    }
+    if (themaBearbeitet(c.module, c.subtopic)) return 0;
+    if (plan.thema[c.module + "/" + c.subtopic]) return 1;
+    return 2;
+  }
+  // Neue Karten so ordnen, dass zuerst Karten aus bereits bearbeiteten/eingeplanten Themen kommen.
+  function neuKartenPriorisiert(fresh) {
+    const gelesen = window.SRS.loadLearnedSpezial(), plan = geplantBisHeute();
+    return fresh.map(function (c, i) { return [neuKartenRang(c, gelesen, plan), i, c]; })
+      .sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; })
+      .map(function (x) { return x[2]; });
+  }
   // ---------- Tagesplan: einmal pro Tag festgelegt, mit einem Klick der Reihe nach abarbeiten ----------
   const TAG_KEY = "desa_tageslog_v1";
   const TAGESMODUS_KEY = "desa_tagesmodus";
@@ -876,17 +916,29 @@
     const zeich = (w.zeichnen || []).filter(function (id) { return !zst[id] || zeichnenStatus(id, zst).faellig; });
     const fall = function (id) { return (window.FAELLE || []).find(function (f) { return f.id === id; }); };
     const zObj = function (id) { return (window.ZEICHNEN || []).find(function (z) { return z.id === id; }); };
+    // Klinische Teilgebiete dieser Woche, die noch nicht bearbeitet sind (Geburtshilfe, Kinder, Notfall …).
+    const themen = (w.themen || []).map(function (tt) { return themaInfo(tt[0], tt[1]); }).filter(function (x) { return !themaBearbeitet(x.mod, x.sub); });
+    const deckStep = function (x, optional) {
+      return { typ: "deck", ziel: x.key, mod: x.mod, sub: x.sub, href: x.href, min: 15, optional: optional,
+        titel: (optional ? "Wenn Zeit ist: Karten " : "Karten: ") + x.titel, text: x.modTitel + " – " + x.count + " Fragen zum Teilgebiet" };
+    };
     const out = [];
     if (w.phase === 1 && kap.length) {
       out.push({ typ: "kapitel", ziel: kap[0].key, href: kap[0].href, min: 20, titel: "Verstehen: " + kap[0].titel, text: kap[0].organ + " – erst Bild und Ketten, dann laut erklären, dann „Verstanden – abhaken“" });
       // 1 Stunde pro Tag → in der Verstehen-Phase ein zweites Kapitel fest einplanen,
       // damit alle Themen bis zur Facharztprüfung durchgearbeitet sind (ca. 2 Kapitel/Tag).
       if (kap.length > 1) out.push({ typ: "kapitel", ziel: kap[1].key, href: kap[1].href, min: 20, titel: "Verstehen: " + kap[1].titel, text: kap[1].organ + " – zweites Kapitel heute (1-Stunden-Plan)" });
-    } else if (faelle.length) {
-      const f = fall(faelle.shift());
-      out.push({ typ: "fall", ziel: f.id, href: "#/fall/" + f.id, min: 20, titel: "Fall laut durchsprechen", text: f.titel });
-    } else if (w.links && w.links.length) {
-      out.push({ typ: "link", ziel: w.links[0][0], href: w.links[0][0], min: 20, titel: w.links[0][1], text: "Jede Frage laut in 4–5 min beantworten, dann vergleichen" });
+      if (themen.length) out.push(deckStep(themen[0], true)); // klinisches Teilgebiet als Bonus
+    } else {
+      // Phase 2/3 (oder Woche ohne Kapitel): klinische Teilgebiete sind der Kern, dazu ein Fall.
+      if (themen.length) out.push(deckStep(themen[0], false));
+      if (themen.length > 1) out.push(deckStep(themen[1], true));
+      if (faelle.length) {
+        const f = fall(faelle.shift());
+        out.push({ typ: "fall", ziel: f.id, href: "#/fall/" + f.id, min: 20, optional: themen.length > 0, titel: "Fall laut durchsprechen", text: f.titel });
+      } else if (!themen.length && w.links && w.links.length) {
+        out.push({ typ: "link", ziel: w.links[0][0], href: w.links[0][0], min: 20, titel: w.links[0][1], text: "Jede Frage laut in 4–5 min beantworten, dann vergleichen" });
+      }
     }
     const tag = new Date().getDay();
     const z = zeich.length ? zObj(zeich[0]) : null;
@@ -906,6 +958,7 @@
     if (st.typ === "fall") { const e = loadFaelle()[st.ziel]; return !!(e && heuteStr(e.datum) === t.datum); }
     if (st.typ === "zeichnen") { const e = loadZeichnen()[st.ziel]; return !!(e && e.last && heuteStr(e.last) === t.datum); }
     if (st.typ === "link") return !!(t.besucht && t.besucht[st.ziel]);
+    if (st.typ === "deck") return themaBearbeitet(st.mod, st.sub) || !!(t.besucht && t.besucht[st.href]);
     return false;
   }
   function alleSchritte(t) {
@@ -956,6 +1009,16 @@
         ' <span class="plan-phase">' + ({ 1: "Verstehen", 2: "Anwenden", 3: "Simulation/Puffer" }[w.phase] || "") + "</span></h2>" +
         '<p class="muted">' + escapeHtml(w.hinweis || "") + (kap.length ? " Kapitel diese Woche: " + ver + " von " + kap.length + " verstanden." : "") +
         (p1Total ? ' Alle Themen gesamt: <strong>' + p1Done + " von " + p1Total + "</strong> verstanden." : "") + "</p>";
+      // Klinische Teilgebiete dieser Woche (Geburtshilfe, Kinder, Notfall … – alle Bereiche der Anästhesie)
+      if ((w.themen || []).length) {
+        const themaLis = w.themen.map(function (tt) {
+          const x = themaInfo(tt[0], tt[1]); const ok = themaBearbeitet(x.mod, x.sub);
+          return '<li class="heute-schritt' + (ok ? " heute-erledigt" : "") + '"><span class="heute-nr">' + (ok ? "✓" : "📇") + "</span>" +
+            '<div class="heute-text"><strong>' + escapeHtml(x.titel) + '</strong><br><span class="muted">' + escapeHtml(x.modTitel) + " · " + x.count + " Karten</span></div>" +
+            '<a class="btn btn-sm btn-secondary" href="' + x.href + '">' + (ok ? "Nochmal" : "Lernen") + "</a></li>";
+        }).join("");
+        kopf += '<h2 class="sw-h2">Teilgebiete diese Woche</h2><p class="muted">Klinische Kartenthemen – so sind auch Geburtshilfe, Kinder, Notfall und die übrigen Bereiche abgedeckt.</p><ol class="heute-plan">' + themaLis + "</ol>";
+      }
       kopf += '<div class="sw-box sw-einfach"><div class="sw-box-title">Diese Woche zusätzlich</div><p>' +
         (w.partner ? "<strong>Mit deinem Lernpartner:</strong> " + escapeHtml(w.partner) + "<br>" : "") +
         "<strong>Im Chat mit Claude:</strong> eine Prüfer-Runde (25 min) zum Wochenthema.</p>" +
@@ -985,18 +1048,8 @@
     return schwer.concat(bald).slice(0, 15);
   }
   function mehrKartenNeu() {
-    const gelesen = window.SRS.loadLearnedSpezial();
-    const neu = window.SRS.getNewCards(FLASHCARDS, progress, "all");
-    const info = lernplanWoche();
-    const organe = info ? (info.w.kapitel || []).map(function (k) { return k[0]; }) : [];
-    const rang = function (c) {
-      if (c.spezialwissen && gelesen.indexOf(c.spezialwissen + "/" + c.kapitel) !== -1) return 0; // schon verstanden → jetzt festigen
-      if (c.spezialwissen && organe.indexOf(c.spezialwissen) !== -1) return 1; // Thema dieser Woche
-      return 2;
-    };
-    return neu.map(function (c, i) { return [rang(c), i, c]; })
-      .sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; })
-      .slice(0, 10).map(function (x) { return x[2]; });
+    // Neue Karten zuerst aus Themen, die du schon bearbeitet oder im Plan hattest.
+    return neuKartenPriorisiert(window.SRS.getNewCards(FLASHCARDS, progress, "all")).slice(0, 10);
   }
   function mehrVorschlaege() {
     const t = tagesplan();
@@ -1322,6 +1375,9 @@
       due = due.filter(function (c) { return c.subtopic === subtopicId; });
       fresh = fresh.filter(function (c) { return c.subtopic === subtopicId; });
     }
+    // Neue Karten bevorzugt aus Themen, die inhaltlich schon bearbeitet oder im Plan dran waren
+    // (Tages- und Freies-Lernen-Modus); sonst wie gehabt.
+    if (subtopicId === "tag" || moduleId === "all") fresh = neuKartenPriorisiert(fresh);
     fresh = fresh.slice(0, 15);
     // Durchmischt statt blockweise nach Unterthema abzuarbeiten (Interleaving) —
     // gemischte statt geblockte Praxis verbessert nachweislich Transfer und
